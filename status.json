@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-01T03:34:27.075Z",
+  "run": "41269533949",
+  "sites": {
+    "bluesky": {
+      "outcome": "pass",
+      "tier": 2,
+      "method": "live-logged-out",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "instagram": {
+      "outcome": "pass",
+      "tier": 1,
+      "method": "unverified",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "pinterest": {
+      "outcome": "pass",
+      "tier": 2,
+      "method": "live-logged-out",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "reddit": {
+      "outcome": "inconclusive",
+      "tier": 1,
+      "method": "live-logged-out",
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-01"
+    },
+    "threads": {
+      "outcome": "pass",
+      "tier": 2,
+      "method": "fixture",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "tiktok": {
+      "outcome": "pass",
+      "tier": 2,
+      "method": "live-logged-out",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "twitch": {
+      "outcome": "pass",
+      "tier": 2,
+      "method": "live-logged-out",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    },
+    "youtube": {
+      "outcome": "pass",
+      "tier": 1,
+      "method": "live-logged-out",
+      "inconclusiveDays": 0,
+      "walled": false,
+      "lastPass": "2026-11-01"
+    }
+  }
+}
