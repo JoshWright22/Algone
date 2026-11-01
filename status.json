@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-01T03:34:27.075Z",
-  "run": "41269533949",
+  "date": "2026-11-01T06:39:00.191Z",
+  "run": "41281475838",
   "sites": {
     "bluesky": {
       "outcome": "pass",
@@ -37,7 +37,7 @@
     "threads": {
       "outcome": "pass",
       "tier": 2,
-      "method": "fixture",
+      "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
       "lastPass": "2026-11-01"
@@ -65,6 +65,38 @@
       "inconclusiveDays": 0,
       "walled": false,
       "lastPass": "2026-11-01"
+    },
+    "facebook": {
+      "outcome": "inconclusive",
+      "tier": 1,
+      "method": "unverified",
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-01"
+    },
+    "linkedin": {
+      "outcome": "inconclusive",
+      "tier": 1,
+      "method": "unverified",
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-01"
+    },
+    "substack": {
+      "outcome": "inconclusive",
+      "tier": 2,
+      "method": "unverified",
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-01"
+    },
+    "x": {
+      "outcome": "inconclusive",
+      "tier": 1,
+      "method": "unverified",
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-01"
     }
   }
 }
