@@ -107,7 +107,7 @@ export interface PublishedRules {
 export const BOUND_ROUTES = ["home", "watch", "shorts", "subscriptions"];
 
 const BROAD = new Set(["*", "html", "body", "main", "div", ":root", "span", "section", "a"]);
-const FORBIDDEN = [/[{}<\]/, /url(/i, //*/];
+const FORBIDDEN = [/[{}<\\]/, /url\(/i, /\/\*/];
 
 /** Returns an error message, or null if the selector is acceptable. */
 export function checkSelector(selector: unknown): string | null {
