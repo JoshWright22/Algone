@@ -1,0 +1,14 @@
+{
+  "Politics": ["election", "senate", "congress", "president", "parliament", "democrat", "republican", "minister", "campaign", "vote"],
+  "News": ["breaking", "news", "report", "headline", "update"],
+  "Sports": ["nba", "nfl", "soccer", "football", "match", "goal", "league", "playoffs", "tennis", "cricket"],
+  "Gaming": ["gameplay", "speedrun", "minecraft", "fortnite", "gta", "walkthrough", "esports", "lets play"],
+  "Celebrity": ["celebrity", "gossip", "kardashian", "red carpet", "drama"],
+  "Finance": ["stocks", "crypto", "bitcoin", "investing", "trading", "market", "economy"],
+  "Technology": ["programming", "software", "coding", "tech", "gadget", "review", "linux", "developer"],
+  "Science": ["science", "physics", "biology", "chemistry", "space", "research", "nasa"],
+  "Music": ["music", "album", "song", "lyrics", "concert", "guitar"],
+  "Education": ["tutorial", "lecture", "course", "how to", "explained", "lesson"],
+  "Cooking": ["recipe", "cooking", "baking", "kitchen"],
+  "Fitness": ["workout", "fitness", "gym", "yoga"]
+}

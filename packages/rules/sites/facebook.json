@@ -1,0 +1,166 @@
+{
+  "id": "facebook",
+  "name": "Facebook",
+  "tier": 1,
+  "hosts": [
+    "www.facebook.com",
+    "web.facebook.com",
+    "m.facebook.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/home.php"
+    ],
+    "watch": [
+      "/watch*"
+    ],
+    "reels": [
+      "/reel/*",
+      "/reels/*"
+    ],
+    "subscriptions": [
+      "/?filter=all&sk=h_chr"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "News Feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"main\"] [role=\"feed\"]",
+        "[role=\"main\"] div:has(> [role=\"article\"])"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "stories",
+      "label": "Stories tray",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"main\"] [aria-label=\"Stories\"]",
+        "[role=\"main\"] div[aria-label*=\"stories\" i]"
+      ],
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "watchFeed",
+      "label": "Watch feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"main\"]"
+      ],
+      "routes": [
+        "watch"
+      ]
+    },
+    {
+      "id": "reels",
+      "label": "Reels",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"main\"]"
+      ],
+      "routes": [
+        "reels"
+      ]
+    },
+    {
+      "id": "watchNav",
+      "label": "Watch in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href*=\"/watch/\"][role=\"link\"]",
+        "a[href=\"/watch/\"]"
+      ]
+    },
+    {
+      "id": "reelsNav",
+      "label": "Reels in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href^=\"/reel/\"][role=\"link\"]",
+        "a[href*=\"/reels/\"]"
+      ]
+    },
+    {
+      "id": "rightRail",
+      "label": "Sponsored and suggestions rail",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"complementary\"] div:has(> div > a[href*=\"/ads/\"])",
+        "[role=\"complementary\"] a[aria-label=\"Advertiser\"]"
+      ]
+    },
+    {
+      "id": "marketplaceNav",
+      "label": "Marketplace in navigation",
+      "group": "Navigation",
+      "class": "extra",
+      "selectors": [
+        "[role=\"navigation\"] a[href*=\"/marketplace/\"]"
+      ]
+    },
+    {
+      "id": "gamingNav",
+      "label": "Gaming in navigation",
+      "group": "Navigation",
+      "class": "extra",
+      "selectors": [
+        "[role=\"navigation\"] a[href*=\"/gaming/\"]"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "[role=\"article\"] [aria-label^=\"Comment\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "[role=\"main\"]",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "[role=\"feed\"] > div",
+    "title": "[data-ad-comet-preview=\"message\"]",
+    "channel": "h3 a",
+    "kinds": {
+      "ads": ":has(a[href*=\"/ads/about\"])",
+      "reels": ":has(a[href*=\"/reel/\"])"
+    }
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "[role=\"search\"]",
+      "label": "Search"
+    }
+  ],
+  "probes": [],
+  "walls": [
+    "input[name=\"email\"]",
+    "form[action*=\"login\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "unverified",
+    "notes": "Logged-out page is a login wall. Roles read from Escape the Algorithm (MIT) and general knowledge. Needs the logged-in check."
+  }
+}

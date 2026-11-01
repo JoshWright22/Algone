@@ -1,0 +1,145 @@
+{
+  "id": "linkedin",
+  "name": "LinkedIn",
+  "tier": 1,
+  "hosts": [
+    "www.linkedin.com"
+  ],
+  "routes": {
+    "home": [
+      "/feed",
+      "/feed/",
+      "/feed/foryou*",
+      "/"
+    ],
+    "subscriptions": [
+      "/feed/following*"
+    ],
+    "news": [
+      "/news/*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Main feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[componentkey='container-update-list_mainFeed-lazy-container']",
+        "[data-testid=\"mainFeed\"]",
+        ".scaffold-finite-scroll__content"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "news",
+      "label": "LinkedIn News sidebar",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-view-name=\"news-module\"]",
+        "#feed-news-module",
+        ".news-module"
+      ]
+    },
+    {
+      "id": "addToFeed",
+      "label": "Add to your feed",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        ".feed-follows-module",
+        "[data-view-name=\"feed-follow-recommendation\"]"
+      ]
+    },
+    {
+      "id": "puzzles",
+      "label": "Today's puzzles",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-view-name=\"news-module-puzzles\"]",
+        ".news-module__games"
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Premium upsells",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        ".premium-upsell-link",
+        "[data-view-name=\"premium-upsell-link\"]"
+      ]
+    },
+    {
+      "id": "reactions",
+      "label": "Reaction counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        ".social-details-social-counts"
+      ]
+    },
+    {
+      "id": "badge",
+      "label": "Notification badge",
+      "group": "Navigation",
+      "class": "extra",
+      "selectors": [
+        ".notification-badge"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "body main",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "[componentkey='container-update-list_mainFeed-lazy-container'] > div[data-lazy-mount-id]",
+    "title": "[data-view-name=\"feed-commentary\"]",
+    "channel": "[data-view-name=\"feed-actor-name\"]",
+    "kinds": {
+      "ads": ":has(a[href*=\"/ads/\"])"
+    }
+  },
+  "capture": {
+    "routes": [
+      "subscriptions"
+    ],
+    "item": "[componentkey='container-update-list_mainFeed-lazy-container'] > div[data-lazy-mount-id]",
+    "title": "[data-view-name=\"feed-commentary\"]",
+    "link": "a[href*=\"/feed/update/\"]"
+  },
+  "protected": [
+    {
+      "path": "/feed/",
+      "selector": "input[placeholder=\"Search\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/feed/",
+      "selector": "a[href*=\"/messaging/\"]",
+      "label": "Messaging"
+    },
+    {
+      "path": "/feed/",
+      "selector": "button[aria-label*=\"Start a post\"]",
+      "label": "Post box"
+    }
+  ],
+  "probes": [],
+  "walls": [
+    "input[name=\"session_key\"]",
+    "a[href*=\"/login\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "unverified",
+    "notes": "Redirects to login when logged out. Selectors read from LinkOff (MIT), its feed selector dated 2026. Needs the logged-in check."
+  }
+}

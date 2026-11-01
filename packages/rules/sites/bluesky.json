@@ -1,0 +1,93 @@
+{
+  "id": "bluesky",
+  "name": "Bluesky",
+  "tier": 2,
+  "hosts": [
+    "bsky.app"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "subscriptions": [
+      "/"
+    ]
+  },
+  "elements": [
+    {
+      "id": "discover",
+      "label": "Discover feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"customFeedPage\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ],
+      "effect": "selectTab",
+      "effectSelector": "[data-testid=\"homeScreenFeedTabs-Following\"][aria-selected=\"false\"]"
+    },
+    {
+      "id": "trending",
+      "label": "Trending sidebar",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"trendingSidebar\"]",
+        "nav ~ div div:has(> a[href^=\"/search?q=\"])"
+      ]
+    },
+    {
+      "id": "suggested",
+      "label": "Suggested follows",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"suggestedFollows\"]"
+      ]
+    },
+    {
+      "id": "counts",
+      "label": "Like and repost counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "[data-testid=\"likeCount\"]",
+        "[data-testid=\"repostCount\"]"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "[data-testid^=\"feedItem-by-\"]",
+    "title": "[data-testid=\"postText\"]",
+    "channel": "a[href^=\"/profile/\"]",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "[data-testid=\"homeScreenFeedTabs\"]",
+      "label": "Feed tabs"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "discover"
+      ]
+    }
+  ],
+  "walls": [],
+  "feedUrls": [
+    "/rss"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "Discover feed checked logged out. The Following tab exists only when logged in."
+  }
+}

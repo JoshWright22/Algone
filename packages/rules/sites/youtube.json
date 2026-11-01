@@ -1,0 +1,253 @@
+{
+  "id": "youtube",
+  "name": "YouTube",
+  "tier": 1,
+  "hosts": [
+    "www.youtube.com",
+    "m.youtube.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "watch": [
+      "/watch"
+    ],
+    "shorts": [
+      "/shorts/*"
+    ],
+    "subscriptions": [
+      "/feed/subscriptions"
+    ],
+    "results": [
+      "/results"
+    ],
+    "explore": [
+      "/feed/explore*",
+      "/feed/trending*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-browse[page-subtype=\"home\"]",
+        "ytm-browse ytm-rich-grid-renderer"
+      ],
+      "feed": true
+    },
+    {
+      "id": "trending",
+      "label": "Trending and Explore pages",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-browse[page-subtype=\"trending\"]",
+        "ytd-browse[page-subtype=\"explore\"]"
+      ]
+    },
+    {
+      "id": "sidebar",
+      "label": "Sidebar recommendations",
+      "group": "Watch page",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-watch-next-secondary-results-renderer",
+        "ytm-item-section-renderer[section-identifier=\"related-items\"]"
+      ]
+    },
+    {
+      "id": "endScreens",
+      "label": "End screens",
+      "group": "Watch page",
+      "class": "algorithmic",
+      "selectors": [
+        ".ytp-endscreen-content",
+        ".ytp-ce-element",
+        ".videowall-endscreen"
+      ]
+    },
+    {
+      "id": "autoplay",
+      "label": "Autoplay",
+      "group": "Watch page",
+      "class": "algorithmic",
+      "selectors": [
+        ".ytp-autonav-toggle"
+      ],
+      "effect": "stopAutoplay",
+      "effectSelector": ".ytp-autonav-toggle-button[aria-checked=\"true\"]"
+    },
+    {
+      "id": "shortsShelf",
+      "label": "Shorts shelves",
+      "group": "Shorts",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-reel-shelf-renderer",
+        "grid-shelf-view-model",
+        "ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])",
+        "ytm-reel-shelf-renderer",
+        "ytm-shorts-lockup-view-model"
+      ]
+    },
+    {
+      "id": "shortsNav",
+      "label": "Shorts in navigation",
+      "group": "Shorts",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-guide-entry-renderer:has(a[title=\"Shorts\"])",
+        "ytd-mini-guide-entry-renderer:has(a[title=\"Shorts\"])",
+        "ytm-pivot-bar-item-renderer:has(a[href=\"/shorts\"])"
+      ]
+    },
+    {
+      "id": "shortsPlayer",
+      "label": "Shorts swipe feed",
+      "group": "Shorts",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-shorts"
+      ],
+      "routes": [
+        "shorts"
+      ],
+      "effect": "shortsToWatch"
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "ytd-guide-section-renderer:has(a[href^=\"/feed/trending\"])",
+        "ytd-guide-section-renderer:has(a[href^=\"/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ\"])"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Watch page",
+      "class": "extra",
+      "selectors": [
+        "ytd-comments#comments",
+        "ytm-comment-section-renderer",
+        "ytm-item-section-renderer[section-identifier=\"comments-entry-point\"]"
+      ]
+    },
+    {
+      "id": "liveChat",
+      "label": "Live chat",
+      "group": "Watch page",
+      "class": "extra",
+      "selectors": [
+        "ytd-live-chat-frame"
+      ]
+    },
+    {
+      "id": "metrics",
+      "label": "View and like counts",
+      "group": "Watch page",
+      "class": "extra",
+      "selectors": [
+        "ytd-watch-info-text",
+        "like-button-view-model .yt-spec-button-shape-next__button-text-content"
+      ]
+    },
+    {
+      "id": "notifications",
+      "label": "Notification bell",
+      "group": "Navigation",
+      "class": "extra",
+      "selectors": [
+        "ytd-notification-topbar-button-renderer"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "ytd-page-manager",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "ytd-rich-item-renderer",
+    "title": "#video-title",
+    "channel": "ytd-channel-name a",
+    "kinds": {
+      "shorts": ":has(a[href^=\"/shorts/\"])",
+      "ads": ":has(ytd-ad-slot-renderer)"
+    }
+  },
+  "capture": {
+    "routes": [
+      "subscriptions"
+    ],
+    "item": "ytd-rich-item-renderer",
+    "title": "#video-title",
+    "link": "a#video-title-link"
+  },
+  "player": {
+    "selector": "video.html5-main-video",
+    "adMarker": ".ad-showing"
+  },
+  "subscriptionsPath": "/feed/subscriptions",
+  "searchUrl": "/results?search_query=",
+  "auxHosts": [
+    "consent.youtube.com"
+  ],
+  "protected": [
+    {
+      "path": "/results?search_query=music",
+      "selector": "yt-searchbox",
+      "label": "Search box"
+    },
+    {
+      "path": "/results?search_query=music",
+      "selector": "ytd-video-renderer",
+      "label": "Search results"
+    },
+    {
+      "path": "/watch?v=dQw4w9WgXcQ",
+      "selector": "video.html5-main-video",
+      "label": "Video player"
+    },
+    {
+      "path": "/",
+      "selector": "a[title=\"Subscriptions\"]",
+      "label": "Subscriptions link"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/watch?v=dQw4w9WgXcQ",
+      "live": true,
+      "expect": [
+        "sidebar",
+        "comments"
+      ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ]
+    }
+  ],
+  "walls": [
+    "form[action*=\"consent\"]",
+    "ytd-consent-bump-v2-lightbox",
+    "input[value=\"Reject all\"]"
+  ],
+  "feedUrls": [
+    "/feeds/videos.xml"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "Home, watch, and search checked logged out. Logged-out home is nearly empty. Mobile (ytm-*) selectors unverified."
+  }
+}

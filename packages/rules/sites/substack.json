@@ -1,0 +1,103 @@
+{
+  "id": "substack",
+  "name": "Substack",
+  "tier": 2,
+  "hosts": [
+    "substack.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/home"
+    ],
+    "notes": [
+      "/notes*"
+    ],
+    "explore": [
+      "/explore*"
+    ],
+    "subscriptions": [
+      "/inbox*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[class*=\"reader2-feed\"]",
+        "[class*=\"feed-\"]:has(a[href*=\"/p/\"])"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "notes",
+      "label": "Notes feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[class*=\"feed\"]"
+      ],
+      "routes": [
+        "notes"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[class*=\"explore\"]"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/explore\"]"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "[class*=\"comments-list\"]"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "[class*=\"feedItem\"]",
+    "title": "a[href*=\"/p/\"]",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "input[type=\"search\"]",
+      "label": "Search"
+    }
+  ],
+  "probes": [],
+  "walls": [],
+  "feedUrls": [
+    "/feed"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "unverified",
+    "notes": "Logged-out home is a marketing page. Class fragments are unconfirmed. Tier 2."
+  }
+}

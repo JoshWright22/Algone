@@ -1,0 +1,130 @@
+{
+  "id": "twitch",
+  "name": "Twitch",
+  "tier": 2,
+  "hosts": [
+    "www.twitch.tv",
+    "m.twitch.tv"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "directory": [
+      "/directory*"
+    ],
+    "subscriptions": [
+      "/directory/following*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home carousel and shelves",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-a-target=\"front-page-carousel\"]",
+        "[data-a-target=\"root-scroller\"] .front-page-carousel ~ *",
+        ".home-carousel-info"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "recommended",
+      "label": "Recommended channels",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        ".side-nav-section:has([data-test-selector=\"recommended-channel\"])",
+        "[data-test-selector=\"recommended-channel\"]"
+      ]
+    },
+    {
+      "id": "browse",
+      "label": "Browse page",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-a-target=\"root-scroller\"]"
+      ],
+      "routes": [
+        "directory"
+      ]
+    },
+    {
+      "id": "browseNav",
+      "label": "Browse in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-a-target=\"browse-link\"]"
+      ]
+    },
+    {
+      "id": "chat",
+      "label": "Stream chat",
+      "group": "Channel page",
+      "class": "extra",
+      "selectors": [
+        ".chat-shell",
+        "[data-a-target=\"right-column-chat-bar\"]"
+      ]
+    },
+    {
+      "id": "viewers",
+      "label": "Viewer counts",
+      "group": "Channel page",
+      "class": "extra",
+      "selectors": [
+        "[data-a-target=\"animated-channel-viewers-count\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "body main",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "[data-a-target=\"preview-card\"]",
+    "title": "[data-a-target=\"preview-card-title-link\"]",
+    "channel": "[data-a-target=\"preview-card-channel-link\"]",
+    "kinds": {}
+  },
+  "player": {
+    "selector": "video",
+    "adMarker": "[data-a-target=\"video-ad-label\"]"
+  },
+  "searchUrl": "/search?term=",
+  "protected": [
+    {
+      "path": "/",
+      "selector": "[data-a-target=\"tray-search-input\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "[data-a-target=\"home-link\"]",
+      "label": "Home link"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home",
+        "recommended"
+      ]
+    }
+  ],
+  "walls": [],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "Home and side nav checked logged out."
+  }
+}

@@ -1,0 +1,57 @@
+import type { SiteRule } from "@algone/rules";
+import type { Runtime, Settings, SiteSettings, TunedFilters } from "./types";
+
+export const emptyTuned = (): TunedFilters => ({
+  blockKeywords: [],
+  blockChannels: [],
+  blockTopics: [],
+  allowTopics: [],
+  hideKinds: [],
+});
+
+export const defaultSite = (): SiteSettings => ({
+  enabled: true,
+  mode: "nofeed",
+  elements: {},
+  tuned: emptyTuned(),
+  intent: { searchHome: false, prompt: false, subsFirst: false, launchPause: false },
+});
+
+export function defaultSettings(rules: SiteRule[]): Settings {
+  return {
+    schema: 1,
+    sites: Object.fromEntries(rules.map((r) => [r.id, defaultSite()])),
+    barrier: { type: "pause", seconds: 30 },
+    snoozeMinutes: 10,
+    stopAtEnd: true,
+    ruleUpdates: true,
+    webSources: { wikipedia: false },
+    theme: "system",
+    queueSoftCap: 5,
+    customRanking: "newest",
+  };
+}
+
+export const defaultRuntime = (): Runtime => ({
+  snoozes: {},
+  daily: { day: "", used: 0 },
+  stats: { started: 0, dismissed: 0, completed: 0 },
+  pending: null,
+  lastRuleCheck: 0,
+  lastRuleError: "",
+  lastAcceptedRev: 0,
+});
+
+/** Fills in sites added by a newer version, without touching existing choices. */
+export function migrateSettings(saved: Settings | undefined, rules: SiteRule[]): Settings {
+  const base = defaultSettings(rules);
+  if (!saved) return base;
+  return { ...base, ...saved, sites: { ...base.sites, ...saved.sites } };
+}
+
+export function isHidden(
+  el: { id: string; class: string },
+  site: SiteSettings,
+): boolean {
+  return site.elements[el.id] ?? el.class === "algorithmic";
+}

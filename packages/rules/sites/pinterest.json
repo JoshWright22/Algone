@@ -1,0 +1,116 @@
+{
+  "id": "pinterest",
+  "name": "Pinterest",
+  "tier": 2,
+  "hosts": [
+    "www.pinterest.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "explore": [
+      "/ideas*",
+      "/today*"
+    ],
+    "pin": [
+      "/pin/*"
+    ],
+    "subscriptions": [
+      "/following*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-test-id=\"homefeed\"]",
+        "[role=\"main\"] [data-test-id=\"masonry-container\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[role=\"main\"]"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "related",
+      "label": "Related Pins",
+      "group": "Pin page",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-test-id=\"masonry-container\"]",
+        "[data-test-id=\"relatedPins\"]"
+      ],
+      "routes": [
+        "pin"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/ideas/\"]",
+        "a[href=\"/ideas\"]"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Pin page",
+      "class": "extra",
+      "selectors": [
+        "[data-test-id=\"comment\"]",
+        "[data-test-id=\"closeup-comments-section\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "[role=\"main\"]",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "[data-grid-item]",
+    "title": "a[aria-label]",
+    "kinds": {}
+  },
+  "searchUrl": "/search/pins/?q=",
+  "protected": [
+    {
+      "path": "/ideas/",
+      "selector": "input[name=\"searchBoxInput\"]",
+      "label": "Search"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/ideas/",
+      "live": true,
+      "expect": [
+        "explore"
+      ]
+    }
+  ],
+  "walls": [],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "Explore checked logged out. Logged-in home uses a selector from Escape the Algorithm (MIT)."
+  }
+}

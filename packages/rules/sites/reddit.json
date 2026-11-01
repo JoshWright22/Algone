@@ -1,0 +1,209 @@
+{
+  "id": "reddit",
+  "name": "Reddit",
+  "tier": 1,
+  "hosts": [
+    "www.reddit.com",
+    "sh.reddit.com",
+    "new.reddit.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      {
+        "path": "/",
+        "query": {
+          "feed": "home"
+        }
+      }
+    ],
+    "subscriptions": [
+      {
+        "path": "/",
+        "query": {
+          "feed": "home"
+        }
+      }
+    ],
+    "popular": [
+      "/r/popular*"
+    ],
+    "all": [
+      "/r/all*"
+    ],
+    "news": [
+      "/news*"
+    ],
+    "explore": [
+      "/explore*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "shreddit-feed"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "popular",
+      "label": "r/popular and r/all",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "shreddit-feed",
+        "#subgrid-container shreddit-gallery-carousel"
+      ],
+      "routes": [
+        "popular",
+        "all",
+        "news"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#main-content",
+        "shreddit-gallery-carousel"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "popularNav",
+      "label": "Popular in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "li:has(> a[href=\"/r/popular/\"])",
+        "faceplate-tracker:has(a[href=\"/r/popular/\"])",
+        "a[href=\"/r/popular/\"]"
+      ]
+    },
+    {
+      "id": "trending",
+      "label": "Trending search suggestions",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "reddit-recent-pdp-posts",
+        "search-dynamic-id-cache-controller faceplate-tracker[source=search]"
+      ]
+    },
+    {
+      "id": "relatedAnswers",
+      "label": "Reddit Answers promos",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href^=\"/answers\"]"
+      ]
+    },
+    {
+      "id": "rightRail",
+      "label": "Recommended communities rail",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "aside[aria-label*=\"popular\" i]",
+        "#right-sidebar-container:has(community-recommendation)",
+        "community-recommendation"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Post page",
+      "class": "extra",
+      "selectors": [
+        "shreddit-comment-tree",
+        "comment-body-header"
+      ]
+    },
+    {
+      "id": "sidebar",
+      "label": "Community sidebar",
+      "group": "Community pages",
+      "class": "extra",
+      "selectors": [
+        "#right-sidebar-container"
+      ]
+    },
+    {
+      "id": "votes",
+      "label": "Vote counts",
+      "group": "Post page",
+      "class": "extra",
+      "selectors": [
+        "shreddit-post::part(score)",
+        "faceplate-number[pretty]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "#subgrid-container",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "shreddit-post",
+    "title": "a[slot=\"title\"]",
+    "channel": "a[slot=\"credit-bar\"]",
+    "kinds": {
+      "ads": ":is(shreddit-ad-post)"
+    }
+  },
+  "capture": {
+    "routes": [
+      "subscriptions"
+    ],
+    "item": "shreddit-post",
+    "title": "a[slot=\"title\"]",
+    "link": "a[slot=\"full-post-link\"]"
+  },
+  "subscriptionsPath": "/?feed=home",
+  "searchUrl": "/search/?q=",
+  "protected": [
+    {
+      "path": "/r/programming/",
+      "selector": "reddit-search-large",
+      "label": "Search"
+    },
+    {
+      "path": "/r/programming/",
+      "selector": "shreddit-post",
+      "label": "Subreddit posts"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/r/popular/",
+      "live": true,
+      "expect": [
+        "popular"
+      ]
+    }
+  ],
+  "walls": [
+    "#challenge-form",
+    "form[action*=\"challenge\"]"
+  ],
+  "feedUrls": [
+    ".rss"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "r/popular and subreddit pages checked logged out; home sometimes served a JS challenge. Logged-in home is unverified."
+  }
+}

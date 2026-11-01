@@ -1,0 +1,154 @@
+{
+  "id": "instagram",
+  "name": "Instagram",
+  "tier": 1,
+  "hosts": [
+    "www.instagram.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "explore": [
+      "/explore",
+      "/explore/"
+    ],
+    "reels": [
+      "/reels*"
+    ],
+    "subscriptions": [
+      "/"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main article",
+        "main div:has(> article)"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore grid",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main > *"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "reels",
+      "label": "Reels page",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main > *"
+      ],
+      "routes": [
+        "reels"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/explore/\"]"
+      ]
+    },
+    {
+      "id": "reelsNav",
+      "label": "Reels in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/reels/\"]"
+      ]
+    },
+    {
+      "id": "suggestedUsers",
+      "label": "Suggested accounts",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/explore/people/\"]",
+        "main section:has(a[href=\"/explore/people/\"])"
+      ]
+    },
+    {
+      "id": "stories",
+      "label": "Stories",
+      "group": "Feeds",
+      "class": "extra",
+      "selectors": [
+        "main [role=\"menu\"]",
+        "main ul:has(button[aria-label*=\"Story\"])"
+      ]
+    },
+    {
+      "id": "likes",
+      "label": "Like counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "section a[href$=\"/liked_by/\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "body main",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "main article",
+    "title": "h1",
+    "channel": "header a[role=\"link\"]",
+    "kinds": {
+      "ads": ":has(a[href*=\"/ads/\"])"
+    }
+  },
+  "capture": {
+    "routes": [
+      "subscriptions"
+    ],
+    "item": "main article",
+    "title": "h1",
+    "link": "a[href*=\"/p/\"]"
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "a[href=\"/direct/inbox/\"]",
+      "label": "Messages"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/explore/",
+      "live": true,
+      "expect": [
+        "explore"
+      ]
+    }
+  ],
+  "walls": [
+    "input[name=\"username\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "unverified",
+    "notes": "Logged-out pages are a login wall except /explore/. Feed selectors are structural and unconfirmed. Needs the logged-in check."
+  }
+}

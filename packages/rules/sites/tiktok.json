@@ -1,0 +1,157 @@
+{
+  "id": "tiktok",
+  "name": "TikTok",
+  "tier": 2,
+  "hosts": [
+    "www.tiktok.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/foryou*"
+    ],
+    "explore": [
+      "/explore*"
+    ],
+    "live": [
+      "/live*"
+    ],
+    "subscriptions": [
+      "/following*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "forYou",
+      "label": "For You feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#main-content-homepage_hot",
+        "[data-e2e=\"recommend-list-item-container\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore page",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#main-content-explore_page",
+        "[data-e2e=\"explore-item-list\"]"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "live",
+      "label": "Live page",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#tiktok-live-main-container-id"
+      ],
+      "routes": [
+        "live"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-e2e=\"nav-explore\"]"
+      ]
+    },
+    {
+      "id": "foryouNav",
+      "label": "For You in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-e2e=\"nav-foryou\"]"
+      ]
+    },
+    {
+      "id": "liveNav",
+      "label": "Live in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-e2e=\"nav-live\"]"
+      ]
+    },
+    {
+      "id": "shopNav",
+      "label": "Shop in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-e2e=\"nav-shop\"]"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Video page",
+      "class": "extra",
+      "selectors": [
+        "[data-e2e=\"comment-list\"]",
+        "[data-e2e=\"browse-comment-list\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "#main-content-homepage_hot",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "[data-e2e=\"recommend-list-item-container\"]",
+    "title": "[data-e2e=\"video-desc\"]",
+    "channel": "[data-e2e=\"video-author-uniqueid\"]",
+    "kinds": {}
+  },
+  "searchUrl": "/search?q=",
+  "protected": [
+    {
+      "path": "/",
+      "selector": "[data-e2e=\"search-user-input\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "[data-e2e=\"nav-following\"]",
+      "label": "Following"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "forYou"
+      ]
+    },
+    {
+      "path": "/explore",
+      "live": true,
+      "expect": [
+        "explore"
+      ]
+    }
+  ],
+  "walls": [
+    "[data-e2e=\"login-modal\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "live-logged-out",
+    "notes": "Home and explore checked logged out."
+  }
+}

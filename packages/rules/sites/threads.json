@@ -1,0 +1,80 @@
+{
+  "id": "threads",
+  "name": "Threads",
+  "tier": 2,
+  "hosts": [
+    "www.threads.com",
+    "www.threads.net"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "subscriptions": [
+      "/following"
+    ]
+  },
+  "elements": [
+    {
+      "id": "forYou",
+      "label": "For You feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "div:has(> div > [data-pressable-container])"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "suggested",
+      "label": "Suggested accounts",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/search?serp_type=accounts\"]"
+      ]
+    },
+    {
+      "id": "counts",
+      "label": "Reply and like counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "[data-pressable-container] svg[aria-label=\"Like\"] + span"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "[data-pressable-container]",
+    "title": "div[dir=\"auto\"]",
+    "channel": "a[href^=\"/@\"]",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "a[href=\"/search\"]",
+      "label": "Search"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "forYou"
+      ]
+    }
+  ],
+  "walls": [
+    "input[autocomplete=\"username\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "fixture",
+    "notes": "Selector is structural, since Threads has few stable attributes. Tested on a fixture; live check pending."
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "id": "x",
+  "name": "X",
+  "tier": 1,
+  "hosts": [
+    "x.com",
+    "twitter.com",
+    "mobile.x.com",
+    "mobile.twitter.com"
+  ],
+  "routes": {
+    "home": [
+      "/home"
+    ],
+    "explore": [
+      "/explore*"
+    ],
+    "subscriptions": [
+      "/following"
+    ]
+  },
+  "elements": [
+    {
+      "id": "forYou",
+      "label": "For You timeline",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"primaryColumn\"] [aria-label*=\"Timeline\"]:has([data-testid=\"tweet\"])"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ],
+      "effect": "selectTab",
+      "effectSelector": "[data-testid=\"primaryColumn\"] [role=\"tablist\"] [role=\"tab\"][aria-selected=\"false\"]"
+    },
+    {
+      "id": "exploreFeed",
+      "label": "Explore feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"primaryColumn\"] section"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "trends",
+      "label": "Trends",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"sidebarColumn\"] section:has([data-testid=\"trend\"])",
+        "[data-testid=\"sidebarColumn\"] [aria-label*=\"Timeline: Trending\"]"
+      ]
+    },
+    {
+      "id": "whoToFollow",
+      "label": "Who to follow",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "[data-testid=\"sidebarColumn\"] aside:has([data-testid=\"UserCell\"])"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[data-testid=\"AppTabBar_Explore_Link\"]"
+      ]
+    },
+    {
+      "id": "grokNav",
+      "label": "Grok in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/i/grok\"]",
+        "div[data-testid=\"GrokDrawer\"]"
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Premium upsells",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "a[href=\"/i/premium_sign_up\"]",
+        "[data-testid=\"super-upsell-UpsellCardRenderProperties\"]"
+      ]
+    },
+    {
+      "id": "replies",
+      "label": "Reply counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "[data-testid=\"reply\"] [data-testid=\"app-text-transition-container\"]"
+      ]
+    },
+    {
+      "id": "views",
+      "label": "View counts",
+      "group": "Posts",
+      "class": "extra",
+      "selectors": [
+        "a[href$=\"/analytics\"]"
+      ]
+    }
+  ],
+  "slot": {
+    "selector": "[data-testid=\"primaryColumn\"]",
+    "fallback": "fixed"
+  },
+  "tuned": {
+    "item": "article[data-testid=\"tweet\"]",
+    "title": "[data-testid=\"tweetText\"]",
+    "channel": "[data-testid=\"User-Name\"]",
+    "kinds": {
+      "ads": ":has([data-testid=\"placementTracking\"])"
+    }
+  },
+  "capture": {
+    "routes": [
+      "subscriptions"
+    ],
+    "item": "article[data-testid=\"tweet\"]",
+    "title": "[data-testid=\"tweetText\"]",
+    "link": "a[href*=\"/status/\"]"
+  },
+  "searchUrl": "/search?q=",
+  "protected": [
+    {
+      "path": "/home",
+      "selector": "[data-testid=\"SearchBox_Search_Input\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/home",
+      "selector": "a[data-testid=\"AppTabBar_DirectMessage_Link\"]",
+      "label": "Messages"
+    },
+    {
+      "path": "/home",
+      "selector": "[data-testid=\"tweetTextarea_0\"]",
+      "label": "Compose box"
+    }
+  ],
+  "probes": [],
+  "walls": [
+    "a[href=\"/login\"]",
+    "input[autocomplete=\"username\"]"
+  ],
+  "verified": {
+    "date": "2026-10-31",
+    "method": "unverified",
+    "notes": "x.com rendered blank to a logged-out headless browser. Test IDs read from Control Panel for Twitter (MIT). Needs the logged-in check."
+  }
+}
