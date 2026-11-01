@@ -23,7 +23,7 @@ Steps 1 to 4 and step 6 were done on 2026-11-01. Step 5 is yours to decide. The 
 5. **Actions PR setting.** Settings > Actions > General > Workflow permissions: turn on "Allow GitHub Actions to create and approve pull requests". `claude-fix.yml` only needs it as a last resort (see [The agent's pull request](#the-agents-pull-request)).
 6. **Rulesets, last.** They block direct pushes for anyone without bypass.
    - On `main`: require a pull request, with admin bypass for the owner.
-   - On tags matching `v*`: block creation, excluding `v*-nightly.*`. Add the GitHub Actions app as a bypass actor, so the stable tag job can create tags. The Claude app is not a bypass actor.
+   - On tags matching `v*`, excluding `v*-nightly.*`: block update and deletion. Creation is not blocked, because GitHub does not allow the Actions app as a bypass actor on a personal repo, and the stable tag job needs to create tags. A tag starts nothing by itself: store publishing runs only by dispatch, in `release`, with your approval.
 
 The stable tag job runs in `release`, so it waits for your approval. Each publish workflow also runs in `release`, so a stable run asks for approval once for the tag and once for each store workflow, even a store with no secrets. An environment's secrets cannot be read before approval.
 

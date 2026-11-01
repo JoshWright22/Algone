@@ -1053,6 +1053,9 @@ Recorded after the spec was approved.
 *   The action's `github_token` output is revoked before later steps run, so
     `open-agent-pr.mjs` falls back as `docs/setup.md` describes. A PR opened by the
     last fallback, `GITHUB_TOKEN`, starts no CI until it is closed and reopened.
+*   The tag ruleset blocks updating and deleting `v*` tags, not creating them. GitHub
+    rejects the Actions app as a bypass actor on a personal repo. The owner's approval
+    on `release` remains the gate, since a tag starts no publishing by itself.
 *   A "Show for 10 minutes" button also exists on each site in Settings.
 *   The privacy policy discloses that RSS servers see the user's IP address, since
     Custom feeds fetch from them.
