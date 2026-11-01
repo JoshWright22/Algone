@@ -1,0 +1,34 @@
+# Algone's "Report a problem" link fills these fields through URL query parameters, so the
+# ids must stay in step with reportUrl in packages/core/src/links.ts.
+name: Broken site
+description: Something on a supported site is hidden when it should not be, or shows when it should not.
+title: "Site: something is broken"
+labels: [bug]
+body:
+  - type: input
+    id: site
+    attributes:
+      label: Site
+      placeholder: youtube
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The path of the page, such as /feed/subscriptions. Leave out anything private.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Algone version
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true

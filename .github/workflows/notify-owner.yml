@@ -1,0 +1,33 @@
+name: Notify owner
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      NUMBER: ${{ github.event.issue.number }}
+    steps:
+      - name: Mention the owner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "@JoshWright22 issue #$NUMBER was closed."
+      - name: Push to ntfy if a topic is set
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          if [ -z "$NTFY_TOPIC" ]; then
+            exit 0
+          fi
+          curl -fsS --max-time 20 -H "Title: Algone issue closed" -H "Click: $ISSUE_URL" \
+            -d "Issue #$NUMBER was closed." "https://ntfy.sh/$NTFY_TOPIC" > /dev/null ||
+            echo "::warning::ntfy did not accept the message."

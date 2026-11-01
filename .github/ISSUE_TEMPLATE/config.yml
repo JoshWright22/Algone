@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Site status
+    url: https://joshwright22.github.io/Algone/
+    about: See which sites the daily check found working.

@@ -13,6 +13,7 @@ const rule = siteMap()[siteId];
 const root = document.getElementById("root")!;
 /** Survives re-renders caused by storage changes. */
 let showAllQueue = false;
+let promptThisPanel = false;
 
 /** Messages go to the content script in the same tab, through the background-free tabs API. */
 async function toPage(msg: object): Promise<void> {
@@ -28,12 +29,16 @@ function searchBox(prompt: boolean): HTMLElement {
       void toPage({ t: "go", path: rule.searchUrl + encodeURIComponent(input.value.trim()) });
     }
   };
-  const once = sessionStorage.getItem("algone-prompted") !== "1";
-  if (prompt && once) sessionStorage.setItem("algone-prompted", "1");
+  // Shown once a tab session. Re-renders in this panel keep it until the panel closes.
+  if (prompt && !promptThisPanel && sessionStorage.getItem("algone-prompted") !== "1") {
+    promptThisPanel = true;
+    sessionStorage.setItem("algone-prompted", "1");
+  }
+  const once = prompt && promptThisPanel;
   return h(
     "form",
     { class: "search", onsubmit: go },
-    prompt && once ? h("p", { class: "prompt", id: "intent-prompt" }, "What do you want to watch?") : null,
+    once ? h("p", { class: "prompt", id: "intent-prompt" }, "What do you want to watch?") : null,
     input,
   );
 }

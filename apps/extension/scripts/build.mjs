@@ -14,6 +14,7 @@ const { values: args } = parseArgs({
     target: { type: "string", default: "all" },
     version: { type: "string" },
     test: { type: "boolean", default: false },
+    "no-remote-rules": { type: "boolean", default: false },
     "out-dir": { type: "string" },
   },
 });
@@ -124,7 +125,7 @@ async function one(target) {
     logLevel: "warning",
     define: {
       SHOW_TIPS: String(target !== "safari"),
-      REMOTE_RULES: "true",
+      REMOTE_RULES: String(!args["no-remote-rules"]),
       TEST_HOOKS: String(args.test),
       BUILD_REV: String(BUILD_REV),
       BUILD_TARGET: JSON.stringify(target),

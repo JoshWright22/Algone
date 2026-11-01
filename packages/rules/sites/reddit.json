@@ -192,6 +192,14 @@
       "expect": [
         "popular"
       ]
+    },
+    {
+      "path": "/r/popular/",
+      "live": true,
+      "expect": [
+        "popular"
+      ],
+      "viewport": "mobile"
     }
   ],
   "walls": [

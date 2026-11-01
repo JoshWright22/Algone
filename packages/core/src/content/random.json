@@ -1,677 +1,677 @@
 [
- {
-  "kind": "quote",
-  "text": "We suffer more often in imagination than in reality.",
-  "source": "Seneca, Letters to Lucilius (trans. Gummere)"
- },
- {
-  "kind": "quote",
-  "text": "While we are postponing, life speeds by.",
-  "source": "Seneca, Letters to Lucilius (trans. Gummere)"
- },
- {
-  "kind": "quote",
-  "text": "Everything is only for a day, both that which remembers and that which is remembered.",
-  "source": "Marcus Aurelius, Meditations (trans. George Long)"
- },
- {
-  "kind": "quote",
-  "text": "The best way of avenging thyself is not to become like the wrong doer.",
-  "source": "Marcus Aurelius, Meditations (trans. George Long)"
- },
- {
-  "kind": "quote",
-  "text": "Look within. Within is the fountain of good, and it will ever bubble up, if thou wilt ever dig.",
-  "source": "Marcus Aurelius, Meditations (trans. George Long)"
- },
- {
-  "kind": "quote",
-  "text": "Such as are thy habitual thoughts, such also will be the character of thy mind; for the soul is dyed by the thoughts.",
-  "source": "Marcus Aurelius, Meditations (trans. George Long)"
- },
- {
-  "kind": "quote",
-  "text": "Men are disturbed, not by the things which happen, but by the opinions about the things.",
-  "source": "Epictetus, Enchiridion"
- },
- {
-  "kind": "quote",
-  "text": "Is it not pleasant to learn with a constant perseverance and application?",
-  "source": "Confucius, Analects (trans. James Legge)"
- },
- {
-  "kind": "quote",
-  "text": "The mass of men lead lives of quiet desperation.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "Rather than love, than money, than fame, give me truth.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "The question is not what you look at, but what you see.",
-  "source": "Henry David Thoreau, Journal"
- },
- {
-  "kind": "quote",
-  "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "Heaven is under our feet as well as over our heads.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "The sun is but a morning star.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "A man is rich in proportion to the number of things which he can afford to let alone.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "Not till we are lost, in other words not till we have lost the world, do we begin to find ourselves.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "Why should we be in such desperate haste to succeed?",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "Our life is frittered away by detail. Simplify, simplify.",
-  "source": "Henry David Thoreau, Walden"
- },
- {
-  "kind": "quote",
-  "text": "To be great is to be misunderstood.",
-  "source": "Ralph Waldo Emerson, Self-Reliance"
- },
- {
-  "kind": "quote",
-  "text": "A foolish consistency is the hobgoblin of little minds.",
-  "source": "Ralph Waldo Emerson, Self-Reliance"
- },
- {
-  "kind": "quote",
-  "text": "Hitch your wagon to a star.",
-  "source": "Ralph Waldo Emerson, Society and Solitude"
- },
- {
-  "kind": "quote",
-  "text": "The only way to have a friend is to be one.",
-  "source": "Ralph Waldo Emerson, Friendship"
- },
- {
-  "kind": "quote",
-  "text": "Beauty is its own excuse for being.",
-  "source": "Ralph Waldo Emerson, The Rhodora"
- },
- {
-  "kind": "quote",
-  "text": "The earth laughs in flowers.",
-  "source": "Ralph Waldo Emerson, Hamatreya"
- },
- {
-  "kind": "quote",
-  "text": "Nothing great was ever achieved without enthusiasm.",
-  "source": "Ralph Waldo Emerson, Circles"
- },
- {
-  "kind": "quote",
-  "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-  "source": "Jane Austen, Pride and Prejudice"
- },
- {
-  "kind": "quote",
-  "text": "There is no charm equal to tenderness of heart.",
-  "source": "Jane Austen, Emma"
- },
- {
-  "kind": "quote",
-  "text": "I declare after all there is no enjoyment like reading!",
-  "source": "Jane Austen, Pride and Prejudice"
- },
- {
-  "kind": "quote",
-  "text": "The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.",
-  "source": "Jane Austen, Northanger Abbey"
- },
- {
-  "kind": "quote",
-  "text": "If I feel physically as if the top of my head were taken off, I know that is poetry.",
-  "source": "Emily Dickinson, letter to T. W. Higginson, 1870"
- },
- {
-  "kind": "quote",
-  "text": "A letter always feels to me like immortality because it is the mind alone without corporeal friend.",
-  "source": "Emily Dickinson, letter to T. W. Higginson, 1869"
- },
- {
-  "kind": "quote",
-  "text": "Well done is better than well said.",
-  "source": "Benjamin Franklin, Poor Richard's Almanack"
- },
- {
-  "kind": "quote",
-  "text": "Early to bed and early to rise, makes a man healthy, wealthy, and wise.",
-  "source": "Benjamin Franklin, Poor Richard's Almanack"
- },
- {
-  "kind": "quote",
-  "text": "Lost time is never found again.",
-  "source": "Benjamin Franklin, Poor Richard's Almanack"
- },
- {
-  "kind": "quote",
-  "text": "Fish and visitors smell in three days.",
-  "source": "Benjamin Franklin, Poor Richard's Almanack"
- },
- {
-  "kind": "quote",
-  "text": "Little strokes fell great oaks.",
-  "source": "Benjamin Franklin, Poor Richard's Almanack"
- },
- {
-  "kind": "quote",
-  "text": "In this world nothing can be said to be certain, except death and taxes.",
-  "source": "Benjamin Franklin, letter to Jean-Baptiste Le Roy, 1789"
- },
- {
-  "kind": "quote",
-  "text": "The world will little note, nor long remember what we say here, but it can never forget what they did here.",
-  "source": "Abraham Lincoln, Gettysburg Address"
- },
- {
-  "kind": "quote",
-  "text": "The report of my death was an exaggeration.",
-  "source": "Mark Twain, New York Journal, 1897"
- },
- {
-  "kind": "quote",
-  "text": "Truth is stranger than fiction, but it is because Fiction is obliged to stick to possibilities; Truth isn't.",
-  "source": "Mark Twain, Following the Equator"
- },
- {
-  "kind": "quote",
-  "text": "Always do right. This will gratify some people and astonish the rest.",
-  "source": "Mark Twain, address to the Young People's Society, 1901"
- },
- {
-  "kind": "quote",
-  "text": "Cauliflower is nothing but cabbage with a college education.",
-  "source": "Mark Twain, Pudd'nhead Wilson"
- },
- {
-  "kind": "quote",
-  "text": "Training is everything. The peach was once a bitter almond.",
-  "source": "Mark Twain, Pudd'nhead Wilson"
- },
- {
-  "kind": "quote",
-  "text": "Few things are harder to put up with than the annoyance of a good example.",
-  "source": "Mark Twain, Pudd'nhead Wilson"
- },
- {
-  "kind": "quote",
-  "text": "There is grandeur in this view of life... from so simple a beginning endless forms most beautiful and most wonderful have been, and are being, evolved.",
-  "source": "Charles Darwin, On the Origin of Species"
- },
- {
-  "kind": "quote",
-  "text": "It is not down in any map; true places never are.",
-  "source": "Herman Melville, Moby-Dick"
- },
- {
-  "kind": "quote",
-  "text": "I loafe and invite my soul, I lean and loafe at my ease observing a spear of summer grass.",
-  "source": "Walt Whitman, Song of Myself"
- },
- {
-  "kind": "quote",
-  "text": "Why, sometimes I've believed as many as six impossible things before breakfast.",
-  "source": "Lewis Carroll, Through the Looking-Glass"
- },
- {
-  "kind": "quote",
-  "text": "We are all in the gutter, but some of us are looking at the stars.",
-  "source": "Oscar Wilde, Lady Windermere's Fan"
- },
- {
-  "kind": "quote",
-  "text": "The mountains are calling and I must go.",
-  "source": "John Muir, letter to his sister Sarah, 1873"
- },
- {
-  "kind": "quote",
-  "text": "Climb the mountains and get their good tidings. Nature's peace will flow into you as sunshine flows into trees.",
-  "source": "John Muir, Our National Parks"
- },
- {
-  "kind": "quote",
-  "text": "If I have seen further it is by standing on the shoulders of Giants.",
-  "source": "Isaac Newton, letter to Robert Hooke, 1676"
- },
- {
-  "kind": "quote",
-  "text": "Nothing will ever be attempted, if all possible objections must be first overcome.",
-  "source": "Samuel Johnson, Rasselas"
- },
- {
-  "kind": "quote",
-  "text": "All the world's a stage, and all the men and women merely players.",
-  "source": "William Shakespeare, As You Like It"
- },
- {
-  "kind": "quote",
-  "text": "I am not afraid of storms, for I am learning how to sail my ship.",
-  "source": "Louisa May Alcott, Little Women"
- },
- {
-  "kind": "quote",
-  "text": "Reading maketh a full man; conference a ready man; and writing an exact man.",
-  "source": "Francis Bacon, Of Studies"
- },
- {
-  "kind": "quote",
-  "text": "I am no bird; and no net ensnares me.",
-  "source": "Charlotte Brontë, Jane Eyre"
- },
- {
-  "kind": "fact",
-  "text": "Light from the Sun takes about eight minutes to reach Earth.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Honey contains so little water that bacteria can barely grow in it, which is why it keeps for very long periods.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Venus spins in the opposite direction to most planets in the solar system.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A day on Venus, one full spin, lasts longer than its year.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Octopuses have three hearts and blue blood.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Sharks were swimming in the oceans before the first trees grew on land.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Water expands as it freezes, which is why ice floats on liquid water.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The Moon is slowly drifting away from Earth, by a few centimeters each year.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Jupiter holds more than twice as much mass as all the other planets combined.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Saturn is less dense than water, so a large enough bathtub would float it.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Pi is irrational: its decimal digits never end and never fall into a repeating pattern.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "There are infinitely many prime numbers, a fact Euclid proved more than two thousand years ago.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The angles of any triangle drawn on a flat surface always add up to 180 degrees.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The Indian mathematician Brahmagupta wrote down rules for arithmetic with zero in the seventh century.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Some bamboo species can grow close to a meter in a single day.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Each ring in a tree trunk usually marks one year of growth.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Antarctica is a desert, because very little precipitation falls there.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A bolt of lightning is hotter than the surface of the Sun.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A sugar-cube-sized piece of neutron star material would weigh billions of tons.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Our galaxy, the Milky Way, holds hundreds of billions of stars.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The Andromeda Galaxy is the nearest large galaxy to ours, about 2.5 million light-years away.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Atoms are almost entirely empty space, with a tiny nucleus at the center.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Most elements heavier than helium were made inside stars or in stellar explosions.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Earth has seasons because its axis is tilted relative to its orbit around the Sun.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Johannes Gutenberg introduced movable-type printing to Europe around the year 1450.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The iron of the Eiffel Tower expands in summer heat, making it a few centimeters taller than in winter.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Spider silk is stronger than steel of the same thickness.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Measured from its base on the ocean floor, Mauna Kea is taller than Mount Everest.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The Pacific Ocean covers more area than all of Earth's land put together.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "An adult human skeleton has 206 bones.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Honeybees tell their hive-mates where to find flowers by performing a waggle dance.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "In the Fibonacci sequence, each number is the sum of the two before it: 1, 1, 2, 3, 5, 8, 13.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Mercury circles the Sun once every 88 Earth days.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Sound travels about four times faster in water than in air.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The number 1 is neither prime nor composite.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A rainbow is really a full circle; the ground usually hides the lower part.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Isaac Newton showed that white sunlight is a mixture of all the colors by splitting it with a prism.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Inside its chrysalis, a caterpillar breaks down much of its body before rebuilding it as a butterfly.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Tardigrades, microscopic animals, can dry out almost completely and revive when water returns.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Roman numerals had no symbol for zero.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A light-year is a distance, roughly 9.46 trillion kilometers.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Euler's identity, e to the power of i times pi plus one equals zero, links five of mathematics' most important constants.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Coast redwoods are the tallest trees on Earth, with the biggest exceeding 100 meters.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Diamond and graphite are both made of pure carbon, arranged in different patterns.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "The Hawaiian Islands were built by volcanoes rising from a hot spot beneath the Pacific plate.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A solar day on Earth is about 24 hours, the time for the Sun to return to the same place in the sky.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Mars has the tallest volcano in the solar system, Olympus Mons, about three times the height of Everest.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "Many whale species sing songs that travel for great distances underwater.",
-  "source": "Algone"
- },
- {
-  "kind": "fact",
-  "text": "A circle's circumference is always a little more than three times its diameter, whatever its size.",
-  "source": "Algone"
- },
- {
-  "kind": "poem",
-  "text": "\"Hope\" is the thing with feathers -\nThat perches in the soul -\nAnd sings the tune without the words -\nAnd never stops - at all -",
-  "source": "Emily Dickinson, Hope is the thing with feathers"
- },
- {
-  "kind": "poem",
-  "text": "I'm Nobody! Who are you?\nAre you - Nobody - too?\nThen there's a pair of us!\nDon't tell! they'd advertise - you know!",
-  "source": "Emily Dickinson, I'm Nobody! Who are you?"
- },
- {
-  "kind": "poem",
-  "text": "To make a prairie it takes a clover and one bee,\nOne clover, and a bee,\nAnd revery.\nThe revery alone will do,\nIf bees are few.",
-  "source": "Emily Dickinson, To make a prairie"
- },
- {
-  "kind": "poem",
-  "text": "A narrow Fellow in the Grass\nOccasionally rides -\nYou may have met Him - did you not\nHis notice sudden is -",
-  "source": "Emily Dickinson, A narrow Fellow in the Grass"
- },
- {
-  "kind": "poem",
-  "text": "There is no Frigate like a Book\nTo take us Lands away\nNor any Coursers like a Page\nOf prancing Poetry -\nThis Traverse may the poorest take\nWithout oppress of Toll -\nHow frugal is the Chariot\nThat bears the Human soul.",
-  "source": "Emily Dickinson, There is no Frigate like a Book"
- },
- {
-  "kind": "poem",
-  "text": "I taste a liquor never brewed -\nFrom Tankards scooped in Pearl -\nNot all the Frankfort Berries\nYield such an Alcohol!",
-  "source": "Emily Dickinson, I taste a liquor never brewed"
- },
- {
-  "kind": "poem",
-  "text": "If I can stop one Heart from breaking\nI shall not live in vain\nIf I can ease one Life the Aching\nOr cool one Pain\nOr help one fainting Robin\nUnto his Nest again\nI shall not live in Vain.",
-  "source": "Emily Dickinson, If I can stop one Heart from breaking"
- },
- {
-  "kind": "poem",
-  "text": "Fame is a bee.\nIt has a song -\nIt has a sting -\nAh, too, it has a wing.",
-  "source": "Emily Dickinson, Fame is a bee"
- },
- {
-  "kind": "poem",
-  "text": "To see a World in a Grain of Sand\nAnd a Heaven in a Wild Flower,\nHold Infinity in the palm of your hand\nAnd Eternity in an hour.",
-  "source": "William Blake, Auguries of Innocence"
- },
- {
-  "kind": "poem",
-  "text": "O Rose, thou art sick!\nThe invisible worm,\nThat flies in the night,\nIn the howling storm,\nHas found out thy bed\nOf crimson joy,\nAnd his dark secret love\nDoes thy life destroy.",
-  "source": "William Blake, The Sick Rose"
- },
- {
-  "kind": "poem",
-  "text": "Tyger Tyger, burning bright,\nIn the forests of the night;\nWhat immortal hand or eye,\nCould frame thy fearful symmetry?",
-  "source": "William Blake, The Tyger"
- },
- {
-  "kind": "poem",
-  "text": "He who binds to himself a joy\nDoes the winged life destroy;\nBut he who kisses the joy as it flies\nLives in eternity's sunrise.",
-  "source": "William Blake, Eternity"
- },
- {
-  "kind": "poem",
-  "text": "Who has seen the wind?\nNeither I nor you:\nBut when the leaves hang trembling,\nThe wind is passing through.\nWho has seen the wind?\nNeither you nor I:\nBut when the trees bow down their heads,\nThe wind is passing by.",
-  "source": "Christina Rossetti, Who Has Seen the Wind?"
- },
- {
-  "kind": "poem",
-  "text": "My heart is like a singing bird\nWhose nest is in a water'd shoot;\nMy heart is like an apple-tree\nWhose boughs are bent with thickest fruit;\nMy heart is like a rainbow shell\nThat paddles in a halcyon sea;\nMy heart is gladder than all these\nBecause my love is come to me.",
-  "source": "Christina Rossetti, A Birthday"
- },
- {
-  "kind": "poem",
-  "text": "Mix a pancake,\nStir a pancake,\nPop it in the pan;\nFry the pancake,\nToss the pancake -\nCatch it if you can.",
-  "source": "Christina Rossetti, Sing-Song"
- },
- {
-  "kind": "poem",
-  "text": "Boats sail on the rivers,\nAnd ships sail on the seas;\nBut clouds that sail across the sky\nAre prettier than these.\nThere are bridges on the rivers,\nAs pretty as you please;\nBut the bow that bridges heaven,\nAnd overtops the trees,\nAnd builds a road from earth to sky,\nIs prettier far than these.",
-  "source": "Christina Rossetti, Sing-Song"
- },
- {
-  "kind": "poem",
-  "text": "I wandered lonely as a cloud\nThat floats on high o'er vales and hills,\nWhen all at once I saw a crowd,\nA host, of golden daffodils;\nBeside the lake, beneath the trees,\nFluttering and dancing in the breeze.",
-  "source": "William Wordsworth, I Wandered Lonely as a Cloud"
- },
- {
-  "kind": "poem",
-  "text": "My heart leaps up when I behold\nA rainbow in the sky:\nSo was it when my life began;\nSo is it now I am a man;\nSo be it when I shall grow old,\nOr let me die!",
-  "source": "William Wordsworth, My Heart Leaps Up"
- },
- {
-  "kind": "poem",
-  "text": "A slumber did my spirit seal;\nI had no human fears:\nShe seem'd a thing that could not feel\nThe touch of earthly years.\nNo motion has she now, no force;\nShe neither hears nor sees;\nRoll'd round in earth's diurnal course,\nWith rocks, and stones, and trees.",
-  "source": "William Wordsworth, A Slumber Did My Spirit Seal"
- },
- {
-  "kind": "poem",
-  "text": "In the desert\nI saw a creature, naked, bestial,\nWho, squatting upon the ground,\nHeld his heart in his hands,\nAnd ate of it.\nI said, \"Is it good, friend?\"\n\"It is bitter - bitter,\" he answered;\n\"But I like it\n\"Because it is bitter,\n\"And because it is my heart.\"",
-  "source": "Stephen Crane, In the Desert"
- },
- {
-  "kind": "poem",
-  "text": "A man said to the universe:\n\"Sir, I exist!\"\n\"However,\" replied the universe,\n\"The fact has not created in me\nA sense of obligation.\"",
-  "source": "Stephen Crane, A Man Said to the Universe"
- },
- {
-  "kind": "poem",
-  "text": "He clasps the crag with crooked hands;\nClose to the sun in lonely lands,\nRing'd with the azure world, he stands.\nThe wrinkled sea beneath him crawls;\nHe watches from his mountain walls,\nAnd like a thunderbolt he falls.",
-  "source": "Alfred, Lord Tennyson, The Eagle"
- },
- {
-  "kind": "poem",
-  "text": "The world is so full of a number of things,\nI'm sure we should all be as happy as kings.",
-  "source": "Robert Louis Stevenson, Happy Thought"
- },
- {
-  "kind": "art",
-  "text": "A generated pattern in violet and grey",
-  "source": "Generated by Algone"
- },
- {
-  "kind": "art",
-  "text": "A generated pattern of soft green waves",
-  "source": "Generated by Algone"
- },
- {
-  "kind": "art",
-  "text": "A generated pattern in warm amber and cream",
-  "source": "Generated by Algone"
- },
- {
-  "kind": "art",
-  "text": "A generated pattern of blue concentric rings",
-  "source": "Generated by Algone"
- },
- {
-  "kind": "art",
-  "text": "A generated pattern in rose and slate",
-  "source": "Generated by Algone"
- }
+  {
+    "kind": "quote",
+    "text": "We suffer more often in imagination than in reality.",
+    "source": "Seneca, Letters to Lucilius (trans. Gummere)"
+  },
+  {
+    "kind": "quote",
+    "text": "While we are postponing, life speeds by.",
+    "source": "Seneca, Letters to Lucilius (trans. Gummere)"
+  },
+  {
+    "kind": "quote",
+    "text": "Everything is only for a day, both that which remembers and that which is remembered.",
+    "source": "Marcus Aurelius, Meditations (trans. George Long)"
+  },
+  {
+    "kind": "quote",
+    "text": "The best way of avenging thyself is not to become like the wrong doer.",
+    "source": "Marcus Aurelius, Meditations (trans. George Long)"
+  },
+  {
+    "kind": "quote",
+    "text": "Look within. Within is the fountain of good, and it will ever bubble up, if thou wilt ever dig.",
+    "source": "Marcus Aurelius, Meditations (trans. George Long)"
+  },
+  {
+    "kind": "quote",
+    "text": "Such as are thy habitual thoughts, such also will be the character of thy mind; for the soul is dyed by the thoughts.",
+    "source": "Marcus Aurelius, Meditations (trans. George Long)"
+  },
+  {
+    "kind": "quote",
+    "text": "Men are disturbed, not by the things which happen, but by the opinions about the things.",
+    "source": "Epictetus, Enchiridion"
+  },
+  {
+    "kind": "quote",
+    "text": "Is it not pleasant to learn with a constant perseverance and application?",
+    "source": "Confucius, Analects (trans. James Legge)"
+  },
+  {
+    "kind": "quote",
+    "text": "The mass of men lead lives of quiet desperation.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "Rather than love, than money, than fame, give me truth.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "The question is not what you look at, but what you see.",
+    "source": "Henry David Thoreau, Journal"
+  },
+  {
+    "kind": "quote",
+    "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "Heaven is under our feet as well as over our heads.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "The sun is but a morning star.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "A man is rich in proportion to the number of things which he can afford to let alone.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "Not till we are lost, in other words not till we have lost the world, do we begin to find ourselves.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "Why should we be in such desperate haste to succeed?",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "Our life is frittered away by detail. Simplify, simplify.",
+    "source": "Henry David Thoreau, Walden"
+  },
+  {
+    "kind": "quote",
+    "text": "To be great is to be misunderstood.",
+    "source": "Ralph Waldo Emerson, Self-Reliance"
+  },
+  {
+    "kind": "quote",
+    "text": "A foolish consistency is the hobgoblin of little minds.",
+    "source": "Ralph Waldo Emerson, Self-Reliance"
+  },
+  {
+    "kind": "quote",
+    "text": "Hitch your wagon to a star.",
+    "source": "Ralph Waldo Emerson, Society and Solitude"
+  },
+  {
+    "kind": "quote",
+    "text": "The only way to have a friend is to be one.",
+    "source": "Ralph Waldo Emerson, Friendship"
+  },
+  {
+    "kind": "quote",
+    "text": "Beauty is its own excuse for being.",
+    "source": "Ralph Waldo Emerson, The Rhodora"
+  },
+  {
+    "kind": "quote",
+    "text": "The earth laughs in flowers.",
+    "source": "Ralph Waldo Emerson, Hamatreya"
+  },
+  {
+    "kind": "quote",
+    "text": "Nothing great was ever achieved without enthusiasm.",
+    "source": "Ralph Waldo Emerson, Circles"
+  },
+  {
+    "kind": "quote",
+    "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+    "source": "Jane Austen, Pride and Prejudice"
+  },
+  {
+    "kind": "quote",
+    "text": "There is no charm equal to tenderness of heart.",
+    "source": "Jane Austen, Emma"
+  },
+  {
+    "kind": "quote",
+    "text": "I declare after all there is no enjoyment like reading!",
+    "source": "Jane Austen, Pride and Prejudice"
+  },
+  {
+    "kind": "quote",
+    "text": "The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.",
+    "source": "Jane Austen, Northanger Abbey"
+  },
+  {
+    "kind": "quote",
+    "text": "If I feel physically as if the top of my head were taken off, I know that is poetry.",
+    "source": "Emily Dickinson, letter to T. W. Higginson, 1870"
+  },
+  {
+    "kind": "quote",
+    "text": "A letter always feels to me like immortality because it is the mind alone without corporeal friend.",
+    "source": "Emily Dickinson, letter to T. W. Higginson, 1869"
+  },
+  {
+    "kind": "quote",
+    "text": "Well done is better than well said.",
+    "source": "Benjamin Franklin, Poor Richard's Almanack"
+  },
+  {
+    "kind": "quote",
+    "text": "Early to bed and early to rise, makes a man healthy, wealthy, and wise.",
+    "source": "Benjamin Franklin, Poor Richard's Almanack"
+  },
+  {
+    "kind": "quote",
+    "text": "Lost time is never found again.",
+    "source": "Benjamin Franklin, Poor Richard's Almanack"
+  },
+  {
+    "kind": "quote",
+    "text": "Fish and visitors smell in three days.",
+    "source": "Benjamin Franklin, Poor Richard's Almanack"
+  },
+  {
+    "kind": "quote",
+    "text": "Little strokes fell great oaks.",
+    "source": "Benjamin Franklin, Poor Richard's Almanack"
+  },
+  {
+    "kind": "quote",
+    "text": "In this world nothing can be said to be certain, except death and taxes.",
+    "source": "Benjamin Franklin, letter to Jean-Baptiste Le Roy, 1789"
+  },
+  {
+    "kind": "quote",
+    "text": "The world will little note, nor long remember what we say here, but it can never forget what they did here.",
+    "source": "Abraham Lincoln, Gettysburg Address"
+  },
+  {
+    "kind": "quote",
+    "text": "The report of my death was an exaggeration.",
+    "source": "Mark Twain, New York Journal, 1897"
+  },
+  {
+    "kind": "quote",
+    "text": "Truth is stranger than fiction, but it is because Fiction is obliged to stick to possibilities; Truth isn't.",
+    "source": "Mark Twain, Following the Equator"
+  },
+  {
+    "kind": "quote",
+    "text": "Always do right. This will gratify some people and astonish the rest.",
+    "source": "Mark Twain, address to the Young People's Society, 1901"
+  },
+  {
+    "kind": "quote",
+    "text": "Cauliflower is nothing but cabbage with a college education.",
+    "source": "Mark Twain, Pudd'nhead Wilson"
+  },
+  {
+    "kind": "quote",
+    "text": "Training is everything. The peach was once a bitter almond.",
+    "source": "Mark Twain, Pudd'nhead Wilson"
+  },
+  {
+    "kind": "quote",
+    "text": "Few things are harder to put up with than the annoyance of a good example.",
+    "source": "Mark Twain, Pudd'nhead Wilson"
+  },
+  {
+    "kind": "quote",
+    "text": "There is grandeur in this view of life... from so simple a beginning endless forms most beautiful and most wonderful have been, and are being, evolved.",
+    "source": "Charles Darwin, On the Origin of Species"
+  },
+  {
+    "kind": "quote",
+    "text": "It is not down in any map; true places never are.",
+    "source": "Herman Melville, Moby-Dick"
+  },
+  {
+    "kind": "quote",
+    "text": "I loafe and invite my soul, I lean and loafe at my ease observing a spear of summer grass.",
+    "source": "Walt Whitman, Song of Myself"
+  },
+  {
+    "kind": "quote",
+    "text": "Why, sometimes I've believed as many as six impossible things before breakfast.",
+    "source": "Lewis Carroll, Through the Looking-Glass"
+  },
+  {
+    "kind": "quote",
+    "text": "We are all in the gutter, but some of us are looking at the stars.",
+    "source": "Oscar Wilde, Lady Windermere's Fan"
+  },
+  {
+    "kind": "quote",
+    "text": "The mountains are calling and I must go.",
+    "source": "John Muir, letter to his sister Sarah, 1873"
+  },
+  {
+    "kind": "quote",
+    "text": "Climb the mountains and get their good tidings. Nature's peace will flow into you as sunshine flows into trees.",
+    "source": "John Muir, Our National Parks"
+  },
+  {
+    "kind": "quote",
+    "text": "If I have seen further it is by standing on the shoulders of Giants.",
+    "source": "Isaac Newton, letter to Robert Hooke, 1676"
+  },
+  {
+    "kind": "quote",
+    "text": "Nothing will ever be attempted, if all possible objections must be first overcome.",
+    "source": "Samuel Johnson, Rasselas"
+  },
+  {
+    "kind": "quote",
+    "text": "All the world's a stage, and all the men and women merely players.",
+    "source": "William Shakespeare, As You Like It"
+  },
+  {
+    "kind": "quote",
+    "text": "I am not afraid of storms, for I am learning how to sail my ship.",
+    "source": "Louisa May Alcott, Little Women"
+  },
+  {
+    "kind": "quote",
+    "text": "Reading maketh a full man; conference a ready man; and writing an exact man.",
+    "source": "Francis Bacon, Of Studies"
+  },
+  {
+    "kind": "quote",
+    "text": "I am no bird; and no net ensnares me.",
+    "source": "Charlotte Brontë, Jane Eyre"
+  },
+  {
+    "kind": "fact",
+    "text": "Light from the Sun takes about eight minutes to reach Earth.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Honey contains so little water that bacteria can barely grow in it, which is why it keeps for very long periods.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Venus spins in the opposite direction to most planets in the solar system.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A day on Venus, one full spin, lasts longer than its year.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Octopuses have three hearts and blue blood.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Sharks were swimming in the oceans before the first trees grew on land.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Water expands as it freezes, which is why ice floats on liquid water.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The Moon is slowly drifting away from Earth, by a few centimeters each year.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Jupiter holds more than twice as much mass as all the other planets combined.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Saturn is less dense than water, so a large enough bathtub would float it.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Pi is irrational: its decimal digits never end and never fall into a repeating pattern.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "There are infinitely many prime numbers, a fact Euclid proved more than two thousand years ago.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The angles of any triangle drawn on a flat surface always add up to 180 degrees.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The Indian mathematician Brahmagupta wrote down rules for arithmetic with zero in the seventh century.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Some bamboo species can grow close to a meter in a single day.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Each ring in a tree trunk usually marks one year of growth.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Antarctica is a desert, because very little precipitation falls there.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A bolt of lightning is hotter than the surface of the Sun.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A sugar-cube-sized piece of neutron star material would weigh billions of tons.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Our galaxy, the Milky Way, holds hundreds of billions of stars.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The Andromeda Galaxy is the nearest large galaxy to ours, about 2.5 million light-years away.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Atoms are almost entirely empty space, with a tiny nucleus at the center.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Most elements heavier than helium were made inside stars or in stellar explosions.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Earth has seasons because its axis is tilted relative to its orbit around the Sun.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Johannes Gutenberg introduced movable-type printing to Europe around the year 1450.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The iron of the Eiffel Tower expands in summer heat, making it a few centimeters taller than in winter.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Spider silk is stronger than steel of the same thickness.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Measured from its base on the ocean floor, Mauna Kea is taller than Mount Everest.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The Pacific Ocean covers more area than all of Earth's land put together.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "An adult human skeleton has 206 bones.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Honeybees tell their hive-mates where to find flowers by performing a waggle dance.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "In the Fibonacci sequence, each number is the sum of the two before it: 1, 1, 2, 3, 5, 8, 13.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Mercury circles the Sun once every 88 Earth days.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Sound travels about four times faster in water than in air.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The number 1 is neither prime nor composite.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A rainbow is really a full circle; the ground usually hides the lower part.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Isaac Newton showed that white sunlight is a mixture of all the colors by splitting it with a prism.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Inside its chrysalis, a caterpillar breaks down much of its body before rebuilding it as a butterfly.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Tardigrades, microscopic animals, can dry out almost completely and revive when water returns.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Roman numerals had no symbol for zero.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A light-year is a distance, roughly 9.46 trillion kilometers.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Euler's identity, e to the power of i times pi plus one equals zero, links five of mathematics' most important constants.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Coast redwoods are the tallest trees on Earth, with the biggest exceeding 100 meters.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Diamond and graphite are both made of pure carbon, arranged in different patterns.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "The Hawaiian Islands were built by volcanoes rising from a hot spot beneath the Pacific plate.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A solar day on Earth is about 24 hours, the time for the Sun to return to the same place in the sky.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Mars has the tallest volcano in the solar system, Olympus Mons, about three times the height of Everest.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "Many whale species sing songs that travel for great distances underwater.",
+    "source": "Algone"
+  },
+  {
+    "kind": "fact",
+    "text": "A circle's circumference is always a little more than three times its diameter, whatever its size.",
+    "source": "Algone"
+  },
+  {
+    "kind": "poem",
+    "text": "\"Hope\" is the thing with feathers -\nThat perches in the soul -\nAnd sings the tune without the words -\nAnd never stops - at all -",
+    "source": "Emily Dickinson, Hope is the thing with feathers"
+  },
+  {
+    "kind": "poem",
+    "text": "I'm Nobody! Who are you?\nAre you - Nobody - too?\nThen there's a pair of us!\nDon't tell! they'd advertise - you know!",
+    "source": "Emily Dickinson, I'm Nobody! Who are you?"
+  },
+  {
+    "kind": "poem",
+    "text": "To make a prairie it takes a clover and one bee,\nOne clover, and a bee,\nAnd revery.\nThe revery alone will do,\nIf bees are few.",
+    "source": "Emily Dickinson, To make a prairie"
+  },
+  {
+    "kind": "poem",
+    "text": "A narrow Fellow in the Grass\nOccasionally rides -\nYou may have met Him - did you not\nHis notice sudden is -",
+    "source": "Emily Dickinson, A narrow Fellow in the Grass"
+  },
+  {
+    "kind": "poem",
+    "text": "There is no Frigate like a Book\nTo take us Lands away\nNor any Coursers like a Page\nOf prancing Poetry -\nThis Traverse may the poorest take\nWithout oppress of Toll -\nHow frugal is the Chariot\nThat bears the Human soul.",
+    "source": "Emily Dickinson, There is no Frigate like a Book"
+  },
+  {
+    "kind": "poem",
+    "text": "I taste a liquor never brewed -\nFrom Tankards scooped in Pearl -\nNot all the Frankfort Berries\nYield such an Alcohol!",
+    "source": "Emily Dickinson, I taste a liquor never brewed"
+  },
+  {
+    "kind": "poem",
+    "text": "If I can stop one Heart from breaking\nI shall not live in vain\nIf I can ease one Life the Aching\nOr cool one Pain\nOr help one fainting Robin\nUnto his Nest again\nI shall not live in Vain.",
+    "source": "Emily Dickinson, If I can stop one Heart from breaking"
+  },
+  {
+    "kind": "poem",
+    "text": "Fame is a bee.\nIt has a song -\nIt has a sting -\nAh, too, it has a wing.",
+    "source": "Emily Dickinson, Fame is a bee"
+  },
+  {
+    "kind": "poem",
+    "text": "To see a World in a Grain of Sand\nAnd a Heaven in a Wild Flower,\nHold Infinity in the palm of your hand\nAnd Eternity in an hour.",
+    "source": "William Blake, Auguries of Innocence"
+  },
+  {
+    "kind": "poem",
+    "text": "O Rose, thou art sick!\nThe invisible worm,\nThat flies in the night,\nIn the howling storm,\nHas found out thy bed\nOf crimson joy,\nAnd his dark secret love\nDoes thy life destroy.",
+    "source": "William Blake, The Sick Rose"
+  },
+  {
+    "kind": "poem",
+    "text": "Tyger Tyger, burning bright,\nIn the forests of the night;\nWhat immortal hand or eye,\nCould frame thy fearful symmetry?",
+    "source": "William Blake, The Tyger"
+  },
+  {
+    "kind": "poem",
+    "text": "He who binds to himself a joy\nDoes the winged life destroy;\nBut he who kisses the joy as it flies\nLives in eternity's sunrise.",
+    "source": "William Blake, Eternity"
+  },
+  {
+    "kind": "poem",
+    "text": "Who has seen the wind?\nNeither I nor you:\nBut when the leaves hang trembling,\nThe wind is passing through.\nWho has seen the wind?\nNeither you nor I:\nBut when the trees bow down their heads,\nThe wind is passing by.",
+    "source": "Christina Rossetti, Who Has Seen the Wind?"
+  },
+  {
+    "kind": "poem",
+    "text": "My heart is like a singing bird\nWhose nest is in a water'd shoot;\nMy heart is like an apple-tree\nWhose boughs are bent with thickest fruit;\nMy heart is like a rainbow shell\nThat paddles in a halcyon sea;\nMy heart is gladder than all these\nBecause my love is come to me.",
+    "source": "Christina Rossetti, A Birthday"
+  },
+  {
+    "kind": "poem",
+    "text": "Mix a pancake,\nStir a pancake,\nPop it in the pan;\nFry the pancake,\nToss the pancake -\nCatch it if you can.",
+    "source": "Christina Rossetti, Sing-Song"
+  },
+  {
+    "kind": "poem",
+    "text": "Boats sail on the rivers,\nAnd ships sail on the seas;\nBut clouds that sail across the sky\nAre prettier than these.\nThere are bridges on the rivers,\nAs pretty as you please;\nBut the bow that bridges heaven,\nAnd overtops the trees,\nAnd builds a road from earth to sky,\nIs prettier far than these.",
+    "source": "Christina Rossetti, Sing-Song"
+  },
+  {
+    "kind": "poem",
+    "text": "I wandered lonely as a cloud\nThat floats on high o'er vales and hills,\nWhen all at once I saw a crowd,\nA host, of golden daffodils;\nBeside the lake, beneath the trees,\nFluttering and dancing in the breeze.",
+    "source": "William Wordsworth, I Wandered Lonely as a Cloud"
+  },
+  {
+    "kind": "poem",
+    "text": "My heart leaps up when I behold\nA rainbow in the sky:\nSo was it when my life began;\nSo is it now I am a man;\nSo be it when I shall grow old,\nOr let me die!",
+    "source": "William Wordsworth, My Heart Leaps Up"
+  },
+  {
+    "kind": "poem",
+    "text": "A slumber did my spirit seal;\nI had no human fears:\nShe seem'd a thing that could not feel\nThe touch of earthly years.\nNo motion has she now, no force;\nShe neither hears nor sees;\nRoll'd round in earth's diurnal course,\nWith rocks, and stones, and trees.",
+    "source": "William Wordsworth, A Slumber Did My Spirit Seal"
+  },
+  {
+    "kind": "poem",
+    "text": "In the desert\nI saw a creature, naked, bestial,\nWho, squatting upon the ground,\nHeld his heart in his hands,\nAnd ate of it.\nI said, \"Is it good, friend?\"\n\"It is bitter - bitter,\" he answered;\n\"But I like it\n\"Because it is bitter,\n\"And because it is my heart.\"",
+    "source": "Stephen Crane, In the Desert"
+  },
+  {
+    "kind": "poem",
+    "text": "A man said to the universe:\n\"Sir, I exist!\"\n\"However,\" replied the universe,\n\"The fact has not created in me\nA sense of obligation.\"",
+    "source": "Stephen Crane, A Man Said to the Universe"
+  },
+  {
+    "kind": "poem",
+    "text": "He clasps the crag with crooked hands;\nClose to the sun in lonely lands,\nRing'd with the azure world, he stands.\nThe wrinkled sea beneath him crawls;\nHe watches from his mountain walls,\nAnd like a thunderbolt he falls.",
+    "source": "Alfred, Lord Tennyson, The Eagle"
+  },
+  {
+    "kind": "poem",
+    "text": "The world is so full of a number of things,\nI'm sure we should all be as happy as kings.",
+    "source": "Robert Louis Stevenson, Happy Thought"
+  },
+  {
+    "kind": "art",
+    "text": "A generated pattern",
+    "source": "Generated by Algone"
+  },
+  {
+    "kind": "art",
+    "text": "A generated pattern",
+    "source": "Generated by Algone"
+  },
+  {
+    "kind": "art",
+    "text": "A generated pattern",
+    "source": "Generated by Algone"
+  },
+  {
+    "kind": "art",
+    "text": "A generated pattern",
+    "source": "Generated by Algone"
+  },
+  {
+    "kind": "art",
+    "text": "A generated pattern",
+    "source": "Generated by Algone"
+  }
 ]

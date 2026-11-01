@@ -1,0 +1,130 @@
+name: Claude fix
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+# One claude-fix run at a time, so two labels cannot both pass the daily cap. Other labels
+# get their own group, or they would replace a waiting run. GitHub keeps only the newest
+# waiting run, so if three claude-fix labels land at once, the middle one must be re-added.
+concurrency:
+  group: claude-fix-${{ github.event.label.name == 'claude-fix' && 'agent' || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: github.event.label.name == 'claude-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      issues: read
+    outputs:
+      proceed: ${{ steps.gate.outputs.proceed }}
+      comment: ${{ steps.gate.outputs.comment }}
+      snapshot_run: ${{ steps.gate.outputs.snapshot_run }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HAS_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+          HAS_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          AGENT_MAX_RUNS_PER_DAY: ${{ vars.AGENT_MAX_RUNS_PER_DAY }}
+        run: node scripts/ci/agent-gate.mjs
+      # The agent job has no actions: read, so the snapshot is fetched here and handed over
+      # as an artifact of this run.
+      - name: Fetch the snapshot
+        if: steps.gate.outputs.snapshot_run != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SNAPSHOT_RUN: ${{ steps.gate.outputs.snapshot_run }}
+        run: |
+          gh run download "$SNAPSHOT_RUN" --repo "$GITHUB_REPOSITORY" --name site-snapshots --dir "$RUNNER_TEMP/snapshot" ||
+            echo "::notice::The snapshot artifact is gone. The agent will work from the issue and fixtures."
+      - if: steps.gate.outputs.snapshot_run != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gate-snapshot
+          path: ${{ runner.temp }}/snapshot
+          if-no-files-found: ignore
+          retention-days: 1
+
+  refuse:
+    needs: gate
+    if: needs.gate.outputs.comment != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Tell the owner why the agent stopped
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          COMMENT: ${{ needs.gate.outputs.comment }}
+        run: gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$COMMENT"
+
+  agent:
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      # The agent can only run npm scripts, and they need dependencies. No browsers are installed.
+      - run: npm ci --ignore-scripts
+      - name: Place the snapshot
+        if: needs.gate.outputs.snapshot_run != ''
+        continue-on-error: true
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: gate-snapshot
+          path: test-results/live
+      - id: claude
+        uses: anthropics/claude-code-action@d535f5172dec02b204866b393d6b20b9b2aaf98d # v1.0.266
+        env:
+          CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"
+        with:
+          # If both secrets exist, the API key wins. That is Claude Code's documented precedence.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          label_trigger: claude-fix
+          include_comments_by_actor: JoshWright22
+          claude_args: |
+            --max-turns 20
+            --allowedTools "Edit,Read,Write,Glob,Grep,Bash(npm test:*),Bash(npm run *)"
+            --disallowedTools "WebFetch,WebSearch"
+      - name: Open the pull request
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          BRANCH: ${{ steps.claude.outputs.branch_name }}
+          ISSUE: ${{ github.event.issue.number }}
+          ACTION_TOKEN: ${{ steps.claude.outputs.github_token }}
+          WORKFLOW_TOKEN: ${{ github.token }}
+        run: node scripts/ci/open-agent-pr.mjs
+      - name: Explain a failed start
+        if: failure() && steps.claude.outcome == 'failure'
+        run: echo "::notice::If the action failed at the token exchange, check that the Claude GitHub app is installed on this repo. See docs/setup.md."

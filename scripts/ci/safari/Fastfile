@@ -1,0 +1,15 @@
+# Copied beside the packaged Xcode project by publish-safari.yml.
+# Untested until the owner has an Apple account: see docs/setup.md.
+default_platform(:ios)
+
+platform :ios do
+  lane :release do
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_content: ENV.fetch("ASC_KEY_P8")
+    )
+    build_app(scheme: ENV.fetch("SAFARI_SCHEME"), export_method: "app-store")
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+  end
+end

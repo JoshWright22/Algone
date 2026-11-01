@@ -110,8 +110,7 @@ for (const device of [null, devices["iPhone 15"]]) {
   const plain = await launch(args.profile, false, device);
   const ext = await launch(args.profile ? `${args.profile}-ext` : undefined, true, device);
   for (const site of sites) {
-    const hostIsMobileAware = site.probes.filter((p) => (p.viewport ?? "desktop") === name || !device);
-    for (const probe of device ? [] : hostIsMobileAware) {
+    for (const probe of site.probes.filter((p) => (p.viewport ?? "desktop") === name)) {
       if (!probe.live && !loggedIn) continue;
       const r = await runProbe(site, probe, plain, ext);
       if (r.snapshot) {

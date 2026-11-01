@@ -6,7 +6,7 @@ import { SITES, type SiteRule } from "@algone/rules";
 import { api, now } from "../browser";
 import { send, type Stored } from "../messages";
 import { loadState } from "../state";
-import { elementList, modePicker } from "./common";
+import { elementList, modePicker, MODES } from "./common";
 import { applyTheme, h, mount, toggle } from "./h";
 
 const root = document.getElementById("root")!;
@@ -14,6 +14,14 @@ let tab = location.hash.slice(1) || "sites";
 let open = "";
 
 const patch = (p: Patch) => send({ t: "patch", patch: p });
+
+const METHOD_LABELS: Record<string, string> = {
+  "live-logged-out": "checked on the live site, logged out",
+  "live-logged-in": "checked on the live site, logged in",
+  fixture: "checked on a saved page",
+  unverified: "not yet checked on the live site",
+};
+
 
 const list = (text: string) => text.split(",").map((s) => s.trim()).filter(Boolean);
 
@@ -76,13 +84,15 @@ function sitesTab(s: Stored): HTMLElement {
           },
         },
           h("span", {}, rule.name),
-          h("span", { class: "muted small" }, site.enabled ? site.mode : "off"),
+          h("span", { class: "muted small" }, site.enabled ? (MODES.find((m) => m.id === site.mode)?.label ?? "") : "Off"),
         ),
         isOpen
           ? h("div", { class: "site-body" },
               h("div", { class: "row" }, h("span", {}, `Algone on ${rule.name}`),
                 toggle(site.enabled, (v) => void patch({ op: "setSiteEnabled", site: rule.id, enabled: v }), `Algone on ${rule.name}`)),
               modePicker(rule, site),
+              h("button", { class: "ghost", "data-snooze": rule.id, onclick: () => void send({ t: "snooze", site: rule.id }) },
+                `Show for ${s.settings.snoozeMinutes} minutes`),
               elementList(rule, site),
               h("section", {}, h("h3", {}, "Picking what to watch"),
                 intent("searchHome", "Search-first home"),
@@ -91,7 +101,7 @@ function sitesTab(s: Stored): HTMLElement {
                 intent("launchPause", "Pause when opening this site"),
               ),
               rule.tuned ? tunedEditor(rule, site.tuned) : null,
-              h("p", { class: "muted small" }, `Rule status: ${rule.verified.method}. Support tier ${rule.tier}.`),
+              h("p", { class: "muted small" }, `Rules ${METHOD_LABELS[rule.verified.method]}. Support tier ${rule.tier}.`),
             )
           : null,
       );
@@ -174,7 +184,7 @@ function generalTab(s: Stored): HTMLElement {
         toggle(st.stopAtEnd, (v) => void patch({ op: "setGlobal", key: "stopAtEnd", value: v }), "Stop at the end")),
       h("div", { class: "row" }, h("span", {}, "Theme"),
         h("select", { id: "theme", "aria-label": "Theme", onchange: (e: Event) => void patch({ op: "setGlobal", key: "theme", value: (e.target as HTMLSelectElement).value }) },
-          ...["system", "dark", "light"].map((t) => h("option", { value: t, selected: st.theme === t }, t)))),
+          ...[["system", "System"], ["dark", "Dark"], ["light", "Light"]].map(([t, label]) => h("option", { value: t, selected: st.theme === t }, label)))),
     ),
     h("section", {}, h("h2", {}, "Random sources"),
       h("p", { class: "muted" }, `${randomContentCount()} items and generated puzzles are bundled and work offline.`),

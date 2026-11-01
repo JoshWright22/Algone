@@ -1,0 +1,14 @@
+name: Feature request
+description: Suggest a change or a new site.
+labels: [feature]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: What problem would it solve?

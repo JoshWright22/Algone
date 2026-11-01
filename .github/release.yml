@@ -1,0 +1,13 @@
+changelog:
+  exclude:
+    authors:
+      - dependabot
+  categories:
+    - title: Site repairs
+      labels: [site-change]
+    - title: Bug fixes
+      labels: [bug]
+    - title: Features
+      labels: [feature]
+    - title: Other changes
+      labels: ["*"]

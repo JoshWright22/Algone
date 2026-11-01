@@ -111,6 +111,7 @@ body.center #root { min-height: 100vh; display: grid; place-items: center; paddi
 .page li { margin-bottom: 4px; }
 
 /* Panels in the page */
+html[data-panel] { color-scheme: normal !important; }
 html[data-panel] body { background: transparent; }
 html[data-panel="feed"] #root { padding: 8px; }
 html[data-panel="feed"] .random, html[data-panel="feed"] #queue, html[data-panel="feed"] #custom { border: 1px solid var(--border); background: var(--bg); border-radius: var(--radius); padding: 16px; margin-top: 12px; }

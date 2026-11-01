@@ -1,0 +1,18 @@
+name: Uninstall feedback
+description: Tell us why you removed Algone. Every field is optional.
+title: "Uninstall feedback"
+body:
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Main reason
+      options:
+        - It broke a site I use
+        - It did not hide what I wanted
+        - The unlock barrier got in the way
+        - I no longer need it
+        - Something else
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else

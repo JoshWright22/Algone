@@ -1,0 +1,21 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["node"],
+    "paths": {
+      "@algone/core": ["../../packages/core/src/index.ts"],
+      "@algone/engine": ["../../packages/engine/src/index.ts"],
+      "@algone/engine/*": ["../../packages/engine/src/*.ts"],
+      "@algone/rules": ["../../packages/rules/src/index.ts"],
+      "@algone/rules/sites": ["../../packages/rules/src/sites.ts"]
+    }
+  },
+  "include": ["index.ts", "app.config.ts", "vitest.config.mts", "src", "test"]
+}

@@ -1043,6 +1043,25 @@ automatic is publishing once a rules change on `main` has passed tests.
 
 --------------------------------------------------------------------------------
 
+## Changes During Implementation
+
+Recorded after the spec was approved.
+
+*   `apps/mobile` is outside the npm workspaces, with its own lockfile, so React Native
+    does not hoist into the extension's dependency tree.
+*   `pages.yml` deploys only after CI succeeds on `main`.
+*   The action's `github_token` output is revoked before later steps run, so
+    `open-agent-pr.mjs` falls back as `docs/setup.md` describes. A PR opened by the
+    last fallback, `GITHUB_TOKEN`, starts no CI until it is closed and reopened.
+*   A "Show for 10 minutes" button also exists on each site in Settings.
+*   The privacy policy discloses that RSS servers see the user's IP address, since
+    Custom feeds fetch from them.
+*   On Android, `react-native-webview` always installs a download listener. Algone
+    Browser blocks the legacy storage permissions, but an allow-listed page can
+    still start a download on Android 10+. Closing this needs a native patch.
+
+--------------------------------------------------------------------------------
+
 ## Risks and Mitigations
 
 | Risk | Likelihood | Effect | Mitigation | Remaining exposure |

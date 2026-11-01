@@ -235,6 +235,14 @@
       "expect": [
         "home"
       ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "viewport": "mobile"
     }
   ],
   "walls": [
