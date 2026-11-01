@@ -134,3 +134,9 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+## Newsreader
+
+The website bundles the Newsreader typeface.
+Copyright 2020 The Newsreader Project Authors (https://github.com/productiontype/Newsreader).
+Licensed under the SIL Open Font License 1.1: https://openfontlicense.org

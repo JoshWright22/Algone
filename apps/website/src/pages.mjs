@@ -21,9 +21,11 @@ const dateText = (iso) =>
     year: "numeric", month: "long", day: "numeric", timeZone: "UTC",
   });
 
-const section = (title, intro, content, cls = "") => `<section class="band split wrap ${cls}">
-<header><h2>${title}</h2>${intro ? `<p>${intro}</p>` : ""}</header>
-<div>${content}</div>
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const section = (title, intro, content, cls = "", id = slug(title)) => `<section class="sec ${cls}" id="${id}">
+<h2>${title}</h2>
+<div class="sec-body">${intro || !cls ? `<p class="sec-intro">${intro}</p>` : ""}<div class="sec-main">${content}</div></div>
 </section>`;
 
 const terms = (rows) =>
@@ -31,7 +33,7 @@ const terms = (rows) =>
 
 const steps = (items) => `<ol class="steps">${items.map((i) => `<li>${i}</li>`).join("")}</ol>`;
 
-const head = (title, lede, extra = "") => `<div class="page-head wrap">
+const head = (title, lede, extra = "") => `<div class="page-head">
 <h1>${title}</h1>
 ${lede ? `<p class="lede">${lede}</p>` : ""}${extra}
 </div>`;
@@ -41,7 +43,6 @@ const CHROME_ZIP = "<code>algone-chrome.zip</code>";
 /* Home */
 
 function home({ sites, shots }) {
-  const tiles = "<i></i>".repeat(12);
   const rows = sites.map((s) => {
     const hidden = s.elements.filter((e) => e.class === "algorithmic").map((e) => e.label);
     const shown = hidden.slice(0, 4);
@@ -54,12 +55,11 @@ function home({ sites, shots }) {
 
   const gallery = shots.length
     ? section("What it looks like", "", `<div class="shots">${shots.map((f) =>
-      `<img src="{{base}}screenshots/${encodeURIComponent(f)}" alt="Algone screenshot: ${esc(f.replace(/\.png$/i, "").replace(/^\d+[-_]/, "").replace(/[-_]+/g, " "))}" width="1280" height="800" loading="lazy">`).join("")}</div>`, "full")
+      `<figure><img src="{{base}}screenshots/${encodeURIComponent(f)}" alt="Algone screenshot: ${esc(f.replace(/\.png$/i, "").replace(/^\d+[-_]/, "").replace(/[-_]+/g, " "))}" width="1280" height="800" loading="lazy"></figure>`).join("")}</div>`, "full")
     : "";
 
-  return `<div class="hero wrap">
-<div>
-<h1>The feed is gone. Search still works.</h1>
+  return `<div class="hero">
+<h1><span class="struck">The feed</span> is gone. Search still works.</h1>
 <p class="lede">Algone is a browser extension that hides recommendation feeds on ${sites.length} popular sites. Search, subscriptions, direct links, and messages stay where they are.</p>
 <div class="actions">
 <a class="button primary" href="{{base}}install/">Install Algone</a>
@@ -67,15 +67,16 @@ function home({ sites, shots }) {
 </div>
 <p class="pending">Store listings are pending, so Algone is not in any store yet. Builds for testing are on <a href="${RELEASES_URL}">GitHub Releases</a>.</p>
 </div>
-<figure class="demo">
-<div class="demo-window" aria-hidden="true">
-<div class="demo-bar">www.youtube.com</div>
-<div class="demo-head"><span class="demo-search">Search</span><span>Subscriptions</span></div>
-<div class="demo-page"><div class="demo-feed">${tiles}</div><span class="demo-line"></span></div>
+
+<figure class="wall" data-wall>
+<div class="wall-page">
+<div class="wall-head" aria-hidden="true"><span class="wall-search">Search</span><span>Subscriptions</span></div>
+<div class="wall-feed"><canvas aria-hidden="true"></canvas>
+<input type="range" min="0" max="100" value="0" disabled aria-label="Share of the feed removed">
+<div class="wall-strike"><span class="wall-grip">Drag to remove the feed</span></div></div>
 </div>
-<figcaption>Illustration of the YouTube home page with default settings. The header and search stay, and the feed area is empty.</figcaption>
+<figcaption class="caption">Illustration of a video site's home page with default settings. The header and search stay, and the feed area is empty.</figcaption>
 </figure>
-</div>
 
 ${section("What is hidden on each site", "Everything classed as algorithmic is hidden from install. You can turn each item back on separately.", `<div class="table-scroll"><table class="stack">
 <thead><tr><th scope="col">Site</th><th scope="col">Hidden by default</th><th scope="col">Tested to stay</th></tr></thead>
@@ -95,7 +96,12 @@ ${section("What Algone cannot do", "", terms([
     ["Native apps", "Algone works in the browser. It does not change the YouTube, Instagram, or TikTok apps, so open these sites in your browser."],
     ["Stop you leaving", "You can always uninstall Algone. Its barriers are there to interrupt autopilot, not to trap you."],
     ["Stay perfect", "Sites change their pages, and a rule can break until it is repaired. <a href=\"{{base}}sites/\">Site status</a> shows what is checked and when."],
-  ]))}`;
+  ]))}
+
+<div class="closing">
+<h2>Keep what you came for.</h2>
+<div class="actions"><a class="button primary" href="{{base}}install/">Install Algone</a></div>
+</div>`;
 }
 
 /* Install */
@@ -201,7 +207,7 @@ function sitesPage({ sites }) {
   return `${head("Site status", `What Algone covers, how each set of rules was checked, and what the latest daily check found.`)}
 <div class="wrap"><div class="callout"><p><strong>Logged-in pages may be unverified.</strong> ${live} of ${sites.length} sites have rules checked against the real site, and ${loggedIn === 0 ? "none has been checked while logged in yet" : `${loggedIn} while logged in`}. Most feeds you see are the logged-in ones, and the daily check cannot reach them, so a rule marked as checked logged out can still miss your home feed. If you see a feed that should be hidden, <a href="${REPORT_URL}">report it</a>.</p></div></div>
 
-<section class="wrap status-block" aria-labelledby="sites-heading">
+<section class="wrap status-block" id="all-sites" aria-labelledby="sites-heading">
 <h2 id="sites-heading">All ${sites.length} sites</h2>
 <p class="table-note" id="status-summary" role="status">Daily check results need JavaScript. They load from <code>raw.githubusercontent.com</code> when you view this page.</p>
 <div class="table-scroll"><table class="stack" id="site-table" data-status-url="${STATUS_URL}">
@@ -270,10 +276,7 @@ function privacy() {
 <p>For questions, open a <a href="${ISSUES_URL}">GitHub issue</a>. Issues are public, so do not include anything private.</p>`],
   ];
   return `${head("Privacy policy", "", `<p class="dated">Effective ${POLICY_DATE}</p>`)}
-<div class="wrap"><div class="policy">
-<nav aria-label="On this page"><ul>${parts.map(([id, title]) => `<li><a href="#${id}">${title}</a></li>`).join("")}</ul></nav>
-<div class="prose">${parts.map(([id, title, html]) => `<section id="${id}"><h2>${title}</h2>${html}</section>`).join("\n")}</div>
-</div></div>`;
+<div class="prose">${parts.map(([id, title, html]) => `<section id="${id}"><h2>${title}</h2>${html}</section>`).join("\n")}</div>`;
 }
 
 /* Support */
@@ -293,9 +296,7 @@ ${section("Algone hid something it should not", "", `<p>Turn on that item's swit
 ${section("Reports and questions", "", `<p>A GitHub account is needed to open an issue. Issues are public, so leave out names, account details, and anything private.</p>
 <div class="actions"><a class="button" href="${REPORT_URL}">Report a broken site</a><a class="button" href="${ISSUES_URL}">See all issues</a></div>`)}
 
-<section class="band split wrap" id="uninstall">
-<header><h2>Uninstall Algone</h2><p>This always works, even during a lock. No barrier applies.</p></header>
-<div>${terms([
+${section("Uninstall Algone", "This always works, even during a lock. No barrier applies.", `${terms([
     ["Chrome", "Open <code>chrome://extensions</code>, find Algone, and choose Remove."],
     ["Edge", "Open <code>edge://extensions</code>, find Algone, and choose Remove."],
     ["Firefox", "Open <code>about:addons</code>, find Algone, and choose Remove."],
@@ -303,8 +304,7 @@ ${section("Reports and questions", "", `<p>A GitHub account is needed to open an
     ["iPhone and iPad", "Delete the Algone for Safari app."],
     ["Algone Browser", "Delete the app."],
   ])}
-<p>Your settings, queue, and feeds are removed with it.</p></div>
-</section>`;
+<p>Your settings, queue, and feeds are removed with it.</p>`, "", "uninstall")}`;
 }
 
 /* Ledger */

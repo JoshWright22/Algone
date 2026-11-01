@@ -1065,6 +1065,23 @@ Recorded after the spec was approved.
 
 --------------------------------------------------------------------------------
 
+## Website Redesign
+
+The owner asked for Mecha's visual language (https://mecha-xyz.webflow.io/) in Algone's
+own brand, without its animations or page flow. The website alone now differs from the
+Visual Direction above; the extension and app keep it.
+
+*   Taken from Mecha: white paper, a persistent left rail, boxed navigation, hairline
+    tables, a thin display serif, isometric line art, 1-bit images, one solid color block.
+*   Algone's own: the logo's blue bar is the device. It crosses the rail line at each
+    section and strikes what is removed. The hero is a dithered feed the visitor wipes
+    away by dragging the bar, which also works from the keyboard.
+*   Newsreader is bundled for display type under the OFL, with Inter for text.
+*   The website defaults to the light theme whatever the system prefers, because the
+    design depends on white paper. The dark theme stays one click away.
+
+--------------------------------------------------------------------------------
+
 ## Risks and Mitigations
 
 | Risk | Likelihood | Effect | Mitigation | Remaining exposure |

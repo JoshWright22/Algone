@@ -32,7 +32,7 @@ describe.runIf(built)("built website", () => {
   it.each([
     "index.html", "install/index.html", "how-it-works/index.html", "sites/index.html",
     "privacy/index.html", "support/index.html", "ledger/index.html", "uninstalled/index.html",
-    "rules/v1/rules.json", "fonts/Inter.woff2",
+    "rules/v1/rules.json", "fonts/Inter.woff2", "fonts/Newsreader.woff2",
   ])("has %s", (f) => {
     expect(existsSync(join(DIST, f))).toBe(true);
   });

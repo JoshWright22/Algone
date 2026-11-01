@@ -6,9 +6,8 @@
   try { stored = localStorage.getItem(KEY); } catch (e) {}
   if (stored === "light" || stored === "dark") root.dataset.theme = stored;
 
-  var light = matchMedia("(prefers-color-scheme: light)");
   function current() {
-    return root.dataset.theme || (light.matches ? "light" : "dark");
+    return root.dataset.theme || "light";
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -25,6 +24,5 @@
       try { localStorage.setItem(KEY, next); } catch (e) {}
       label();
     });
-    light.addEventListener("change", label);
   });
 })();
