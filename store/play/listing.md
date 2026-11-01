@@ -46,6 +46,6 @@ Algone Browser has no link with the sites it opens. All names belong to their ow
 
 - Icon: `store/assets/play/icon-512.png`
 - Feature graphic: `store/assets/play/feature-graphic-1024x500.png`
-- Phone screenshots: owner task. They need a device or emulator. Do not show platform logos.
+- Phone screenshots: maintainer task. They need a device or emulator. Do not show platform logos.
 
 Google Play's short description limit is 80 characters.

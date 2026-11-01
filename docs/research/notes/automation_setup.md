@@ -102,7 +102,7 @@ Critical gap: **write-access checks cover who triggers a run, not whose text is 
 Rules:
 
 1. Keep the write-access check. Avoid `allowed_non_write_users: "*"`. Docs call it high risk, for very limited workflows such as label-only ones. It requires `github_token` and must never use a PAT [doc].
-2. Filter comments with `include_comments_by_actor: "JoshWright22"`. Exclusion wins if both lists match [doc].
+2. Filter comments with `include_comments_by_actor: "MAINTAINERS"`. Exclusion wins if both lists match [doc].
 3. Add a job `if:` on sender. `github.event.issue.author_association` can additionally gate on `OWNER`, `MEMBER` or `COLLABORATOR`.
 4. Keep the tool list minimal, and deny `WebFetch` and `WebSearch` so injected text has less way to send data out [inference].
 5. Set `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"` yourself. The action turns it on automatically only when `allowed_non_write_users` is set [source].
@@ -123,7 +123,7 @@ on:
     types: [labeled]
 jobs:
   fix:
-    if: github.event.label.name == 'claude-fix' && github.event.sender.login == 'JoshWright22'
+    if: github.event.label.name == 'claude-fix' && github.event.sender.login == 'MAINTAINERS'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -141,7 +141,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           label_trigger: claude-fix
-          include_comments_by_actor: JoshWright22
+          include_comments_by_actor: MAINTAINERS
           claude_args: |
             --model claude-sonnet-5-5
             --max-turns 20
@@ -306,7 +306,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           NUMBER: ${{ github.event.issue.number }}
-        run: gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "@JoshWright22 issue #$NUMBER was closed."
+        run: gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "@MAINTAINERS issue #$NUMBER was closed."
       - name: ntfy push
         env:
           TOPIC: ${{ secrets.NTFY_TOPIC }}
@@ -696,7 +696,7 @@ env:
   MIN_RUN: "0.25"
 jobs:
   gate:
-    if: github.event.label.name == 'claude-fix' && github.event.sender.login == 'JoshWright22'
+    if: github.event.label.name == 'claude-fix' && github.event.sender.login == 'MAINTAINERS'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -736,7 +736,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           label_trigger: claude-fix
-          include_comments_by_actor: JoshWright22
+          include_comments_by_actor: MAINTAINERS
           claude_args: |
             --model claude-sonnet-5-5
             --max-turns 20

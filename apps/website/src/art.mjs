@@ -45,3 +45,17 @@ ${ghost}
 ${bar.join("\n")}
 </svg>`;
 }
+
+/** A loud made-up video thumbnail: a blurred scene, a silhouette, and shouted text. */
+export function thumb(i, { from, to, spot, text, arrow }) {
+  const id = `thumb-${i}`;
+  return `<svg viewBox="0 0 320 180" aria-hidden="true">
+<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient>
+<filter id="${id}-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="16"/></filter></defs>
+<rect width="320" height="180" fill="url(#${id})"/>
+<g filter="url(#${id}-soft)"><circle cx="${60 + (i * 83) % 200}" cy="48" r="58" fill="${spot}"/><circle cx="${270 - (i * 57) % 170}" cy="150" r="46" fill="#000" fill-opacity=".55"/></g>
+<g fill="#000" fill-opacity=".82"><circle cx="246" cy="84" r="31"/><path d="M186 180c3-44 30-62 60-62s57 18 60 62z"/></g>
+<text x="14" y="${text.length > 1 ? 62 : 84}" font-family="Inter, sans-serif" font-size="33" font-weight="800" fill="#fff" stroke="#000" stroke-width="6" paint-order="stroke">${text.map((t, n) => `<tspan x="14" dy="${n ? 38 : 0}">${t}</tspan>`).join("")}</text>
+${arrow ? '<path d="M150 150l44-30m-26-1 27 0-2 26" fill="none" stroke="#ff2d2d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' : ""}
+</svg>`;
+}

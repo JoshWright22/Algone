@@ -8,7 +8,7 @@ export const REPORT_URL = `${REPO_URL}/issues/new?template=broken-site.yml`;
 export const UNINSTALL_FEEDBACK_URL = `${REPO_URL}/issues/new?template=uninstall-feedback.yml`;
 export const STATUS_URL = "https://raw.githubusercontent.com/JoshWright22/Algone/site-status/status.json";
 export const SPONSOR_URL = "https://github.com/sponsors/JoshWright22";
-/** Empty until the owner has a handle. An empty link is not shown. */
+/** Empty until a maintainer has a handle. An empty link is not shown. */
 export const KOFI_URL = "";
 
 export const STORES = {

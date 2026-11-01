@@ -4,6 +4,8 @@ import {
   brokenIssue, findOpenIssue, nextStatus, safeReason, walledIssue, WALLED_AFTER_DAYS,
 } from "./site-status-core.mjs";
 
+process.env.MAINTAINERS = "octocat";
+
 describe("streak logic", () => {
   const run = (outcome) => ({ date: "d", sites: { x: { outcome, tier: 1, method: "fixture", probes: [] } } });
   const walk = (days) => {
@@ -75,7 +77,7 @@ describe("issues and dedupe", () => {
   it("writes the mention, the label, and a parsable marker", () => {
     const i = brokenIssue({ site: "youtube", reasons: [{ path: "/", reason: "home" }] }, ctx);
     expect(i.labels).toEqual(["site-change"]);
-    expect(i.body).toContain("@JoshWright22");
+    expect(i.body).toContain("@octocat");
     expect(parseMarker(i.body, BOT_LOGIN)).toEqual({ site: "youtube", runId: "77" });
     expect(i.title).not.toContain("simulated");
     expect(brokenIssue({ site: "x", reasons: [] }, { ...ctx, simulated: true }).title).toContain("[simulated]");
@@ -83,7 +85,7 @@ describe("issues and dedupe", () => {
   it("writes the walled issue", () => {
     const i = walledIssue("tiktok", ctx);
     expect(i.labels).toEqual(["site-walled"]);
-    expect(i.body).toContain("@JoshWright22");
+    expect(i.body).toContain("@octocat");
   });
   it("finds the bot's open issue for that site", () => {
     expect(findOpenIssue([issue({ number: 1 })], "site-change", "youtube")?.number).toBe(1);

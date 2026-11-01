@@ -45,4 +45,4 @@ Algone Browser has no link with the sites it opens. All names belong to their ow
 ## Images
 
 - App icon: `store/assets/app-store/icon-1024.png` (opaque, no alpha)
-- iPhone screenshots: owner task. They need a device or simulator. Do not show platform logos.
+- iPhone screenshots: maintainer task. They need a device or simulator. Do not show platform logos.

@@ -14,4 +14,4 @@ export async function openWithFallback(sources, attempt) {
 }
 
 export const prBody = (issue) =>
-  `Closes #${issue}.\n\nOpened by the claude-fix workflow after the owner labeled the issue. Review before merging.\n`;
+  `Closes #${issue}.\n\nOpened by the claude-fix workflow after a maintainer labeled the issue. Review before merging.\n`;

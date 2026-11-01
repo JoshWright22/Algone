@@ -42,7 +42,7 @@ Algone is `0.1.0`. It is not in any store yet.
 | Tests | Passing in CI: unit, Chromium, Firefox smoke, mobile typecheck and bundle |
 | Rules checked on the real site, logged out | YouTube (and its mobile home), Reddit, TikTok, Twitch, Bluesky, Pinterest, Threads, Instagram Explore only |
 | Rules not checked on the real site | X, Facebook, LinkedIn, Substack, and Instagram's home feed |
-| Logged-in check | Not run. Needs the owner's accounts |
+| Logged-in check | Not run. Needs a maintainer's accounts |
 | Website and privacy policy | Live at <https://joshwright22.github.io/Algone/> |
 | Store listings | Drafted in `store/`, not submitted |
 | GitHub Releases | Nightly prereleases. No stable release yet |
@@ -91,10 +91,14 @@ npm run check:logged-in -- --profile <dir>   # your signed-in browser profile
 npm run assets                # store icons, tiles, and screenshots
 ```
 
+## Community
+
+Algone is maintained by its community. Reports, rule repairs, and features are welcome, and maintainers review every change. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Docs
 
 - [Design spec](docs/designs/algone.md)
-- [Owner brief](docs/designs/owner_brief.md)
+- [Project brief](docs/designs/project_brief.md)
 - [Firefox review notes](docs/firefox-review.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)

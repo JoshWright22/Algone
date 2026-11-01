@@ -45,12 +45,11 @@ function layout({ slug, title, description, body, script }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="${csp}">
 <meta name="referrer" content="no-referrer">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark">
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="icon" href="{{base}}assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{{base}}assets/site.css">
-<script src="{{base}}assets/theme.js"></script>
 <script src="{{base}}assets/site.js" defer></script>
 ${script ? `<script src="{{base}}assets/${script}" defer></script>\n` : ""}</head>
 <body>
@@ -65,13 +64,12 @@ ${slug === "install" ? "" : '<a class="rail-cta" href="{{base}}install/">Install
 <div class="column">
 <header class="top">
 <nav aria-label="Main"><ul>${links}</ul></nav>
-<button class="theme" id="theme-toggle" type="button" hidden>Dark theme</button>
 </header>
 <main id="main" tabindex="-1">
 ${body}
 </main>
 <footer class="foot"><div class="wrap">
-<p>Algone is free and open source under the MIT license. It has no account and collects no data by default.</p>
+<p>Algone is free, open source under the MIT license, and maintained by its community. It has no account and collects no data by default.</p>
 <ul>
 <li><a href="{{base}}privacy/">Privacy policy</a></li>
 <li><a href="{{base}}support/">Support</a></li>
@@ -104,7 +102,7 @@ rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, "assets"), { recursive: true });
 mkdirSync(join(dist, "fonts"));
 
-for (const file of ["site.css", "theme.js", "site.js", "status.js"]) {
+for (const file of ["site.css", "site.js", "status.js"]) {
   copyFileSync(join(here, "src", file), join(dist, "assets", file));
 }
 copyFileSync(join(root, "assets/icon.svg"), join(dist, "assets/icon.svg"));

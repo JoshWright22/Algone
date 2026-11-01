@@ -63,6 +63,8 @@ export interface ProtectedItem {
 export interface Probe {
   path: string;
   live: boolean;
+  /** The feed exists only when signed in, so a logged-out miss is inconclusive. */
+  needsLogin?: boolean;
   expect: string[];
   viewport?: "desktop" | "mobile";
 }

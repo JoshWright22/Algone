@@ -33,17 +33,29 @@ if (loggedIn && !args.profile) {
 const sites = loadSites().filter((s) => !args.site || s.id === args.site);
 mkdirSync(args.out, { recursive: true });
 
+/** A site can redirect while it is being read, so a lost page gets one more try. */
+async function settled(page, read) {
+  try {
+    return await read();
+  } catch (e) {
+    if (!/context was destroyed|navigat/i.test(String(e))) throw e;
+    await page.waitForLoadState("domcontentloaded").catch(() => {});
+    await page.waitForTimeout(2000);
+    return read();
+  }
+}
+
 const anyMatch = (page, selectors) =>
-  page.evaluate((list) => list.some((s) => {
+  settled(page, () => page.evaluate((list) => list.some((s) => {
     try { return !!document.querySelector(s); } catch { return false; }
-  }), selectors);
+  }), selectors));
 
 const visible = (page, selectors) =>
-  page.evaluate((list) => list.some((s) => {
+  settled(page, () => page.evaluate((list) => list.some((s) => {
     try {
       return [...document.querySelectorAll(s)].some((e) => e.getClientRects().length > 0);
     } catch { return false; }
-  }), selectors);
+  }), selectors));
 
 async function open(context, url) {
   const page = await context.newPage();
@@ -66,6 +78,13 @@ async function runProbe(site, probe, ctxPlain, ctxExt) {
     return { path: probe.path, outcome: "inconclusive", reason };
   }
   const problems = [];
+  if (probe.needsLogin && !loggedIn) {
+    const found = await Promise.all(probe.expect.map((id) => anyMatch(plain.page, site.elements.find((e) => e.id === id).selectors)));
+    if (!found.every(Boolean)) {
+      await plain.page.close();
+      return { path: probe.path, outcome: "inconclusive", reason: "the feed needs a login" };
+    }
+  }
   for (const id of probe.expect) {
     const el = site.elements.find((e) => e.id === id);
     const selectors = el.selectors.map((s) => (args["simulate-break"] === site.id ? `${s}-simulated-break` : s));
@@ -112,7 +131,9 @@ for (const device of [null, devices["iPhone 15"]]) {
   for (const site of sites) {
     for (const probe of site.probes.filter((p) => (p.viewport ?? "desktop") === name)) {
       if (!probe.live && !loggedIn) continue;
-      const r = await runProbe(site, probe, plain, ext);
+      const r = await runProbe(site, probe, plain, ext).catch((e) => ({
+        path: probe.path, outcome: "inconclusive", reason: String(e).split("\n")[0].slice(0, 120),
+      }));
       if (r.snapshot) {
         writeFileSync(join(args.out, `${site.id}-${name}.json`), JSON.stringify(r.snapshot));
         delete r.snapshot;

@@ -143,7 +143,7 @@ jobs:
           path: ${{ runner.temp }}/apk
           if-no-files-found: error
 
-  # Stable waits here for the owner's approval, then creates the tag with GITHUB_TOKEN.
+  # Stable waits here for a maintainer's approval, then creates the tag with GITHUB_TOKEN.
   # A nightly uses no environment, and gh release create makes its tag in the publish job.
   # This job runs no project code, so the keystore never meets npm or Gradle.
   sign-and-tag:

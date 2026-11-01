@@ -7,7 +7,7 @@ Report security problems privately through a GitHub private advisory:
 
 Please do not open a public issue for a security problem. Include what you found, how to reproduce it, and the version or commit.
 
-Algone is maintained by one person, so there is no fixed response time. Reports are read as soon as possible.
+Algone is maintained by volunteers, so there is no fixed response time. Reports are read as soon as possible.
 
 ## In scope
 

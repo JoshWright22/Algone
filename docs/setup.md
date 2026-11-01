@@ -1,8 +1,12 @@
-# Owner setup
+# Maintainer setup
 
 Everything here is optional for CI. CI passes with no secrets, and every publish workflow exits successfully with a notice when its secrets are missing.
 
 Add secrets at **Settings > Secrets and variables > Actions**, or under **Settings > Environments > release** where marked. Store secrets go in the `release` environment, never at repo level. No job that runs Claude uses that environment.
+
+## Maintainers
+
+Set the `MAINTAINERS` repository variable to the GitHub logins of the maintainers, split by commas. They can start the agent, and alerts mention them. While it is empty, nobody can start the agent and alerts mention nobody.
 
 ## Repo protections
 
@@ -22,7 +26,7 @@ Steps 1 to 4 and step 6 were done on 2026-11-01. Step 5 is yours to decide. The 
 
 5. **Actions PR setting.** Settings > Actions > General > Workflow permissions: turn on "Allow GitHub Actions to create and approve pull requests". `claude-fix.yml` only needs it as a last resort (see [The agent's pull request](#the-agents-pull-request)).
 6. **Rulesets, last.** They block direct pushes for anyone without bypass.
-   - On `main`: require a pull request, with admin bypass for the owner.
+   - On `main`: require a pull request, with admin bypass for a maintainer.
    - On tags matching `v*`, excluding `v*-nightly.*`: block update and deletion. Creation is not blocked, because GitHub does not allow the Actions app as a bypass actor on a personal repo, and the stable tag job needs to create tags. A tag starts nothing by itself: store publishing runs only by dispatch, in `release`, with your approval.
 
 The stable tag job runs in `release`, so it waits for your approval. Each publish workflow also runs in `release`, so a stable run asks for approval once for the tag and once for each store workflow, even a store with no secrets. An environment's secrets cannot be read before approval.
@@ -43,7 +47,7 @@ Also install the Claude GitHub app: go to <https://github.com/apps/claude>, choo
 
 | Name | Kind | Where to get it | Used by |
 |---|---|---|---|
-| `NTFY_TOPIC` | Secret | Choose a long random name. On ntfy.sh anyone who knows a topic name can read it. Subscribe to it in the ntfy phone app | `site-check.yml`, `notify-owner.yml` |
+| `NTFY_TOPIC` | Secret | Choose a long random name. On ntfy.sh anyone who knows a topic name can read it. Subscribe to it in the ntfy phone app | `site-check.yml`, `notify-maintainers.yml` |
 
 **Alert delivery has not been tested.** Neither the GitHub mention nor the ntfy push has been seen arriving. To test, run `site-check.yml` with `simulate_break` and watch for both. Then close the `[simulated]` issue, or it will hide real breaks of that site.
 
@@ -156,7 +160,7 @@ The label check covers who started the run, not whose text Claude reads. **It do
 
 ## The agent's pull request
 
-Claude pushes a `claude/` branch. A workflow step then opens the PR, with `Closes #N` in the body. Merging closes the issue, and that triggers the mention from `notify-owner.yml`.
+Claude pushes a `claude/` branch. A workflow step then opens the PR, with `Closes #N` in the body. Merging closes the issue, and that triggers the mention from `notify-maintainers.yml`.
 
 The pinned action revokes its own token as its last step, so the step cannot rely on that token. It tries, in order: the action's output, a new app token from the same exchange the action uses, and `GITHUB_TOKEN`. The second is not a documented API, so it may break when the action changes. The third works, but a PR opened with it starts no CI. If the run warns about this, close and reopen the PR to start CI.
 
@@ -166,4 +170,4 @@ If three `claude-fix` labels land while a run is going, GitHub keeps only the ne
 
 Using your subscription token for CI you run on your own repo is a documented use: Anthropic offers `claude setup-token` and the action's `claude_code_oauth_token` input for it.
 
-A bot that strangers can trigger is a different thing. Nothing confirms that it fits the subscription terms, so it was not built. Every run stays owner-triggered: a public issue never starts Claude, and only your label does. Keep it that way. If you ever want a bot that others can trigger, use an API key and ask Anthropic first.
+A bot that strangers can trigger is a different thing. Nothing confirms that it fits the subscription terms, so it was not built. Every run stays maintainer-triggered: a public issue never starts Claude, and only your label does. Keep it that way. If you ever want a bot that others can trigger, use an API key and ask Anthropic first.

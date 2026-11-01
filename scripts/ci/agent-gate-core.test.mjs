@@ -32,7 +32,7 @@ describe("cap logic", () => {
 
 describe("edit detection", () => {
   const edit = (editor, hour) => ({ editor, editedAt: `2026-10-31T0${hour}:00:00Z` });
-  const clean = { includesCreatedEdit: false, bodyEdits: [], titleRenames: [], truncated: false };
+  const clean = { maintainers: ["octocat"], includesCreatedEdit: false, bodyEdits: [], titleRenames: [], truncated: false };
   it("passes an unedited issue", () => {
     expect(outsideEditors(clean)).toEqual({ complete: true, editors: [] });
   });
@@ -40,7 +40,7 @@ describe("edit detection", () => {
     const r = outsideEditors({
       ...clean,
       includesCreatedEdit: true,
-      bodyEdits: [edit("JoshWright22", 2), edit("stranger", 1)],
+      bodyEdits: [edit("octocat", 2), edit("stranger", 1)],
     });
     expect(r.editors).toEqual([]);
   });
@@ -48,7 +48,7 @@ describe("edit detection", () => {
     const r = outsideEditors({
       ...clean,
       includesCreatedEdit: true,
-      bodyEdits: [edit("JoshWright22", 3), edit("stranger", 2), edit("stranger", 1)],
+      bodyEdits: [edit("octocat", 3), edit("stranger", 2), edit("stranger", 1)],
     });
     expect(r.editors).toEqual(["stranger"]);
   });
@@ -64,7 +64,8 @@ describe("edit detection", () => {
 describe("decide", () => {
   const ok = {
     label: "claude-fix",
-    sender: "JoshWright22",
+    sender: "octocat",
+    maintainers: ["octocat"],
     hasCredential: true,
     edits: { complete: true, editors: [] },
     labels: ["bug"],

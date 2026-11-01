@@ -152,7 +152,16 @@
       "label": "Compose box"
     }
   ],
-  "probes": [],
+  "probes": [
+    {
+      "path": "/home",
+      "live": true,
+      "expect": [
+        "forYou"
+      ],
+      "needsLogin": true
+    }
+  ],
   "walls": [
     "a[href=\"/login\"]",
     "input[autocomplete=\"username\"]"

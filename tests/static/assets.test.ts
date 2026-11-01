@@ -134,7 +134,7 @@ describe("store folders", () => {
 
 describe("repo front matter", () => {
   it("has its license and policies", () => {
-    expect(readFileSync("LICENSE", "utf8")).toContain("Copyright (c) 2026 Josh Wright");
+    expect(readFileSync("LICENSE", "utf8")).toContain("Copyright (c) 2026 The Algone contributors");
     expect(readFileSync("LICENSE", "utf8")).toContain("MIT License");
     for (const f of ["README.md", "CONTRIBUTING.md", "SECURITY.md", "THIRD_PARTY_NOTICES.md", "docs/firefox-review.md"]) {
       expect(existsSync(f), f).toBe(true);

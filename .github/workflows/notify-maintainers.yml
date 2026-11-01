@@ -1,4 +1,4 @@
-name: Notify owner
+name: Notify maintainers
 
 on:
   issues:
@@ -16,11 +16,13 @@ jobs:
     env:
       NUMBER: ${{ github.event.issue.number }}
     steps:
-      - name: Mention the owner
+      - name: Mention the maintainers
         env:
           GH_TOKEN: ${{ github.token }}
+          MAINTAINERS: ${{ vars.MAINTAINERS }}
         run: |
-          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "@JoshWright22 issue #$NUMBER was closed."
+          MENTIONS=$(printf '%s' "$MAINTAINERS" | tr -s ', ' '\n' | sed 's/^/@/' | tr '\n' ' ')
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "${MENTIONS}issue #$NUMBER was closed."
       - name: Push to ntfy if a topic is set
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}

@@ -90,7 +90,16 @@
       "label": "Search"
     }
   ],
-  "probes": [],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
+    }
+  ],
   "walls": [],
   "feedUrls": [
     "/feed"

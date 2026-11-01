@@ -87,6 +87,16 @@ describe("copy", () => {
   });
 });
 
+describe("live checks", () => {
+  it("cover every site", () => {
+    const dir = "packages/rules/sites";
+    for (const f of readdirSync(dir)) {
+      const site = JSON.parse(readFileSync(join(dir, f), "utf8"));
+      expect(site.probes.some((p: { live: boolean }) => p.live), f).toBe(true);
+    }
+  });
+});
+
 describe("ledger", () => {
   it("is well formed, and holds no donor names", () => {
     const entries = JSON.parse(readFileSync("ledger/entries.json", "utf8"));

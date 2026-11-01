@@ -1,7 +1,7 @@
 # Goldfish review of `docs/designs/algone.md`
 
 Reviewed 2026-10-31 through the EGM stages, run sequentially by fresh subagents. The
-owner delegated resolution to the Elephant and said not to stop and ask, so stage gates
+maintainer delegated resolution to the Elephant and said not to stop and ask, so stage gates
 were resolved by the Elephant instead of a person. This page condenses the reviewers'
 output. Each finding is listed by outcome.
 
@@ -22,17 +22,17 @@ concerned the plan, and the build tests that plan directly.
 
 | Finding | Why |
 |---|---|
-| Cut to 3 to 5 sites and a minimal v1 (Stage 5, B3) | Scope is set by the owner (`owner_brief.md`). Support tiers and phase order were added instead |
-| Defer Custom mode (Stage 5, M1) | Owner scope. Its limits are stated in the spec |
-| Ship only pause plus daily limit (Stage 5, M2) | Owner scope |
-| Defer Algone Browser (Stage 5, M3) | The owner's later decision makes it part of the build |
-| Release and ledger are premature (Stage 5, N2) | Owner scope |
-| Remove the `ads` filter everywhere (Stage 5, M10) | Owner named it for Tuned. Kept in the extension, removed from the app |
+| Cut to 3 to 5 sites and a minimal v1 (Stage 5, B3) | Scope is set by a maintainer (`project_brief.md`). Support tiers and phase order were added instead |
+| Defer Custom mode (Stage 5, M1) | Maintainer scope. Its limits are stated in the spec |
+| Ship only pause plus daily limit (Stage 5, M2) | Maintainer scope |
+| Defer Algone Browser (Stage 5, M3) | A maintainer's later decision makes it part of the build |
+| Release and ledger are premature (Stage 5, N2) | Maintainer scope |
+| Remove the `ads` filter everywhere (Stage 5, M10) | Maintainer named it for Tuned. Kept in the extension, removed from the app |
 | Staged rollout of rules (Stage 7, 24) | One file, no user cohorts, no telemetry to judge a stage. Live probes guard publishing; recorded as a risk |
 
 ## Main changes from review
 
-*   Logged-in detection, through a check on the owner's machine (Stage 5).
+*   Logged-in detection, through a check on a maintainer's machine (Stage 5).
 *   Sanitized structural snapshots, so a repair has real input (Stage 5).
 *   Overlay narrowed to selector data, with an explicit field table (Stages 5 and 8).
 *   `data-algone-off` for repairing both classes of element, written only after

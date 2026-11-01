@@ -2,7 +2,9 @@
 import { BOT_LOGIN, marker, parseMarker } from "./markers.mjs";
 
 export const WALLED_AFTER_DAYS = 7;
-export const OWNER_MENTION = "@JoshWright22";
+/** Mentions the logins in the MAINTAINERS repo variable. */
+export const mention = (raw = process.env.MAINTAINERS) =>
+  String(raw ?? "").split(/[\s,]+/).filter(Boolean).map((l) => `@${l}`).join(" ") || "Maintainers:";
 
 // Reasons come from the checker, but a failed probe must never carry page text into an issue.
 export const safeReason = (s) => String(s).replace(/[^\w ./:;#-]/g, "").slice(0, 200);
@@ -58,7 +60,7 @@ export function brokenIssue({ site, reasons }, { runId, runUrl, simulated }) {
     title: `${simulated ? "[simulated] " : ""}Site check: ${site} is broken`,
     labels: ["site-change"],
     body: [
-      `${OWNER_MENTION} the daily check found a problem on **${site}**.${simulated ? " This run used a deliberately wrong selector." : ""}`,
+      `${mention()} the daily check found a problem on **${site}**.${simulated ? " This run used a deliberately wrong selector." : ""}`,
       "",
       ...reasons.map((r) => `- \`${r.path}\`: ${r.reason}`),
       "",
@@ -76,7 +78,7 @@ export function walledIssue(site, { runId, runUrl }) {
     title: `Site check: ${site} has been inconclusive for ${WALLED_AFTER_DAYS} days`,
     labels: ["site-walled"],
     body: [
-      `${OWNER_MENTION} **${site}** served a login, bot, or error page to the daily check for ${WALLED_AFTER_DAYS} days in a row.`,
+      `${mention()} **${site}** served a login, bot, or error page to the daily check for ${WALLED_AFTER_DAYS} days in a row.`,
       "",
       "Its rules are not being checked by this job. Use the logged-in check in docs/setup.md until a probe passes.",
       "",

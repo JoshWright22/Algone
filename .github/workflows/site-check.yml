@@ -75,6 +75,7 @@ jobs:
           path: test-results/live
       - name: Write status and open issues
         env:
+          MAINTAINERS: ${{ vars.MAINTAINERS }}
           GH_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           SIMULATE_BREAK: ${{ inputs.simulate_break }}

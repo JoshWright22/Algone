@@ -1,12 +1,13 @@
 // Gate for claude-fix.yml. Reads the event, gathers facts, and writes outputs for later jobs.
 import { readFileSync } from "node:fs";
-import { countAgentRuns, decide, OWNER, outsideEditors, parseCap, TRIGGER_LABEL } from "./agent-gate-core.mjs";
+import { countAgentRuns, decide, outsideEditors, parseCap, parseMaintainers, TRIGGER_LABEL } from "./agent-gate-core.mjs";
 import { graphql, notice, rest, restPages, setOutputs } from "./github.mjs";
 import { parseMarker } from "./markers.mjs";
 
 const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
 const repo = process.env.GITHUB_REPOSITORY;
 const [owner, name] = repo.split("/");
+const maintainers = parseMaintainers(process.env.MAINTAINERS);
 const issue = event.issue;
 
 const EDITS = `query($owner: String!, $name: String!, $number: Int!) {
@@ -29,6 +30,7 @@ async function readEdits() {
   const data = await graphql(EDITS, { owner, name, number: issue.number });
   const i = data.repository.issue;
   return outsideEditors({
+    maintainers,
     includesCreatedEdit: i.includesCreatedEdit,
     bodyEdits: i.userContentEdits.nodes.map((n) => ({ editedAt: n.editedAt, editor: n.editor?.login })),
     titleRenames: i.timelineItems.nodes.map((n) => ({ actor: n.actor?.login })),
@@ -55,9 +57,10 @@ const label = event.label?.name;
 const sender = event.sender?.login;
 const hasCredential = process.env.HAS_OAUTH_TOKEN === "true" || process.env.HAS_API_KEY === "true";
 // The API calls are only worth making once the cheap checks pass.
-const ready = label === TRIGGER_LABEL && sender === OWNER && hasCredential;
+const ready = label === TRIGGER_LABEL && maintainers.includes(sender) && hasCredential;
 
 const result = decide({
+  maintainers,
   label,
   sender,
   hasCredential,

@@ -3,6 +3,7 @@ import {
   ISSUES_URL, KOFI_URL, RELEASES_URL, REPO_URL, REPORT_URL, SPONSOR_URL, STATUS_URL, STORES,
   UNINSTALL_FEEDBACK_URL,
 } from "./constants.mjs";
+import { thumb } from "./art.mjs";
 
 const POLICY_DATE = "October 31, 2026";
 
@@ -42,6 +43,66 @@ const CHROME_ZIP = "<code>algone-chrome.zip</code>";
 
 /* Home */
 
+// Everything in the demo is made up. Tuned keeps the cards marked calm.
+const DEMO_FEED = [
+  { title: "I Tried Every Morning Routine For 30 Days (Shocking)", by: "Daily Buzz Lab", stats: "4.1M views, 2 days ago", time: "18:42", from: "#ff6a00", to: "#d3003f", spot: "#ffd400", text: ["30 DAYS", "LATER..."], arrow: true },
+  { title: "Nobody Is Talking About This Anymore", by: "Viral Vault", stats: "912K views, 6 hours ago", time: "11:07", from: "#7a00ff", to: "#ff0080", spot: "#00e0ff", text: ["THEY", "LIED"], arrow: true },
+  { title: "Slow Bread at Home: A Beginner's Loaf", by: "Hearth and Flour", stats: "88K views, 1 week ago", time: "24:15", from: "#8a5a2b", to: "#3b2410", spot: "#f2c078", text: ["BREAD"], calm: true },
+  { title: "You Won't Believe What Happened Next", by: "TopTen Tonight", stats: "2.7M views, 1 day ago", time: "9:33", from: "#00b09b", to: "#0047ff", spot: "#fff200", text: ["WAIT", "FOR IT"], arrow: true },
+  { title: "Why Everyone Is Quitting Right Now", by: "Hot Take Hour", stats: "1.3M views, 3 days ago", time: "14:58", from: "#ff0844", to: "#6a0dad", spot: "#ffb199", text: ["IT'S", "OVER"] },
+  { title: "How Suspension Bridges Stay Up", by: "Plain Engineering", stats: "210K views, 2 weeks ago", time: "12:04", from: "#2c5364", to: "#0f2027", spot: "#8fd3f4", text: ["CABLES"], calm: true },
+  { title: "10 Things You're Doing Wrong Every Day", by: "Life Hacks Max", stats: "6M views, 5 days ago", time: "16:20", from: "#f7971e", to: "#e8006f", spot: "#fffb00", text: ["STOP", "THIS NOW"], arrow: true },
+  { title: "The Truth About Your Phone", by: "Exposed Daily", stats: "3.3M views, 12 hours ago", time: "21:49", from: "#1a2a6c", to: "#b21f1f", spot: "#fdbb2d", text: ["DELETE", "THIS"] },
+  { title: "Tide Pools of the North Coast", by: "Field Notes", stats: "64K views, 3 weeks ago", time: "31:07", from: "#1f6f78", to: "#0b2b33", spot: "#a8e6cf", text: ["TIDES"], calm: true },
+];
+
+const DEMO_CUSTOM = [
+  ["Why the Elm Street bridge took nine years", "Today"],
+  ["A beginner's guide to sourdough, part 4", "Today"],
+  ["Notes on walking to work for a year", "Yesterday"],
+  ["The last repair shop on the high street", "Yesterday"],
+  ["How tide tables are made", "Mon"],
+  ["What I learned restoring an old radio", "Mon"],
+];
+
+const NOTES = {
+  custom: "Your own feed: the sources you add, ranked how you pick.",
+  tuned: "The feed stays, filtered by topics, keywords, channels, and kinds of post.",
+  random: "A quote, fact, poem, artwork, or puzzle, bundled offline.",
+  none: "Clean empty space. This is the default.",
+};
+
+const demoCard = (c, i, tuned) => `<div class="mock-card${tuned && !c.calm ? " is-gone" : ""}">
+<div class="mock-thumb">${thumb(i + (tuned ? 20 : 0), c)}<b>${c.time}</b></div>
+<div class="mock-meta"><span class="mock-av"></span><div><div class="mock-title">${esc(c.title)}</div><div class="mock-by">${esc(c.by)}</div><div class="mock-by">${esc(c.stats)}</div></div></div>
+</div>`;
+
+const demo = () => `<figure class="wall" data-wall>
+<div class="mock">
+<div class="mock-top" aria-hidden="true"><span class="mock-burger"></span><span class="mock-search">Search<i></i></span><span class="mock-me"></span></div>
+<div class="mock-body">
+<div class="mock-side" aria-hidden="true"><span>Home</span><span>Subscriptions</span><span>You</span></div>
+<div class="mock-stage">
+<div class="mock-layer" data-layer="custom"><div class="mock-panel"><h3>Your feed</h3>${DEMO_CUSTOM.map(([t, d]) => `<div class="mock-row"><span>${esc(t)}</span><span>${d}</span></div>`).join("")}</div></div>
+<div class="mock-layer" data-layer="tuned" hidden aria-hidden="true"><div class="mock-grid">${DEMO_FEED.map((c, i) => demoCard(c, i, true)).join("")}</div></div>
+<div class="mock-layer" data-layer="random" hidden><div class="mock-panel"><p class="mock-quote">We suffer more often in imagination than in reality.</p><p class="mock-source">Seneca, Letters to Lucilius (trans. Gummere)</p></div></div>
+<div class="mock-layer" data-layer="none" hidden></div>
+<div class="mock-layer mock-feed" aria-hidden="true"><div class="mock-chips"><span>All</span><span>Trending</span><span>Reactions</span><span>Drama</span><span>Live</span><span>Recently uploaded</span></div><div class="mock-grid">${DEMO_FEED.map((c, i) => demoCard(c, i, false)).join("")}</div></div>
+<input class="wall-range" type="range" min="0" max="100" value="0" disabled aria-label="Share of the feed replaced">
+<div class="wall-strike"><span class="wall-grip">Drag to replace the feed</span></div>
+</div>
+</div>
+</div>
+<div class="wall-modes" role="group" aria-label="Show a mode">
+<button type="button" data-mode="custom" data-note="${NOTES.custom}" aria-pressed="true">Custom</button>
+<button type="button" data-mode="tuned" data-note="${NOTES.tuned}" aria-pressed="false">Tuned</button>
+<button type="button" data-mode="random" data-note="${NOTES.random}" aria-pressed="false">Random</button>
+<button type="button" data-mode="none" data-note="${NOTES.none}" aria-pressed="false">No feed</button>
+<p class="wall-note" role="status">${NOTES.custom}</p>
+</div>
+<figcaption class="caption">Illustration of a made-up video site. The header and search stay. Custom lists titles and dates from your sources, without thumbnails.</figcaption>
+</figure>`;
+
 function home({ sites, shots }) {
   const rows = sites.map((s) => {
     const hidden = s.elements.filter((e) => e.class === "algorithmic").map((e) => e.label);
@@ -59,8 +120,8 @@ function home({ sites, shots }) {
     : "";
 
   return `<div class="hero">
-<h1><span class="struck">The feed</span> is gone. Search still works.</h1>
-<p class="lede">Algone is a browser extension that hides recommendation feeds on ${sites.length} popular sites. Search, subscriptions, direct links, and messages stay where they are.</p>
+<h1>Replace <span class="struck">your feed</span> with what you want.</h1>
+<p class="lede">Algone takes the recommendation feed off ${sites.length} popular sites, and you choose what goes there instead: RSS, creators you pick, and your own subscriptions, ranked your way. Search, direct links, and messages stay where they are.</p>
 <div class="actions">
 <a class="button primary" href="{{base}}install/">Install Algone</a>
 <a class="button" href="{{base}}how-it-works/">See how it works</a>
@@ -68,15 +129,13 @@ function home({ sites, shots }) {
 <p class="pending">Store listings are pending, so Algone is not in any store yet. Builds for testing are on <a href="${RELEASES_URL}">GitHub Releases</a>.</p>
 </div>
 
-<figure class="wall" data-wall>
-<div class="wall-page">
-<div class="wall-head" aria-hidden="true"><span class="wall-search">Search</span><span>Subscriptions</span></div>
-<div class="wall-feed"><canvas aria-hidden="true"></canvas>
-<input type="range" min="0" max="100" value="0" disabled aria-label="Share of the feed removed">
-<div class="wall-strike"><span class="wall-grip">Drag to remove the feed</span></div></div>
-</div>
-<figcaption class="caption">Illustration of a video site's home page with default settings. The header and search stay, and the feed area is empty.</figcaption>
-</figure>
+${demo()}
+
+${section("Your own algorithm", "Algone starts every site on No feed. Switch a site to Custom to build yours.", terms([
+    ["Your sources", "Add RSS feeds, follow creators from the Algone popup, and collect new items from your subscriptions pages. Sites without public feeds give a partial view."],
+    ["Your ranking", "Pick Newest first, Fair with one from each source, or Oldest unseen first. Nothing is ranked for you."],
+    ["Your device", "The sources and the ranking run in your browser. There is no account, and nothing is sent to a server."],
+  ]))}
 
 ${section("What is hidden on each site", "Everything classed as algorithmic is hidden from install. You can turn each item back on separately.", `<div class="table-scroll"><table class="stack">
 <thead><tr><th scope="col">Site</th><th scope="col">Hidden by default</th><th scope="col">Tested to stay</th></tr></thead>
@@ -86,10 +145,10 @@ ${section("What is hidden on each site", "Everything classed as algorithmic is h
 ${gallery}
 
 ${section("What to put there instead", "Each site has four modes.", terms([
-    ["No feed", "Clean empty space. This is the default."],
-    ["Random", "A quote, fact, poem, artwork, or puzzle, bundled offline."],
-    ["Tuned", "The feed stays, filtered by topics, keywords, channels, and kinds of post."],
     ["Custom", "A feed you build from RSS, creators you choose, and your own subscriptions. It stays on your device."],
+    ["Tuned", "The feed stays, filtered by topics, keywords, channels, and kinds of post."],
+    ["Random", "A quote, fact, poem, artwork, or puzzle, bundled offline."],
+    ["No feed", "Clean empty space. This is the default."],
   ]))}
 
 ${section("What Algone cannot do", "", terms([
@@ -98,8 +157,11 @@ ${section("What Algone cannot do", "", terms([
     ["Stay perfect", "Sites change their pages, and a rule can break until it is repaired. <a href=\"{{base}}sites/\">Site status</a> shows what is checked and when."],
   ]))}
 
+${section("Maintained by its community", "", `<p>Algone is open source. Anyone can report a broken site, repair a rule, or propose a feature, and maintainers review every change before it ships.</p>
+<div class="actions"><a class="button" href="${REPO_URL}/blob/main/CONTRIBUTING.md">Contribute on GitHub</a><a class="button" href="${REPORT_URL}">Report a broken site</a></div>`)}
+
 <div class="closing">
-<h2>Keep what you came for.</h2>
+<h2>Decide what you see next.</h2>
 <div class="actions"><a class="button primary" href="{{base}}install/">Install Algone</a></div>
 </div>`;
 }
@@ -110,7 +172,7 @@ function install({ sites }) {
   const pending = Object.values(STORES).every((s) => !s.listed);
   const store = (key, name) =>
     STORES[key].listed ? `<a href="${STORES[key].url}">Get ${name}</a>` : "Store listing pending.";
-  return `${head("Install Algone", "Algone works in the browser and does not change native apps. Uninstalling always works.")}
+  return `${head("Install Algone", "Algone works in the browser and does not change native apps.")}
 
 ${pending ? `<div class="wrap"><div class="callout"><p><strong>Algone is not in any store yet.</strong> Listings are pending. Until they exist, any published builds are on <a href="${RELEASES_URL}">GitHub Releases</a>, and they are meant for testing.</p></div></div>` : ""}
 
@@ -174,10 +236,10 @@ ${section("Choosing what to watch", "All of these are optional except stop at th
   ]))}
 
 ${section("When a site changes", "Sites rename things, and rules go stale. This is how a repair reaches you.", `${steps([
-    "A check runs every day against the real sites, logged out. It cannot see logged-in pages, so those rely on the owner's weekly check and on your reports.",
+    "A check runs every day against the real sites, logged out. It cannot see logged-in pages, so those rely on a maintainer's weekly check and on your reports.",
     `A failed check opens an <a href="${ISSUES_URL}">issue on GitHub</a>. No model runs on its own.`,
-    "The owner reads the issue and can ask Claude to draft a fix in a pull request.",
-    "The owner reviews and merges it. A person approves every change, so no repair time is promised.",
+    "A maintainer reads the issue and can ask Claude to draft a fix in a pull request.",
+    "A maintainer reviews and merges it. A person approves every change, so no repair time is promised.",
     "Tests run, and the new rules are published on this website.",
     "Your extension fetches them within a day, without a store review.",
   ])}
@@ -215,14 +277,14 @@ function sitesPage({ sites }) {
 <tbody>${rows}</tbody>
 </table></div>
 </section>
-${section("Support tiers", "One person maintains twelve sites, so they are not treated equally.", terms([
-    ["Tier 1", "Daily logged-out check, plus the owner's weekly logged-in check. Repaired first."],
+${section("Support tiers", "Maintainers have limited time, so the twelve sites are not treated equally.", terms([
+    ["Tier 1", "Daily logged-out check, plus a maintainer's weekly logged-in check. Repaired first."],
     ["Tier 2", "Daily logged-out check only, so logged-in pages depend on your reports. Repaired when time allows."],
   ]))}
 
 ${section("Rules checked", "How the rules were last confirmed by hand.", terms([
     [METHOD_LABELS["live-logged-out"], "Checked against the real site without an account. Logged-in pages can differ."],
-    [METHOD_LABELS["live-logged-in"], "Checked by the owner, signed in to a real account."],
+    [METHOD_LABELS["live-logged-in"], "Checked by a maintainer, signed in to a real account."],
     [METHOD_LABELS.fixture, "Checked against a saved or hand-built copy of a page, not the live site."],
     [METHOD_LABELS.unverified, "Written from knowledge of the site or read from an MIT-licensed project, and not tested on the site yet. It may not work."],
   ]))}
@@ -270,7 +332,7 @@ function privacy() {
 <p>Algone does not change what you send to the sites you visit. They handle your data under their own terms, and they can detect that Algone is present.</p>`],
     ["browser", "Algone Browser", `<p>Algone Browser stores your settings, queue, and feeds locally on your device, and makes the same daily rules fetch. It has no account of its own. Sites you log in to in the app handle your data under their own terms.</p>`],
     ["website", "This website", `<p>This website is hosted on GitHub Pages, so GitHub sees your IP address and User-Agent when you visit. It has no analytics, no cookies, and no third-party fonts or scripts.</p>
-<p>If you choose a theme, the choice is saved in your browser's local storage and never sent anywhere. The site status page loads a status file from <code>raw.githubusercontent.com</code> in your browser, and GitHub sees that request too. The page shown after uninstalling receives no parameters and does no tracking. Its feedback link opens a GitHub issue form that you fill in and submit yourself.</p>
+<p>The site status page loads a status file from <code>raw.githubusercontent.com</code> in your browser, and GitHub sees that request too. The page shown after uninstalling receives no parameters and does no tracking. Its feedback link opens a GitHub issue form that you fill in and submit yourself.</p>
 <p>If you tip through GitHub Sponsors or Ko-fi, that service handles your payment under its own terms. The <a href="{{base}}ledger/">public ledger</a> shows totals and carries no donor names.</p>`],
     ["changes", "Changes and contact", `<p>Changes to this policy are published on this page with a new date, and past versions are in the <a href="${REPO_URL}">public repository</a>.</p>
 <p>For questions, open a <a href="${ISSUES_URL}">GitHub issue</a>. Issues are public, so do not include anything private.</p>`],
@@ -343,7 +405,7 @@ ${section("How the money moves", "", `<ul>
 <li>A person pays for Claude usage by hand, and records the cost here.</li>
 <li>Nothing moves donations to Anthropic automatically. There is no such route, and auto-reload stays off.</li>
 <li>Donors do not buy Claude access, priority, or features. Every feature is free for everyone.</li>
-<li>Agent runs start only when the owner asks, and are capped each day. Rule repairs come first, then bugs, then features.</li>
+<li>Agent runs start only when a maintainer asks, and are capped each day. Rule repairs come first, then bugs, then features.</li>
 </ul>`)}
 
 ${section("Support the work", "", `<p>Tips help pay for maintenance, mainly the Claude usage behind rule repairs. You can tip through ${tips}.</p>`)}`;
@@ -363,7 +425,7 @@ ${section("Changed your mind?", "", `<p>You can <a href="{{base}}install/">insta
 export function buildPages(ctx) {
   const count = ctx.sites.length;
   return [
-    { slug: "", title: "Algone: Algorithm Control", description: `Algone is a browser extension that hides recommendation feeds on ${count} popular sites and keeps search, subscriptions, direct links, and messages working.`, body: home(ctx) },
+    { slug: "", title: "Algone: Algorithm Control", description: `Replace your feed with what you want. Algone hides recommendation feeds on ${count} popular sites and lets you build your own from RSS, creators, and subscriptions.`, body: home(ctx) },
     { slug: "install", title: "Install: Algone", description: "How to install Algone. It works in the browser, does not change native apps, and store listings are pending.", body: install(ctx) },
     { slug: "how-it-works", title: "How it works: Algone", description: "What Algone hides, its four modes and six barriers, and how rule repairs reach you.", body: howItWorks(ctx) },
     { slug: "sites", title: "Site status: Algone", description: `Support tier, verification, and the latest daily check for all ${count} sites.`, body: sitesPage(ctx), script: "status.js" },

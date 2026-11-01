@@ -50,7 +50,7 @@ After installing, turn the extension on in Settings and allow it on each site. T
 
 - App icon: `store/assets/app-store/icon-1024.png` (opaque)
 - Mac screenshots: `store/screenshots/` at 1280x800.
-- iPhone and iPad screenshots: owner task. They need a device or simulator, in the sizes App Store Connect asks for.
+- iPhone and iPad screenshots: maintainer task. They need a device or simulator, in the sizes App Store Connect asks for.
 
 The extension product name stays "Algone: Algorithm Control". The app that carries it is "Algone for Safari". There is no tip link in this app, and the build sets `SHOW_TIPS=false`.
 

@@ -1,7 +1,7 @@
 # Algone: Algorithm Control
 
-*   **Author:** Claude (Elephant), for JoshWright22
-*   **Status:** Approved (by the Elephant, under the owner's delegation; see `reviews/`)
+*   **Author:** Claude (Elephant)
+*   **Status:** Approved (by the Elephant, under a maintainer's delegation; see `reviews/`)
 *   **Date:** 2026-10-31
 *   **Store name:** Algone: Algorithm Control
 *   **Repo:** https://github.com/JoshWright22/Algone (public, MIT)
@@ -14,22 +14,22 @@ Algone replaces algorithmic feeds with empty space, or with a feed the user
 builds. It hides recommendation surfaces on popular websites, and keeps search,
 subscriptions, direct links, and messages working. The deliverables are: one
 browser extension for Chrome, Edge, Firefox, and Safari; a website; an optional
-mobile browser app; store assets; a release pipeline; and owner-triggered agent
+mobile browser app; store assets; a release pipeline; and maintainer-triggered agent
 automation.
 
 This document describes the planned design. Nothing in it is implemented yet.
 
-The owner was away while this was built and told the author (the "Elephant", the
+A maintainer was away while this was built and told the author (the "Elephant", the
 long-running AI session in the Elephant-Goldfish review process) to make every
-design decision and record it. The owner's instructions are in
-[`owner_brief.md`](owner_brief.md). The [Decision Register](#decision-register) lists them
-and marks which came from the owner. The owner may give design feedback afterward.
+design decision and record it. A maintainer's instructions are in
+[`project_brief.md`](project_brief.md). The [Decision Register](#decision-register) lists them
+and marks which came from a maintainer. A maintainer may give design feedback afterward.
 
-**Owner-mandated scope (not open to reviewer cuts).** The brief fixes these: all
+**Maintainer-mandated scope (not open to reviewer cuts).** The brief fixes these: all
 popular social sites, per-element toggles, four modes, six barriers, intent
 features, a browser-only mobile route including an Expo browser app, every store,
-nightly plus stable releases, owner-triggered agents, and a funding ledger. The
-research suggests a narrower start would carry less risk. The owner chose the
+nightly plus stable releases, maintainer-triggered agents, and a funding ledger. The
+research suggests a narrower start would carry less risk. A maintainer chose the
 full scope, so the design instead orders the work and states support tiers.
 
 Algone works **in the browser only**. It never changes native apps, and no text
@@ -37,7 +37,7 @@ in the product may suggest otherwise.
 
 **Starting point.** The repository holds research notes, a placeholder README, and
 a placeholder icon. All code is new. "T3 Code" below refers to a separate app that
-the owner named as the reference for visual style and release style only.
+a maintainer named as the reference for visual style and release style only.
 
 Terms: **MV3** is Manifest V3, the current browser extension format. A **flash** is
 feed content painting briefly before it is hidden. **NFE** is News Feed Eradicator,
@@ -87,15 +87,15 @@ cannot be checked without logged-in accounts, which the author did not have. See
     Algone Browser has a stated exception for YouTube sign-in.
 *   **G6. Repair path.** Three intervals: (a) a logged-out break is detected within
     24 hours of the site change, while the daily check runs and sites do not wall
-    the runner; (b) the owner's review takes as long as it takes, so no number is
+    the runner; (b) a maintainer's review takes as long as it takes, so no number is
     promised; (c) installed extensions receive a merged fix within 24 hours of the
-    merge, without a store review. Logged-in surfaces rely on the owner's weekly
+    merge, without a store review. Logged-in surfaces rely on a maintainer's weekly
     logged-in check or on user reports.
 *   **G7. Compliance.** Rules are JSON data, never code. No `eval`. No
     obfuscation. Minimal permissions. No data collection by default.
 *   **G8. Help people choose:** search-first home, subscriptions-first view,
     local queue, stop at the end, launch pause.
-*   **G9. Owner can ship.** Store assets, checklists, reviewer notes, and
+*   **G9. Maintainer can ship.** Store assets, checklists, reviewer notes, and
     releases exist. Workflows no-op cleanly when secrets are missing.
 *   **G10. Stated limits.** The product, website, and listings say plainly what
     it cannot do: it cannot stop uninstalling, and it cannot change native apps.
@@ -103,12 +103,12 @@ cannot be checked without logged-in accounts, which the author did not have. See
 ## Non-Goals
 
 *   Screen Time shielding, Android Accessibility features, overlays over other
-    apps, or anything that acts on native apps (owner decision).
+    apps, or anything that acts on native apps (maintainer decision).
 *   Native desktop apps. Desktop is served by the extension (D-26).
 *   Pay to unlock, physical keys, message-only prompts, irreversible locks,
-    server-held cooldowns, streak penalties (owner decision).
+    server-held cooldowns, streak penalties (maintainer decision).
 *   Covering ads in apps, patched apps, third-party video clients, uninstall
-    locks. (The extension's owner-specified Tuned `ads` filter hides labeled ad
+    locks. (The extension's maintainer-specified Tuned `ads` filter hides labeled ad
     items on websites, like any content blocker. It is compiled out of the mobile
     app. See D-22.)
 *   Claiming to stop removal. Uninstalling always works, and Algone says so.
@@ -117,7 +117,7 @@ cannot be checked without logged-in accounts, which the author did not have. See
 *   Whole-site blocking, to-do lists, or a new tab page. Each would risk the
     store single-purpose rule.
 *   Autonomous agents acting on strangers' input. Every agent run is
-    owner-triggered.
+    maintainer-triggered.
 
 ## Open Questions
 
@@ -182,14 +182,14 @@ Everything below needs evidence that cannot be obtained in this build.
 ### CUJ 6: A site changes its markup
 
 *   **Given**: Reddit renames its logged-out feed container. (For logged-in
-    surfaces such as the LinkedIn feed, the trigger is the owner's logged-in check
+    surfaces such as the LinkedIn feed, the trigger is a maintainer's logged-in check
     or a user report instead.)
 *   **When**: The daily check fails.
 *   **Then**: An issue is opened with no model used, linking a sanitized structural
-    snapshot. The owner reads it and adds `claude-fix`. A Claude run uses the
-    snapshot, updates fixtures and selectors, and a PR opens. The owner merges.
+    snapshot. A maintainer reads it and adds `claude-fix`. A Claude run uses the
+    snapshot, updates fixtures and selectors, and a PR opens. A maintainer merges.
     Rules publish after tests pass, and extensions pick them up within a day. The
-    owner is mentioned when the issue closes.
+    maintainer is mentioned when the issue closes.
 
 ### CUJ 7: iPhone user
 
@@ -492,7 +492,7 @@ what a page shows, on every platform.
 | Mode | Feed | Mode content | Barrier to enter |
 |---|---|---|---|
 | No feed (default) | Hidden | None: clean empty space | None, it is the strongest |
-| Random | Hidden | Quote, fact, poem, art, or puzzle | None (owner exempted it) |
+| Random | Hidden | Quote, fact, poem, art, or puzzle | None (maintainer exempted it) |
 | Tuned | Shown, filtered item by item | None | Yes |
 | Custom | Hidden | The user's own feed | Yes |
 
@@ -607,7 +607,7 @@ shown in settings. There is no streak or penalty.
 ### Intent features
 
 *   **Search-first home** (per site, off by default, offered in onboarding). The
-    default is off because the owner specified clean empty space for No feed. On
+    default is off because a maintainer specified clean empty space for No feed. On
     home routes the panel shows a search box posting to `searchUrl`, plus the
     queue.
 *   **Intent prompt** (optional, requires search-first). "What do you want to
@@ -645,7 +645,7 @@ pause:
     launches.
 
 This is an engineering reading, not legal advice, and the claims were not reviewed
-by a lawyer (Q6). The owner should ask counsel before relying on it.
+by a lawyer (Q6). A maintainer should ask counsel before relying on it.
 
 ### Extension surfaces
 
@@ -716,7 +716,7 @@ line. Not derived from T3 assets.
 
 ### Mobile: browser only
 
-**Owner decision: on phones Algone works through the browser.** Surfaces:
+**Maintainer decision: on phones Algone works through the browser.** Surfaces:
 
 | Platform | Route | Role |
 |---|---|---|
@@ -766,11 +766,11 @@ Scoped limits, each a decision made because of store rules (researched
 | Apple 5.2.3 | No saving or downloading media | No download, no background play, no picture-in-picture feature added |
 | Apple 2.5.2 | Apps may not download code that "introduces or changes features" | Rules are selector data, not code, but this is a gray area (Q5). `REMOTE_RULES=false` is available for Apple builds; the Safari review notes disclose the fetch |
 | Apple 4.1(c) | No other developer's icon or brand in the app's icon or name | Site tiles use plain text labels, no logos |
-| Apple age rating | "Unrestricted web access" is a 16+ trigger | Answer the questionnaire honestly. Because navigation is allow-listed the answer may differ, so the owner confirms at submission; assume 16+ |
-| Play Spam | No apps whose primary purpose is to "provide a webview of a website without permission from the website owner" | **Real rejection risk.** The app's purpose is a multi-site filtered browser with its own features. Fallback: signed APK on GitHub Releases |
+| Apple age rating | "Unrestricted web access" is a 16+ trigger | Answer the questionnaire honestly. Because navigation is allow-listed the answer may differ, so a maintainer confirms at submission; assume 16+ |
+| Play Spam | No apps whose primary purpose is to "provide a webview of a website without permission from the website maintainer" | **Real rejection risk.** The app's purpose is a multi-site filtered browser with its own features. Fallback: signed APK on GitHub Releases |
 | Play Device and Network Abuse | Bars "a webview with added JavaScript Interface that loads untrusted web content" | `react-native-webview` adds such an interface, so the main frame is limited to `https:` on the 12 sites' hosts plus `auxHosts`. No free address bar. Other links go to the system browser. Scripts are injected in the main frame only. This reduces but does not remove the risk, since these sites carry user content |
-| Play Device and Network Abuse | Bars apps that "block or interfere with another app displaying ads" and uses that breach a service's terms | **The `ads` filter is compiled out of the mobile app.** The extension keeps it as an owner-specified Tuned filter |
-| Play accounts | Developer account needs government ID; new personal accounts may need a 12-tester, 14-day closed test (search snippet) | Owner action, in the checklist |
+| Play Device and Network Abuse | Bars apps that "block or interfere with another app displaying ads" and uses that breach a service's terms | **The `ads` filter is compiled out of the mobile app.** The extension keeps it as an maintainer-specified Tuned filter |
+| Play accounts | Developer account needs government ID; new personal accounts may need a 12-tester, 14-day closed test (search snippet) | Maintainer action, in the checklist |
 | Android developer verification | Expands globally in 2027 for sideloaded apps | APK route will need registration or the advanced flow; recorded in the checklist |
 
 Other limits:
@@ -811,12 +811,12 @@ stable only ships what nightly users ran, as T3 Code does.
 Nightly runs daily, skipped if no commit landed since the last nightly.
 
 **Repo protections** (applied last, through the API, with admin bypass for the
-owner): a ruleset requires a PR for `main`, and a ruleset blocks creating `v*` tags
+maintainer): a ruleset requires a PR for `main`, and a ruleset blocks creating `v*` tags
 except nightlies, so an agent cannot publish. The `release` environment requires
-the owner's approval.
+a maintainer's approval.
 
-**Who creates a stable tag.** The owner runs `release.yml` with channel `stable`. Its
-tag job runs in the `release` environment, so it waits for the owner's approval, and
+**Who creates a stable tag.** A maintainer runs `release.yml` with channel `stable`. Its
+tag job runs in the `release` environment, so it waits for a maintainer's approval, and
 then creates the tag with `GITHUB_TOKEN`. The GitHub Actions app is a bypass actor on
 the tag ruleset. This does not open a path for agents: the agent job has
 `contents: read` and pushes with the Claude app's token, which is not a bypass actor.
@@ -839,18 +839,18 @@ First submissions are manual (see `store/`).
 
 ### Automation
 
-**Decisions from the owner.** Authenticate with the owner's Claude subscription
-first. Every model run is owner-triggered. Public issues never auto-run.
+**Decisions from a maintainer.** Authenticate with a maintainer's Claude subscription
+first. Every model run is maintainer-triggered. Public issues never auto-run.
 
 ```text
 schedule (daily, no model)   issue opened by anyone
     Playwright site check          |
           | fails                  v
-          v                   owner reads it
+          v                   maintainer reads it
    issue labeled site-change       |
           +----------+-------------+
                      v
-       owner adds label claude-fix (gate: sender == JoshWright22)
+       maintainer adds label claude-fix (gate: sender == MAINTAINERS)
                      v
        gate job: credential present? under the daily cap for this priority?
                      v
@@ -859,24 +859,24 @@ schedule (daily, no model)   issue opened by anyone
                      v
        pushes claude/ branch; PR opened with the action's app token
                      v
-       owner reviews and merges -> CI -> rules publish
+       maintainer reviews and merges -> CI -> rules publish
                      v
-       issue closes -> github-actions[bot] mentions owner, optional ntfy
+       issue closes -> github-actions[bot] mentions maintainer, optional ntfy
 ```
 
 This **supersedes** the initial brief's "publish rule fixes when tests pass"
-without review: the owner's later decision has them merge every PR. What remains
+without review: a maintainer's later decision has them merge every PR. What remains
 automatic is publishing once a rules change on `main` has passed tests.
 
-*   **Who it serves.** `claude-fix` runs on any issue the owner labels. The labels
+*   **Who it serves.** `claude-fix` runs on any issue a maintainer labels. The labels
     `site-change`, `bug`, and others set its priority. A `site-change` issue from
     the daily check has a snapshot. A user-reported issue has none, so the agent
-    works from the issue and fixtures. For logged-in breakage, the owner commits a
+    works from the issue and fixtures. For logged-in breakage, a maintainer commits a
     logged-in snapshot to `tests/fixtures/snapshots/<site>/` first.
 *   **Auth.** `claude_code_oauth_token` from `CLAUDE_CODE_OAUTH_TOKEN` by default,
     `anthropic_api_key` as the alternative. If both are present, the API key wins
     (documented precedence). With neither, the gate exits with a notice.
-*   **Terms.** Subscription use is supported for owner-run CI. An always-on bot
+*   **Terms.** Subscription use is supported for maintainer-run CI. An always-on bot
     triggered by strangers is unverified against Anthropic's terms, so it is not
     built.
 *   **Caps.** `AGENT_MAX_RUNS_PER_DAY` (default 3) with `--max-turns 20`. Priority
@@ -884,13 +884,13 @@ automatic is publishing once a rules change on `main` has passed tests.
     cap minus 1, others the cap minus 2. A run over its limit comments and stops.
 *   **Hardening.** Action pinned to `d535f5172dec02b204866b393d6b20b9b2aaf98d`
     (v1.0.266). `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"`.
-    `include_comments_by_actor: JoshWright22`. Tools limited; `WebFetch` and
+    `include_comments_by_actor: MAINTAINERS`. Tools limited; `WebFetch` and
     `WebSearch` denied. No `pull_request_target`. Store secrets exist only in
     environments, and no agent job uses those environments.
 *   **Important gap.** The label check covers who started the run, not whose text
-    Claude reads. The owner must read the issue first. Because a stranger can edit an
-    issue after that, the gate refuses to run if anyone but the owner has edited the
-    body or title since creation. The owner can repost the text in a new issue. Page content from a failed
+    Claude reads. A maintainer must read the issue first. Because a stranger can edit an
+    issue after that, the gate refuses to run if anyone but a maintainer has edited the
+    body or title since creation. A maintainer can repost the text in a new issue. Page content from a failed
     site check is untrusted too, so it is summarized in the issue by selector and
     site name only, not as raw HTML.
 *   **Daily check.** Cron plus Playwright on live sites, logged out. Three outcomes
@@ -922,10 +922,10 @@ automatic is publishing once a rules change on `main` has passed tests.
     Logged-in snapshots are stricter, since they show other people's names: `id` is
     dropped and `href` keeps only its first path segment.
 *   **Logged-in check.** `npm run check:logged-in` runs the same assertions in a
-    browser profile the owner signs in to, on the owner's machine, and never in CI.
+    browser profile a maintainer signs in to, on a maintainer's machine, and never in CI.
     It is the only automated detector for logged-in feeds. It writes snapshots to a
     local folder, applying the same sanitizing, then `npm run snapshot:scan -- <your
-    handles>` fails if a handle or email remains. Only then does the owner commit
+    handles>` fails if a handle or email remains. Only then does a maintainer commit
     them into `tests/fixtures`. `docs/setup.md` asks for it weekly. Agents cannot
     run it.
 *   **Publishing guard.** `pages.yml` always deploys the website. For rules, it
@@ -934,9 +934,9 @@ automatic is publishing once a rules change on `main` has passed tests.
     previous entry, and a notice is posted. Other sites publish normally, so a site
     that is already broken cannot block a repair or a revert. There is no staged
     rollout, and a rollback takes up to 24 hours to reach clients (see Risks).
-*   **Alerts.** The daily check job itself writes `@JoshWright22` into any issue it
+*   **Alerts.** The daily check job itself writes `@MAINTAINERS` into any issue it
     opens, because events caused by `GITHUB_TOKEN` do not start other workflows.
-    When any issue closes, `notify-owner.yml` comments the same mention from
+    When any issue closes, `notify-maintainers.yml` comments the same mention from
     `github-actions[bot]`. Both call the ntfy push service if `NTFY_TOPIC` exists. Delivery has not
     been tested, and `docs/setup.md` says so.
 
@@ -945,7 +945,7 @@ automatic is publishing once a rules change on `main` has passed tests.
 *   Tips through GitHub Sponsors or Ko-fi help pay for maintenance, mainly the
     Claude usage behind rule repairs. Features are never gated.
 *   `ledger/entries.json` is a public ledger of aggregate donations and costs,
-    edited by the owner, validated in CI, shown on the website. No donor names.
+    edited by a maintainer, validated in CI, shown on the website. No donor names.
 *   No documented route moves donations to Anthropic automatically. A person pays
     and the ledger records it. The product must not claim otherwise.
 *   Auto-reload stays off. Donors are not sold Claude access or priority.
@@ -956,9 +956,9 @@ automatic is publishing once a rules change on `main` has passed tests.
 ### Fork News Feed Eradicator
 
 *   **Pros**: Existing site data and a clean per-site schema.
-*   **Cons**: AGPL-3.0 conflicts with the owner's MIT choice. Its flash path needs
+*   **Cons**: AGPL-3.0 conflicts with a maintainer's MIT choice. Its flash path needs
     replacing.
-*   **Reason for Rejection**: License. The owner chose MIT. No selectors are copied
+*   **Reason for Rejection**: License. A maintainer chose MIT. No selectors are copied
     from AGPL or unlicensed projects. Selectors come from live inspection where the
     page is reachable, and from MIT projects or site knowledge otherwise, labeled
     in `verified`.
@@ -998,7 +998,7 @@ automatic is publishing once a rules change on `main` has passed tests.
 *   **Pros**: Capacitor shares web code. Native gives full control of web views.
 *   **Cons**: Native doubles the code for one maintainer. Capacitor has no advantage
     here, since the trust boundary requires native screens regardless.
-*   **Reason for Rejection**: The owner chose Expo and React Native.
+*   **Reason for Rejection**: A maintainer chose Expo and React Native.
 
 ### WXT or another extension framework
 
@@ -1026,7 +1026,7 @@ automatic is publishing once a rules change on `main` has passed tests.
 *   **Pros**: Reaches where most mobile use happens.
 *   **Cons**: Entitlement delays, Play Accessibility policy risk, breakage with each
     app update, and a separate codebase in Swift and Kotlin.
-*   **Reason for Rejection**: The owner chose browser only, for these reasons.
+*   **Reason for Rejection**: A maintainer chose browser only, for these reasons.
 
 ### Single App Store app for Safari extension and browser
 
@@ -1039,7 +1039,7 @@ automatic is publishing once a rules change on `main` has passed tests.
 *   **Pros**: Fastest repair.
 *   **Cons**: Prompt injection from pages or issues could reach every user within a
     day, with no person in the path.
-*   **Reason for Rejection**: Injection risk. The owner merges every PR.
+*   **Reason for Rejection**: Injection risk. A maintainer merges every PR.
 
 --------------------------------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ Recorded after the spec was approved.
     `open-agent-pr.mjs` falls back as `docs/setup.md` describes. A PR opened by the
     last fallback, `GITHUB_TOKEN`, starts no CI until it is closed and reopened.
 *   The tag ruleset blocks updating and deleting `v*` tags, not creating them. GitHub
-    rejects the Actions app as a bypass actor on a personal repo. The owner's approval
+    rejects the Actions app as a bypass actor on a personal repo. A maintainer's approval
     on `release` remains the gate, since a tag starts no publishing by itself.
 *   A "Show for 10 minutes" button also exists on each site in Settings.
 *   The privacy policy discloses that RSS servers see the user's IP address, since
@@ -1067,18 +1067,45 @@ Recorded after the spec was approved.
 
 ## Website Redesign
 
-The owner asked for Mecha's visual language (https://mecha-xyz.webflow.io/) in Algone's
+A maintainer asked for Mecha's visual language (https://mecha-xyz.webflow.io/) in Algone's
 own brand, without its animations or page flow. The website alone now differs from the
 Visual Direction above; the extension and app keep it.
 
-*   Taken from Mecha: white paper, a persistent left rail, boxed navigation, hairline
+*   Taken from Mecha: a persistent left rail, boxed navigation, hairline
     tables, a thin display serif, isometric line art, 1-bit images, one solid color block.
 *   Algone's own: the logo's blue bar is the device. It crosses the rail line at each
-    section and strikes what is removed. The hero is a dithered feed the visitor wipes
-    away by dragging the bar, which also works from the keyboard.
+    section and strikes what is removed. The hero is a made-up video site whose feed the
+    visitor wipes away by dragging the bar, which also works from the keyboard. Tabs
+    switch the space underneath between the four modes.
+*   A maintainer set the home page pitch: replace your feed with what you want, led by
+    Custom. No feed stays the install default. The demo shows Custom as the real panel
+    does, a list of titles and dates, so the site promises no thumbnails.
 *   Newsreader is bundled for display type under the OFL, with Inter for text.
-*   The website defaults to the light theme whatever the system prefers, because the
-    design depends on white paper. The dark theme stays one click away.
+*   At a maintainer's request the website is dark only, with no theme toggle, so nothing
+    is saved in local storage.
+
+--------------------------------------------------------------------------------
+
+## Community Maintenance
+
+The request is a project maintained by a community, with no personal details in
+docs or code. `MAINTAINERS`, a repository variable, replaces the hard-coded login in the
+agent gate, the alerts, and the comment filter, and an empty list blocks the agent. The
+license names The Algone contributors.
+
+The repository path, the Pages address, the store IDs, and the Sponsors link still
+carry the account name, because each follows from where the repository lives. Moving it
+to an organization changes them together.
+
+--------------------------------------------------------------------------------
+
+## Live Check Coverage
+
+A maintainer's rule is to always check all 12 sites. Facebook, LinkedIn, X, and Substack had
+no live probe, and Instagram's home had none, so the daily check skipped them. Each now
+has one. `needsLogin` marks a feed that only exists when signed in: logged out, a miss is
+inconclusive, not broken, so it opens no false issue. A static test requires every site
+to have a live probe.
 
 --------------------------------------------------------------------------------
 
@@ -1086,17 +1113,17 @@ Visual Direction above; the extension and app keep it.
 
 | Risk | Likelihood | Effect | Mitigation | Remaining exposure |
 |---|---|---|---|---|
-| Malicious release (account or token theft) | Low | Code runs on 12 logged-in sites | 2FA on all accounts, owner approval on `release`, tag ruleset, secrets only in environments, first submissions by hand | Owner's GitHub account is a single point of failure |
+| Malicious release (account or token theft) | Low | Code runs on 12 logged-in sites | 2FA on all accounts, maintainer approval on `release`, tag ruleset, secrets only in environments, first submissions by hand | Maintainer's GitHub account is a single point of failure |
 | Bad rules file | Medium | Parts of sites hidden, or feeds return, for all users | Validation, live probes before publishing, entry-level checks, "Use bundled rules" | No staged rollout; up to 24 h to roll back |
 | GitHub Pages outage | Low | No rule updates | Last good file kept; bundled rules | Fixes wait |
-| Selector churn outpaces one maintainer | High | Silent breakage, on Tier 2 especially | Tiers, status page, reports, agent repair | Depends on the owner's time; research estimates a recurring weekly check for 5 to 6 sites |
-| Logged-in rules wrong at launch | High | Feed shows through, or over-blocking, on Tier 1 sites | Owner's logged-in check before the first store submission, recorded in the checklist | Until then those rules are `unverified` |
+| Selector churn outpaces one maintainer | High | Silent breakage, on Tier 2 especially | Tiers, status page, reports, agent repair | Depends on a maintainer's time; research estimates a recurring weekly check for 5 to 6 sites |
+| Logged-in rules wrong at launch | High | Feed shows through, or over-blocking, on Tier 1 sites | Maintainer's logged-in check before the first store submission, recorded in the checklist | Until then those rules are `unverified` |
 | Apple 5.2.2 or 4.2 rejection of Algone Browser | Medium | No iPhone app beyond Safari | Safari extension is primary and separate | Accepted |
 | Play rejection of Algone Browser | Medium | Android reach falls to sideloaded APK and Firefox | APK on GitHub Releases | 2027 developer verification adds friction |
 | Site terms of service or a legal demand | Low to medium | Takedown or demand letter | No logos, no automation of accounts, descriptive naming, daily checks are logged out at one visit per probe | Unresolved in law; counsel recommended |
-| Bot or wall blocks the daily check | High | Inconclusive results | Tri-state results, seven-day alert | Coverage of walled sites depends on the owner's logged-in check |
+| Bot or wall blocks the daily check | High | Inconclusive results | Tri-state results, seven-day alert | Coverage of walled sites depends on a maintainer's logged-in check |
 | Actions schedule stops after 60 inactive days | Medium | No detection | Status page date, docs | Cannot alert itself |
-| Prompt injection through issues or snapshots | Medium | Bad PR | Owner reads and merges, no web tools, no secrets, sanitized snapshots, edit check | The owner's review is the last control |
+| Prompt injection through issues or snapshots | Medium | Bad PR | Maintainer reads and merges, no web tools, no secrets, sanitized snapshots, edit check | A maintainer's review is the last control |
 | Hidden video keeps playing | Medium | Audio from an invisible feed | `pauseHiddenMedia` | Sites may restart playback |
 | Rules file bandwidth | Low | Pages soft limit of 100 GB a month | File under 512 KB, one fetch a day, HTTP caching. At 1 MB a user-month, supports about 100,000 users | Move hosts beyond that |
 | Patent claim | Low | Legal letter | Distinct design, recorded | Needs counsel (Q6) |
@@ -1121,7 +1148,7 @@ on a 200-item page, checked by a Chromium test.
 
 **Support tiers.** Twelve sites across desktop and mobile layouts is more upkeep
 than one person can treat equally. **Tier 1** (YouTube, Reddit, X, LinkedIn,
-Facebook, Instagram): daily logged-out check plus the owner's weekly logged-in
+Facebook, Instagram): daily logged-out check plus a maintainer's weekly logged-in
 check; repairs first. **Tier 2** (TikTok, Threads, Bluesky, Twitch, Pinterest,
 Substack): daily logged-out check only, so their logged-in surfaces depend on user
 reports; best-effort repair. The site status page, built from each rule's
@@ -1136,7 +1163,7 @@ replaced by a higher `rev`, and users can pick "Use bundled rules".
 
 **Legal.** YouTube's terms bar interfering with the service, and whether a personal
 display tool breaches them is untested. No platform logos appear in branding.
-Listings use names descriptively. The owner should get counsel before a public
+Listings use names descriptively. A maintainer should get counsel before a public
 launch, especially for Algone Browser.
 
 ## Verification Status
@@ -1144,53 +1171,53 @@ launch, especially for Algone Browser.
 Each rule records `verified.method`:
 
 *   `live-logged-out`: checked against the real site, logged out.
-*   `live-logged-in`: checked by the owner's logged-in run.
+*   `live-logged-in`: checked by a maintainer's logged-in run.
 *   `fixture`: checked against a saved or hand-built fixture only.
 *   `unverified`: written from knowledge of the site, or read from an MIT project,
     and not checked.
 
 Logged-in surfaces (X, Instagram, Facebook, LinkedIn, TikTok feeds) start as
 `fixture` or `unverified`, because the author had no accounts. The site status page
-publishes these labels. The report to the owner at the end of the work lists them.
+publishes these labels. The report to a maintainer at the end of the work lists them.
 
 ## Decision Register
 
-`O` marks a decision made by the owner. `E` marks one made by the Elephant.
+`O` marks a decision made by a maintainer. `E` marks one made by the Elephant.
 
 | ID | By | Decision | Reason |
 |---|---|---|---|
 | D-01 | E | npm workspaces monorepo | pnpm and bun are unavailable on the default path; simplest for CI |
 | D-02 | E | esbuild, unminified, no framework in extension UI | Reviewable; small |
 | D-03 | E | Manifest CSS with attribute gating | Only documented flash-free route |
-| D-04 | O/E | 12 sites | Owner named the first seven and "others as sensible"; the author chose the rest from research on coverage gaps |
+| D-04 | O/E | 12 sites | Maintainer named the first seven and "others as sensible"; the author chose the rest from research on coverage gaps |
 | D-05 | E | Single rules JSON per site; no regex or step lists | Stays on the safe side of the interpreter ban |
-| D-06 | O/E | Rules on GitHub Pages, 24 h check | Owner: served from GitHub. Pages sends a CORS header, so no host permission |
+| D-06 | O/E | Rules on GitHub Pages, 24 h check | Maintainer: served from GitHub. Pages sends a CORS header, so no host permission |
 | D-07 | E | `scripting.insertCSS` for overlays | Avoids page CSP issues |
 | D-08 | E | No signing of rules | Fixed host plus validation; damage is limited to changing what is hidden. Revisit above 100,000 users or if rules gain non-selector fields |
 | D-09 | E | Panels are extension iframes | Page scripts cannot read user data; fonts and art load; page CSS cannot reach them |
-| D-10 | O | No feed panel empty; search-first off by default | Owner: clean empty space |
-| D-11 | O/E | Snooze 10 min, wait 30 s (owner); typing 60 characters, limit 3 a day (author) | Owner suggestions and research |
+| D-10 | O | No feed panel empty; search-first off by default | Maintainer: clean empty space |
+| D-11 | O/E | Snooze 10 min, wait 30 s (maintainer); typing 60 characters, limit 3 a day (author) | Maintainer suggestions and research |
 | D-12 | E | Lock maximum 7 days; escape after 2 minutes, once per lock | Research; no irreversible locks |
 | D-13 | E | PBKDF2 600,000 iterations; 24 h recovery | Available in WebCrypto, and partners may reuse a real password; the delay means reinstalling is not the only recovery |
 | D-14 | E | Barrier runs in a tab | Popups close on blur |
 | D-15 | E | Snooze reveals everything hidden on that site | One clear meaning; per-feed scope was considered and rejected for simplicity |
 | D-16 | E | Custom limited to feeds that allow reading, plus tiles and capture | No all-sites access |
 | D-17 | E | "Likely AI" is local text matching | No model, no data leaves; labeled honestly |
-| D-18 | O | One Firefox MV3 build with event page for Android too, despite Mozilla's MV2 suggestion | Owner: MV3, one codebase. Event pages avoid the unsupported service worker. Untested on a device |
+| D-18 | O | One Firefox MV3 build with event page for Android too, despite Mozilla's MV2 suggestion | Maintainer: MV3, one codebase. Event pages avoid the unsupported service worker. Untested on a device |
 | D-19 | E | Chrome 116+, Firefox 140+/142+, Safari 15.4+ | `:has()`, `data_collection_permissions`, MV3 |
 | D-20 | E | Safari extension in its own App Store app | Survives browser-app rejection |
 | D-21 | E | Algone Browser allow-lists hosts; no address bar | Play JS-interface rule, and age rating scope |
-| D-22 | O | `ads` filter removed from mobile app | Play Device and Network Abuse; owner's no ad covering |
-| D-23 | O | Rule fixes need owner merge, then auto-publish | Owner's later decision supersedes the brief |
+| D-22 | O | `ads` filter removed from mobile app | Play Device and Network Abuse; maintainer's no ad covering |
+| D-23 | O | Rule fixes need maintainer merge, then auto-publish | Maintainer's later decision supersedes the brief |
 | D-24 | E | Launch pause uses a tab-session flag with no timestamps | Designed to avoid the timing limits in US 12468828's claims; not a legal conclusion |
 | D-25 | O | The product name in the research note's open item 9 is not cited as a precedent | The note could not identify it |
 | D-26 | E | No desktop binary; "desktop" is the extension | Research: native desktop has little to filter; Expo gives no value there |
-| D-27 | E | Nightly daily, skip if unchanged; stable promotes nightly commit | Owner named T3 Code's release style; daily rather than half-hourly |
-| D-28 | O | Daily cap 3 runs, 20 turns, priority by reserved slots | Owner: cap runs and turns; repairs, bugs, features |
+| D-27 | E | Nightly daily, skip if unchanged; stable promotes nightly commit | Maintainer named T3 Code's release style; daily rather than half-hourly |
+| D-28 | O | Daily cap 3 runs, 20 turns, priority by reserved slots | Maintainer: cap runs and turns; repairs, bugs, features |
 | D-29 | E | No selectors copied from AGPL or unlicensed projects. MIT sources may inform logged-in selectors, credited in `THIRD_PARTY_NOTICES.md` | License; the author could not inspect logged-in pages |
 | D-30 | E | Bundled Random content is original or public domain | Licensing |
 | D-31 | E | Overlay schema is narrower than bundled rules, and can retire elements | Fixes over-blocking remotely; no remote clicks or redirects |
-| D-32 | E | Agent receives a sanitized structural snapshot; logged-in checks run only on the owner's machine | Repair needs structure; text is the injection channel; accounts must not enter CI |
+| D-32 | E | Agent receives a sanitized structural snapshot; logged-in checks run only on a maintainer's machine | Repair needs structure; text is the injection channel; accounts must not enter CI |
 | D-33 | E | Two support tiers | One maintainer cannot treat 12 sites equally |
 | D-34 | E | `isWeakening` fails closed | Unlisted settings must not be a bypass |
 | D-35 | E | `REMOTE_RULES` flag for Apple builds | Apple 2.5.2 gray area |
@@ -1199,7 +1226,7 @@ publishes these labels. The report to the owner at the end of the work lists the
 | D-38 | E | Background context is the single writer; pending changes are patches | Prevents lost updates |
 | D-39 | E | `rev` is the commit timestamp | Always rises, needs no history |
 | D-40 | E | Repo rulesets plus required approval on `release` | A code release is the worst-case path; the merge gate needs enforcing |
-| D-41 | O | Anything in `owner_brief.md` not listed here is an owner decision | Traceability |
+| D-41 | O | Anything in `project_brief.md` not listed here is an maintainer decision | Traceability |
 | D-42 | E | Identifiers and tip handles as listed under Toolchain | Permanent once submitted |
 | D-43 | E | EAS for store mobile builds; Gradle on the runner for the release APK | Store upload is solved by EAS; APK needs no account |
 | D-44 | E | Firefox smoke test uses a `firefox-test` build on `youtube.localhost` | No real-host mapping exists; no live dependence in CI |
@@ -1221,12 +1248,12 @@ Dependencies are pinned by `package-lock.json`.
 Permanent identifiers (D-42): Firefox `algone@joshwright22.github.io`; Algone for
 Safari `io.github.joshwright22.algone.safari`; Algone Browser iOS bundle and Android
 package `io.github.joshwright22.algone`. Tip links: GitHub Sponsors
-`JoshWright22`; a Ko-fi handle is an empty constant in `packages/core/src/links.ts`
-until the owner has one, and an empty link is not shown.
+`MAINTAINERS`; a Ko-fi handle is an empty constant in `packages/core/src/links.ts`
+until a maintainer has one, and an empty link is not shown.
 
 ### Phase 0: Spec and scaffold
 
-1.  Commit this spec, `owner_brief.md`, `docs/research/`, and
+1.  Commit this spec, `project_brief.md`, `docs/research/`, and
     `docs/designs/reviews/` to `main` before any code.
 2.  Root: `package.json` (workspaces and scripts: `build`, `test`, `test:e2e`,
     `test:firefox`, `test:live`, `check:logged-in`, `snapshot:scan`, `assets`),
@@ -1425,7 +1452,7 @@ Gate: tests and both exports pass.
 1.  `scripts/make-assets.mjs`: icons (128 px with 96 px art and 16 px transparent
     padding, plus 16, 32, 48), 1280x800 screenshots from the real extension, 440x280
     promo tile, Edge tile, App Store 1024 px icon, Play 512 px icon and 1024x500
-    feature graphic. Phone screenshots are an owner task, as they need devices.
+    feature graphic. Phone screenshots are an maintainer task, as they need devices.
 2.  `store/<store>/`: listing text, checklist, reviewer notes, permission
     justifications, Non-Trader note (a seller declaration under EU consumer law), for
     Chrome, Firefox, Edge, Algone for Safari, Algone Browser on the App Store, and
@@ -1447,7 +1474,7 @@ lives in `scripts/ci/*.mjs`, with unit tests.
 | `publish-{chrome,firefox,edge,safari,mobile}.yml` | Dispatch only | read; `release` environment | Secret check first |
 | `site-check.yml` | Cron daily, dispatch (`simulate_break`) | issues: write, contents: write | `scripts/ci/site-status.mjs` writes `status.json` to `site-status`, counts the streak, dedupes. `simulate_break` runs the path with a deliberately wrong selector |
 | `claude-fix.yml` | `issues: labeled` | gate: read; agent: contents read, issues and PRs write, id-token write | `scripts/ci/agent-gate.mjs` |
-| `notify-owner.yml` | `issues: closed` | issues: write | Mention, optional ntfy |
+| `notify-maintainers.yml` | `issues: closed` | issues: write | Mention, optional ntfy |
 
 `agent-gate.mjs` checks: sender; credential presence; today's runs of the agent job
 through the jobs API, against the priority's slots; and edits, using the GraphQL
@@ -1474,7 +1501,7 @@ Gate: `actionlint` passes if available, and unit tests of `scripts/ci/*` pass.
     `site-check.yml` with `simulate_break`.
 4.  Load the built extension in a real browser and let it fetch from the live URL.
 5.  Apply rulesets last, as they block direct pushes for anyone without bypass.
-6.  Final report to the owner.
+6.  Final report to a maintainer.
 
 ### Verification Plan
 
@@ -1484,7 +1511,7 @@ Gate: `actionlint` passes if available, and unit tests of `scripts/ci/*` pass.
 | G2 | Test that every element renders a toggle |
 | G3 | E2E per mode |
 | G4 | Unit plus E2E per barrier |
-| G5 | `protected` selectors in fixtures and logged-out live checks. Logged-in surfaces such as messages need the owner's logged-in check |
+| G5 | `protected` selectors in fixtures and logged-out live checks. Logged-in surfaces such as messages need a maintainer's logged-in check |
 | G6 | Interval (c): a real rules publish, fetched by the built extension. Interval (a): the daily check runs, and `simulate_break` exercises the path; a real break is unproven until one occurs |
 | G7 | Static tests, `web-ext lint`, permission snapshot |
 | G8 | E2E on fixtures |
@@ -1492,6 +1519,6 @@ Gate: `actionlint` passes if available, and unit tests of `scripts/ci/*` pass.
 | G10 | Copy tests: required strings present, banned claims absent |
 
 CUJs 1 to 5 are covered by Phase 5 end-to-end tests on fixtures. CUJ 6 is exercised by
-`simulate_break` up to the issue; the agent step needs the owner's token, so it stays
-unverified until the owner adds one. CUJs 7 and 8 need devices and are not verified
+`simulate_break` up to the issue; the agent step needs a maintainer's token, so it stays
+unverified until a maintainer adds one. CUJs 7 and 8 need devices and are not verified
 by the author.

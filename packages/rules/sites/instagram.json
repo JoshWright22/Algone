@@ -141,6 +141,14 @@
       "expect": [
         "explore"
       ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
     }
   ],
   "walls": [

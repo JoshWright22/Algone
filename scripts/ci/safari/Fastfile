@@ -1,5 +1,5 @@
 # Copied beside the packaged Xcode project by publish-safari.yml.
-# Untested until the owner has an Apple account: see docs/setup.md.
+# Untested until a maintainer has an Apple account: see docs/setup.md.
 default_platform(:ios)
 
 platform :ios do

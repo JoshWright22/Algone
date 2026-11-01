@@ -1,6 +1,6 @@
-# Owner brief for Algone
+# Project brief for Algone
 
-The owner's instructions for this build, condensed from the session on 2026-10-31.
+A maintainer's instructions for this build, condensed from the session on 2026-10-31.
 Later instructions override earlier ones where they conflict.
 
 ## Initial brief
@@ -57,7 +57,7 @@ billing setup; workflows no-op cleanly without secrets, each listed in
 `docs/setup.md`.
 
 **Finish.** Tests passing, real verification in a browser, and an honest report of
-what works, what was not tested, and what the owner must do.
+what works, what was not tested, and what a maintainer must do.
 
 ## Later decisions
 
@@ -80,16 +80,16 @@ record it. Do not name "Reset" as a precedent.
 **Automation.**
 *   Auth: Claude subscription through `CLAUDE_CODE_OAUTH_TOKEN`, with
     `ANTHROPIC_API_KEY` as an optional alternative in the same workflow. Keep every
-    run owner-triggered.
-*   Issue bot: public issues never auto-run. The owner applies `claude-fix` after
-    reading, gated on sender JoshWright22. Claude pushes a `claude/` branch and opens
-    a PR; the owner merges. Pin the action SHA, set
+    run maintainer-triggered.
+*   Issue bot: public issues never auto-run. A maintainer applies `claude-fix` after
+    reading, gated on sender MAINTAINERS. Claude pushes a `claude/` branch and opens
+    a PR; a maintainer merges. Pin the action SHA, set
     `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"`, keep store secrets in main-limited
     environments.
 *   Alerts: GitHub mention from `github-actions[bot]` when an issue is addressed,
     optional ntfy. Note that delivery is untested.
 *   Daily check: Actions cron runs Playwright with no model and opens an issue only
-    on failure. The owner labels it to spend agent usage.
+    on failure. A maintainer labels it to spend agent usage.
 *   Funding ledger: public ledger of donations and costs. Cap runs per day and turns
     per run, prioritizing rule repairs, then bugs, then features. A person pays; no
     automatic route exists, and nothing may claim otherwise. No auto-reload. Do not

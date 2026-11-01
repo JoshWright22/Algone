@@ -32,7 +32,7 @@ Declare **Non-Trader** in Play Console, under Account details, when it asks for 
 
 ## Rejection risks
 
-- **Spam, webview policy:** Play bars apps whose primary purpose is to "provide a webview of a website without permission from the website owner". This is a real risk. The app's purpose is a multi-site filtered browser with its own features, and it has no permission from those sites.
+- **Spam, webview policy:** Play bars apps whose primary purpose is to "provide a webview of a website without permission from the website maintainer". This is a real risk. The app's purpose is a multi-site filtered browser with its own features, and it has no permission from those sites.
 - **Device and Network Abuse, JavaScript interface:** Play bars "a webview with added JavaScript Interface that loads untrusted web content". `react-native-webview` adds one, and the allow-list reduces the risk without removing it, since these sites carry user content.
 - **Device and Network Abuse, ads:** Play bars apps that "block or interfere with another app displaying ads". The `ads` filter is compiled out, but hiding feed parts on sites could still be read as a breach of a service's terms.
 
@@ -48,11 +48,11 @@ If rejected, use the APK fallback. Do not rework the app to get around a policy.
 | Apple 5.2.3 | No saving or downloading media | No download, no background play, no picture-in-picture feature added |
 | Apple 2.5.2 | Apps may not download code that "introduces or changes features" | Rules are selector data, not code, but this is a gray area. `REMOTE_RULES=false` is available for Apple builds; the Safari review notes disclose the fetch |
 | Apple 4.1(c) | No other developer's icon or brand in the app's icon or name | Site tiles use plain text labels, no logos |
-| Apple age rating | "Unrestricted web access" is a 16+ trigger | Answer the questionnaire honestly. Because navigation is allow-listed the answer may differ, so the owner confirms at submission; assume 16+ |
-| Play Spam | No apps whose primary purpose is to "provide a webview of a website without permission from the website owner" | **Real rejection risk.** The app's purpose is a multi-site filtered browser with its own features. Fallback: signed APK on GitHub Releases |
+| Apple age rating | "Unrestricted web access" is a 16+ trigger | Answer the questionnaire honestly. Because navigation is allow-listed the answer may differ, so a maintainer confirms at submission; assume 16+ |
+| Play Spam | No apps whose primary purpose is to "provide a webview of a website without permission from the website maintainer" | **Real rejection risk.** The app's purpose is a multi-site filtered browser with its own features. Fallback: signed APK on GitHub Releases |
 | Play Device and Network Abuse | Bars "a webview with added JavaScript Interface that loads untrusted web content" | `react-native-webview` adds such an interface, so the main frame is limited to `https:` on the 12 sites' hosts plus `auxHosts`. No free address bar. Other links go to the system browser. Scripts are injected in the main frame only. This reduces but does not remove the risk, since these sites carry user content |
-| Play Device and Network Abuse | Bars apps that "block or interfere with another app displaying ads" and uses that breach a service's terms | **The `ads` filter is compiled out of the mobile app.** The extension keeps it as an owner-specified Tuned filter |
-| Play accounts | Developer account needs government ID; new personal accounts may need a 12-tester, 14-day closed test (search snippet) | Owner action, in the checklist |
+| Play Device and Network Abuse | Bars apps that "block or interfere with another app displaying ads" and uses that breach a service's terms | **The `ads` filter is compiled out of the mobile app.** The extension keeps it as an maintainer-specified Tuned filter |
+| Play accounts | Developer account needs government ID; new personal accounts may need a 12-tester, 14-day closed test (search snippet) | Maintainer action, in the checklist |
 | Android developer verification | Expands globally in 2027 for sideloaded apps | APK route will need registration or the advanced flow; recorded in the checklist |
 
 ## Other limits

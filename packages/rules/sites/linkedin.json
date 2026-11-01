@@ -132,7 +132,16 @@
       "label": "Post box"
     }
   ],
-  "probes": [],
+  "probes": [
+    {
+      "path": "/feed/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
+    }
+  ],
   "walls": [
     "input[name=\"session_key\"]",
     "a[href*=\"/login\"]"

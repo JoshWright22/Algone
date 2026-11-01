@@ -1,7 +1,11 @@
 // Decisions for the claude-fix gate. Pure: agent-gate.mjs supplies the data.
-export const OWNER = "JoshWright22";
 export const TRIGGER_LABEL = "claude-fix";
 export const DEFAULT_CAP = 3;
+
+/** The MAINTAINERS repo variable: logins split by commas or spaces. */
+export function parseMaintainers(raw) {
+  return String(raw ?? "").split(/[\s,]+/).filter(Boolean);
+}
 
 export function parseCap(raw) {
   const text = String(raw ?? "").trim();
@@ -20,26 +24,26 @@ export function countAgentRuns(jobs) {
 }
 
 /**
- * Lists who other than the owner changed the body or title.
+ * Lists who other than a maintainer changed the body or title.
  * GitHub reports the original text as the oldest edit once an issue has been edited,
  * and its editor is the author, so that entry is not an edit.
  */
-export function outsideEditors({ includesCreatedEdit, bodyEdits, titleRenames, truncated }) {
+export function outsideEditors({ includesCreatedEdit, bodyEdits, titleRenames, truncated, maintainers = [] }) {
   if (truncated) return { complete: false, editors: [] };
   const byTime = [...bodyEdits].sort((a, b) => Date.parse(a.editedAt) - Date.parse(b.editedAt));
   const real = includesCreatedEdit ? byTime.slice(1) : byTime;
   const logins = [...real.map((e) => e.editor), ...titleRenames.map((r) => r.actor)];
-  // A deleted account has no login, and it is not the owner.
-  const editors = [...new Set(logins.map((l) => l ?? "unknown"))].filter((l) => l !== OWNER);
+  // A deleted account has no login, and it is not a maintainer.
+  const editors = [...new Set(logins.map((l) => l ?? "unknown"))].filter((l) => !maintainers.includes(l));
   return { complete: true, editors };
 }
 
 const stop = (kind, message) => ({ proceed: false, kind, message });
 
-/** kind "notice" only logs. kind "comment" also tells the owner on the issue. */
-export function decide({ label, sender, hasCredential, edits, labels, usedToday, cap }) {
+/** kind "notice" only logs. kind "comment" also explains on the issue. */
+export function decide({ label, sender, maintainers = [], hasCredential, edits, labels, usedToday, cap }) {
   if (label !== TRIGGER_LABEL) return stop("notice", `Label ${label} does not start the agent.`);
-  if (sender !== OWNER) return stop("notice", `Only ${OWNER} can start the agent. Sender was ${sender}.`);
+  if (!maintainers.includes(sender)) return stop("notice", `Only a maintainer can start the agent. Sender was ${sender}.`);
   if (!hasCredential) {
     return stop(
       "notice",
@@ -52,7 +56,7 @@ export function decide({ label, sender, hasCredential, edits, labels, usedToday,
   if (edits.editors.length) {
     return stop(
       "comment",
-      "Someone other than the owner edited this issue's title or body, so the agent did not run. Read it again, and repost the text in a new issue if it is safe.",
+      "Someone other than a maintainer edited this issue's title or body, so the agent did not run. Read it again, and repost the text in a new issue if it is safe.",
     );
   }
   const slots = slotsFor(labels, cap);
