@@ -16,6 +16,7 @@ const { values: args } = parseArgs({
     test: { type: "boolean", default: false },
     "no-remote-rules": { type: "boolean", default: false },
     "out-dir": { type: "string" },
+    "build-rev": { type: "string" },
   },
 });
 
@@ -32,7 +33,7 @@ function buildRev() {
     return 0;
   }
 }
-const BUILD_REV = buildRev();
+const BUILD_REV = args["build-rev"] ? Number(args["build-rev"]) : buildRev();
 
 const { SITES, compileSiteCss, BASE_CSS } = await (async () => {
   const out = join(app, "dist", ".tools", "rules.mjs");

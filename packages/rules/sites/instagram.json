@@ -149,6 +149,6 @@
   "verified": {
     "date": "2026-10-31",
     "method": "unverified",
-    "notes": "Logged-out pages are a login wall except /explore/. Feed selectors are structural and unconfirmed. Needs the logged-in check."
+    "notes": "/explore/ checked logged out. The home feed needs the logged-in check."
   }
 }

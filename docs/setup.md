@@ -6,7 +6,7 @@ Add secrets at **Settings > Secrets and variables > Actions**, or under **Settin
 
 ## Repo protections
 
-As of 2026-10-31 none of this is in place yet. A read-only check found no rulesets, no environments, no `site-status` branch, no Pages site, and only GitHub's default labels. Do these in order.
+Steps 1 to 4 and step 6 were done on 2026-11-01. Step 5 is yours to decide. The steps stay here in case you need to redo them.
 
 1. **Pages.** Settings > Pages > Source: GitHub Actions.
 2. **Labels.** Create `claude-fix`, `site-change`, `site-walled`, `bug`, `feature`. `bug` already exists. The daily check fails to open an issue if its label is missing.

@@ -39,19 +39,18 @@ Algone is `0.1.0`. It is not in any store yet.
 
 | Item | Status |
 |---|---|
-| Extension tests (unit, Chromium) | In the repo |
-| Rules checked on the real site, logged out | YouTube, Reddit, TikTok, Twitch, Bluesky, Pinterest |
-| Rules checked on a fixture only | Threads |
-| Rules not checked on the real site | X, Instagram, Facebook, LinkedIn, Substack |
+| Tests | Passing in CI: unit, Chromium, Firefox smoke, mobile typecheck and bundle |
+| Rules checked on the real site, logged out | YouTube (and its mobile home), Reddit, TikTok, Twitch, Bluesky, Pinterest, Threads, Instagram Explore only |
+| Rules not checked on the real site | X, Facebook, LinkedIn, Substack, and Instagram's home feed |
 | Logged-in check | Not run. Needs the owner's accounts |
-| Website and privacy policy | Not published yet |
+| Website and privacy policy | Live at <https://joshwright22.github.io/Algone/> |
 | Store listings | Drafted in `store/`, not submitted |
-| GitHub Releases | None yet |
-| Release workflows | Not in the repo yet |
+| GitHub Releases | Nightly prereleases. No stable release yet |
+| Algone Browser | Builds in CI. Never run on a device |
 
 ## Install
 
-No release exists yet. When one does, it will be at <https://github.com/JoshWright22/Algone/releases>.
+Builds are at <https://github.com/JoshWright22/Algone/releases>. Open the newest nightly.
 
 **Chrome or Edge.** Download `algone-chrome.zip` or `algone-edge.zip` and unzip it. Open `chrome://extensions` or `edge://extensions`, turn on Developer mode, press Load unpacked, and pick the folder.
 

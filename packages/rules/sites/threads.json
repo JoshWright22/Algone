@@ -73,8 +73,8 @@
     "input[autocomplete=\"username\"]"
   ],
   "verified": {
-    "date": "2026-10-31",
-    "method": "fixture",
-    "notes": "Selector is structural, since Threads has few stable attributes. Tested on a fixture; live check pending."
+    "date": "2026-11-01",
+    "method": "live-logged-out",
+    "notes": "Logged-out home checked from a local browser and a GitHub runner. The structural selector is fragile."
   }
 }
