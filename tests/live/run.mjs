@@ -80,8 +80,9 @@ async function runProbe(site, probe, ctxPlain, ctxExt) {
   }
   for (const p of site.protected) {
     if (p.path !== probe.path) continue;
-    const present = await anyMatch(plain.page, [p.selector]);
-    if (present && !(await visible(hidden.page, [p.selector]))) problems.push(`${p.label}: hidden by Algone`);
+    // A control the site itself keeps collapsed is not something Algone hid.
+    const shown = await visible(plain.page, [p.selector]);
+    if (shown && !(await visible(hidden.page, [p.selector]))) problems.push(`${p.label}: hidden by Algone`);
   }
   let snapshot;
   if (problems.length) {
