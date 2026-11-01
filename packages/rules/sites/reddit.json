@@ -196,7 +196,8 @@
   ],
   "walls": [
     "#challenge-form",
-    "form[action*=\"challenge\"]"
+    "form[action*=\"challenge\"]",
+    "html:not(:has(shreddit-app))"
   ],
   "feedUrls": [
     ".rss"

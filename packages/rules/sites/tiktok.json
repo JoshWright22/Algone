@@ -146,9 +146,7 @@
       ]
     }
   ],
-  "walls": [
-    "[data-e2e=\"login-modal\"]"
-  ],
+  "walls": [],
   "verified": {
     "date": "2026-10-31",
     "method": "live-logged-out",
