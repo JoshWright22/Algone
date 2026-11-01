@@ -70,8 +70,9 @@ export function start(host: PageHost): () => void {
   };
 
   const applyOverlay = async (css: string, off: string[]) => {
-    if (css === appliedOverlay) return;
-    appliedOverlay = css;
+    const key = `${css}\n${off.join(" ")}`;
+    if (key === appliedOverlay) return;
+    appliedOverlay = key;
     // The old rule goes off only after its replacement is in place.
     const ok = css ? await host.applyCss(css) : true;
     if (ok) writeOff(off);

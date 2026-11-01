@@ -1,5 +1,5 @@
-import aiPhrases from "./content/ai-phrases.json";
-import topics from "./content/topics.json";
+import aiPhrases from "./content/ai-phrases.json" with { type: "json" };
+import topics from "./content/topics.json" with { type: "json" };
 import type { TunedFilters } from "./types";
 
 export interface TunedItem {

@@ -1,4 +1,4 @@
-import content from "./content/random.json";
+import content from "./content/random.json" with { type: "json" };
 import { makePuzzle, type Puzzle, seeded } from "./puzzles";
 
 export interface RandomItem {

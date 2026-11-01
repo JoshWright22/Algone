@@ -11,3 +11,4 @@ apps/mobile/src/generated/
 .env*
 local-snapshots/
 .playwright-profile/
+apps/extension/dist-test/

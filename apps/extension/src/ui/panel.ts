@@ -11,6 +11,8 @@ const siteId = params.get("site") ?? "";
 const pageUrl = params.get("url") ?? "";
 const rule = siteMap()[siteId];
 const root = document.getElementById("root")!;
+/** Survives re-renders caused by storage changes. */
+let showAllQueue = false;
 
 /** Messages go to the content script in the same tab, through the background-free tabs API. */
 async function toPage(msg: object): Promise<void> {
@@ -38,8 +40,8 @@ function searchBox(prompt: boolean): HTMLElement {
 
 function queueList(queue: QueueItem[], cap: number): HTMLElement | null {
   if (!queue.length) return null;
-  const render = (all: boolean): HTMLElement => {
-    const v = visibleQueue(queue, cap, all);
+  const render = (): HTMLElement => {
+    const v = visibleQueue(queue, cap, showAllQueue);
     const box = h(
       "section",
       { id: "queue" },
@@ -51,12 +53,15 @@ function queueList(queue: QueueItem[], cap: number): HTMLElement | null {
         ),
       ),
       v.hiddenCount
-        ? h("button", { class: "ghost", id: "show-all", onclick: () => box.replaceWith(render(true)) }, `Show all (${v.hiddenCount} more)`)
+        ? h("button", { class: "ghost", id: "show-all", onclick: () => {
+            showAllQueue = true;
+            box.replaceWith(render());
+          } }, `Show all (${v.hiddenCount} more)`)
         : null,
     );
     return box;
   };
-  return render(false);
+  return render();
 }
 
 function artPattern(seed: number): SVGSVGElement {

@@ -23,7 +23,8 @@ function pageSite(rule: SiteRule): PageSite {
 }
 
 function main(): void {
-  const bundled = siteForHost(location.hostname);
+  const hostname = TEST_HOOKS && location.hostname === "youtube.localhost" ? "www.youtube.com" : location.hostname;
+  const bundled = siteForHost(hostname);
   if (!bundled) return;
   primeRoutes(bundled.routes);
 

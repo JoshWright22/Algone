@@ -1,15 +1,15 @@
-import bluesky from "../sites/bluesky.json";
-import facebook from "../sites/facebook.json";
-import instagram from "../sites/instagram.json";
-import linkedin from "../sites/linkedin.json";
-import pinterest from "../sites/pinterest.json";
-import reddit from "../sites/reddit.json";
-import substack from "../sites/substack.json";
-import threads from "../sites/threads.json";
-import tiktok from "../sites/tiktok.json";
-import twitch from "../sites/twitch.json";
-import x from "../sites/x.json";
-import youtube from "../sites/youtube.json";
+import bluesky from "../sites/bluesky.json" with { type: "json" };
+import facebook from "../sites/facebook.json" with { type: "json" };
+import instagram from "../sites/instagram.json" with { type: "json" };
+import linkedin from "../sites/linkedin.json" with { type: "json" };
+import pinterest from "../sites/pinterest.json" with { type: "json" };
+import reddit from "../sites/reddit.json" with { type: "json" };
+import substack from "../sites/substack.json" with { type: "json" };
+import threads from "../sites/threads.json" with { type: "json" };
+import tiktok from "../sites/tiktok.json" with { type: "json" };
+import twitch from "../sites/twitch.json" with { type: "json" };
+import x from "../sites/x.json" with { type: "json" };
+import youtube from "../sites/youtube.json" with { type: "json" };
 import type { SiteRule } from "./schema";
 
 export const SITES = [
