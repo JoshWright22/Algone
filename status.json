@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-08T13:31:37.009Z",
-  "run": "42485120115",
+  "date": "2026-11-09T16:29:09.425Z",
+  "run": "42654729781",
   "sites": {
     "bluesky": {
       "outcome": "pass",
@@ -8,7 +8,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "instagram": {
       "outcome": "pass",
@@ -16,7 +16,7 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "pinterest": {
       "outcome": "pass",
@@ -24,15 +24,15 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "reddit": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "live-logged-out",
-      "inconclusiveDays": 8,
+      "inconclusiveDays": 9,
       "walled": true,
-      "lastCounted": "2026-11-08"
+      "lastCounted": "2026-11-09"
     },
     "threads": {
       "outcome": "pass",
@@ -40,7 +40,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "tiktok": {
       "outcome": "pass",
@@ -48,7 +48,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "twitch": {
       "outcome": "pass",
@@ -56,7 +56,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "youtube": {
       "outcome": "pass",
@@ -64,39 +64,39 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-08"
+      "lastPass": "2026-11-09"
     },
     "facebook": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 8,
+      "inconclusiveDays": 9,
       "walled": true,
-      "lastCounted": "2026-11-08"
+      "lastCounted": "2026-11-09"
     },
     "linkedin": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 8,
+      "inconclusiveDays": 9,
       "walled": true,
-      "lastCounted": "2026-11-08"
+      "lastCounted": "2026-11-09"
     },
     "substack": {
       "outcome": "inconclusive",
       "tier": 2,
       "method": "unverified",
-      "inconclusiveDays": 8,
+      "inconclusiveDays": 9,
       "walled": true,
-      "lastCounted": "2026-11-08"
+      "lastCounted": "2026-11-09"
     },
     "x": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 8,
+      "inconclusiveDays": 9,
       "walled": true,
-      "lastCounted": "2026-11-08"
+      "lastCounted": "2026-11-09"
     }
   }
 }
