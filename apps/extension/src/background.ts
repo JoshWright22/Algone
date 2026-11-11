@@ -1,5 +1,5 @@
 import {
-  addFeedItems, addMinute, checkBreak, markSeen, rateCreator,
+  addFeedItems, addMinute, applyPolicyText, checkBreak, markSeen, policyFromSettings, rateCreator,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime, describePatch,
   dueSources, handleRulesFile, isWeakening, mergeEntries, migrateSettings, moveInQueue, nextFetchAt, parseFeed,
   recordPass, removeFromQueue, removeSource, RULES_URL, safeHttps, startRecovery, startSnooze, UNINSTALL_URL,
@@ -21,6 +21,15 @@ function serial<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 const save = (patch: Partial<Stored>) => api.storage.local.set(patch);
+
+/** A random id for this browser profile, made once. Names this device in the shared policy. */
+async function deviceId(): Promise<string> {
+  const { device } = (await api.storage.local.get("device")) as { device?: string };
+  if (device) return device;
+  const id = `${BUILD_TARGET}-${Array.from(crypto.getRandomValues(new Uint8Array(4)), (b) => b.toString(16).padStart(2, "0")).join("")}`;
+  await api.storage.local.set({ device: id });
+  return id;
+}
 
 async function openUnlock(): Promise<void> {
   await api.tabs.create({ url: api.runtime.getURL("unlock.html") });
@@ -261,6 +270,22 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
     case "healthyMinute":
       await save({ healthy: addMinute(state.healthy, now()) });
       return { ok: true };
+    case "exportPolicy": {
+      const device = await deviceId();
+      return { ok: true, text: JSON.stringify(policyFromSettings(state.settings, 0, device, now()), null, 2) };
+    }
+    case "importPolicy": {
+      if (typeof cmd.text !== "string") return { ok: false, error: "No file" };
+      const r = applyPolicyText(state.settings, cmd.text, SITES, { platform: BUILD_TARGET, deviceId: await deviceId() }, "an imported file");
+      if (!r.ok) return { ok: false, error: r.error };
+      await save({ settings: r.settings });
+      if (r.pending) {
+        const fresh = await loadState();
+        const res = await requestPending(fresh, r.pending);
+        return { ...res, applied: r.applied };
+      }
+      return { ok: true, applied: r.applied };
+    }
     case "closeTab":
       if (sender.tab?.id !== undefined) await api.tabs.remove(sender.tab.id);
       return { ok: true };

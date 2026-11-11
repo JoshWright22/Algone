@@ -18,3 +18,4 @@ export * from "./diff";
 export * from "./policy";
 export * from "./zen";
 export * from "./healthy";
+export * from "./sync";

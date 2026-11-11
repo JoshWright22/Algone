@@ -27,12 +27,17 @@ export type Command =
   | { t: "feedItems"; site: string; items: Array<{ title: string; channel: string; url: string }> }
   | { t: "healthySeen"; id: string }
   | { t: "rate"; channel: string; rating: Rating }
-  | { t: "healthyMinute" };
+  | { t: "healthyMinute" }
+  | { t: "exportPolicy" }
+  | { t: "importPolicy"; text: string };
 
 export interface CommandResult {
   ok: boolean;
   needsBarrier?: boolean;
   error?: string;
+  /** exportPolicy: the file. importPolicy: what happened. */
+  text?: string;
+  applied?: number;
 }
 
 export const send = (cmd: Command): Promise<CommandResult> => api.runtime.sendMessage(cmd);

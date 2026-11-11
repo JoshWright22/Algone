@@ -2,7 +2,7 @@ import { SITES } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
   applyPatch, defaultSettings, describePatch, diffSettings, isWeakening, nextRevision, parsePolicy,
-  planSync, policyFromSettings, settingsFromPolicy, validatePolicy,
+  applyPolicyText, planSync, policyFromSettings, settingsFromPolicy, validatePolicy,
   type Patch, type Settings,
 } from "../src/index";
 
@@ -192,5 +192,24 @@ describe("barriers in the policy", () => {
   it("refuses a daily limit of zero", () => {
     const p = policyFromSettings(base(), 1, "pc-1", NOW);
     expect(validatePolicy({ ...p, settings: { ...p.settings, barrier: { type: "daily", limit: 0, step: "pause" } } }, SITES).ok).toBe(false);
+  });
+});
+
+describe("applying a policy file", () => {
+  const where = { platform: "chrome", deviceId: "pc-1" };
+  it("applies stricter changes and holds looser ones as one pending change", () => {
+    let remote = applyPatch(base(), { op: "setElement", site: "youtube", element: "comments", hidden: true });
+    remote = applyPatch(remote, { op: "setSiteEnabled", site: "reddit", enabled: false });
+    const text = JSON.stringify(policyFromSettings(remote, 7, "agent:claude", NOW));
+    const r = applyPolicyText(base(), text, SITES, where, "an imported file");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.settings.sites.youtube?.elements.comments).toBe(true);
+    expect(r.settings.sites.reddit?.enabled).toBe(true);
+    expect(r.pending?.label).toBe("Loosen 1 setting from an imported file");
+    expect(r.rev).toBe(7);
+  });
+  it("reports a bad file and changes nothing", () => {
+    expect(applyPolicyText(base(), "{}", SITES, where, "x")).toMatchObject({ ok: false });
   });
 });

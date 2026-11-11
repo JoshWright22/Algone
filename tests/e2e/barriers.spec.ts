@@ -170,3 +170,26 @@ test("Random mode is exempt; Tuned needs a barrier", async ({ h }) => {
   ]);
   await expect(unlock.locator("#never-mind")).toBeVisible();
 });
+
+test("importing a settings file: stricter now, looser waits for the barrier", async ({ h }) => {
+  const opts = await extPage(h, "options.html#sync");
+  const exported = (await opts.evaluate(() => chrome.runtime.sendMessage({ t: "exportPolicy" }))) as { ok: boolean; text: string };
+  expect(exported.ok).toBe(true);
+  const policy = JSON.parse(exported.text);
+  expect(policy.schema).toBe("algone-policy/1");
+  expect(policy.settings.theme).toBeUndefined();
+  policy.settings.sites.youtube.elements = { comments: true };
+  policy.settings.sites.reddit.enabled = false;
+  const [unlock, result] = await Promise.all([
+    h.context.waitForEvent("page", (p) => p.url().includes("unlock.html")),
+    opts.evaluate((text) => chrome.runtime.sendMessage({ t: "importPolicy", text }), JSON.stringify(policy)),
+  ]);
+  expect(result).toMatchObject({ ok: true, needsBarrier: true, applied: 1 });
+  const settings = await getStorage(h, "settings");
+  expect(settings.sites.youtube.elements.comments).toBe(true);
+  expect(settings.sites.reddit.enabled).toBe(true);
+  await unlock.waitForLoadState();
+  await expect(unlock.locator("body")).toContainText("Loosen 1 setting from an imported file");
+  const bad = await opts.evaluate(() => chrome.runtime.sendMessage({ t: "importPolicy", text: "{}" }));
+  expect(bad).toMatchObject({ ok: false });
+});

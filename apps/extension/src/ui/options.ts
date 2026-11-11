@@ -301,6 +301,42 @@ function feedTab(s: Stored): HTMLElement {
   );
 }
 
+/** Kept across re-renders, which storage changes from the import itself cause. */
+let syncMessage = "";
+
+function syncTab(): HTMLElement {
+  const status = h("p", { role: "status", id: "sync-status" }, syncMessage);
+  const file = h("input", { type: "file", accept: "application/json,.json", id: "policy-file", "aria-label": "Policy file" }) as HTMLInputElement;
+  file.addEventListener("change", async () => {
+    const f = file.files?.[0];
+    if (!f) return;
+    if (f.size > 256 * 1024) return void (status.textContent = syncMessage = "That file is too large to be an Algone policy.");
+    const r = await send({ t: "importPolicy", text: await f.text() });
+    syncMessage = !r.ok
+      ? `Not imported: ${r.error}`
+      : r.needsBarrier
+        ? `${r.applied} stricter settings applied. The looser ones wait for your barrier.`
+        : `Imported. ${r.applied} settings changed.`;
+    status.textContent = syncMessage;
+  });
+  return h("div", { id: "sync-tab" },
+    h("h2", {}, "Settings file"),
+    h("p", {}, "One file holds every setting that applies on all your devices. You, or an assistant you trust, can edit it and import it anywhere Algone runs."),
+    h("p", { class: "muted" }, "Importing is never a shortcut: stricter settings apply at once, looser ones wait for your barrier on this device. Your theme, breaks and partner password stay on this device."),
+    h("div", { class: "row" },
+      h("button", { class: "primary", id: "policy-export", onclick: async () => {
+        const r = await send({ t: "exportPolicy" });
+        if (!r.ok || !r.text) return;
+        const url = URL.createObjectURL(new Blob([r.text], { type: "application/json" }));
+        const a = h("a", { href: url, download: "algone-policy.json" });
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      } }, "Export settings"),
+      h("label", { class: "ghost button" }, "Import settings", file)),
+    status,
+  );
+}
+
 function aboutTab(s: Stored): HTMLElement {
   const overlay = s.rulesOverlay ? `published ${new Date(s.rulesOverlay.rev * 1000).toLocaleDateString()}` : "none";
   return h("div", { id: "about" },
@@ -332,7 +368,7 @@ async function render(): Promise<void> {
   const s = await loadState();
   applyTheme(s.settings.theme);
   const tabs: Array<[string, string]> = [
-    ["sites", "Sites"], ["healthy", "Healthy feed"], ["general", "Barrier and general"], ["queue", "Queue"], ["feed", "Custom feed"], ["about", "About"],
+    ["sites", "Sites"], ["healthy", "Healthy feed"], ["general", "Barrier and general"], ["queue", "Queue"], ["feed", "Custom feed"], ["sync", "Sync"], ["about", "About"],
   ];
   const active = document.activeElement?.id;
   mount(root,
@@ -355,6 +391,7 @@ async function render(): Promise<void> {
         tab === "general" ? generalTab(s) : null,
         tab === "queue" ? queueTab(s) : null,
         tab === "feed" ? feedTab(s) : null,
+        tab === "sync" ? syncTab() : null,
         tab === "about" ? aboutTab(s) : null,
       ),
     ),
