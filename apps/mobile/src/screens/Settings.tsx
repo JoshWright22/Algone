@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Switch, View } from "react-native";
+import { Alert, Switch, View } from "react-native";
 import {
   AVOID_IDS, COPY, createPartnerBarrier, isHidden, KIND_LABELS, localDay, MOBILE_ITERATIONS,
-  type AvoidId, type BarrierConfig, type Mode, type Patch, type Theme,
+  type AppMode, type AppPolicy, type AvoidId, type BarrierConfig, type Mode, type Patch, type Theme,
 } from "@algone/core";
-import { SITES } from "@algone/rules";
+import { APPS, SITES } from "@algone/rules";
+import { a11y } from "../../modules/algone-a11y";
 import { rulesConfig } from "../config";
 import { MOBILE_COPY } from "../copy";
 import { mobileKdf } from "../kdf";
@@ -311,6 +312,53 @@ function BarrierForm() {
   );
 }
 
+const APP_MODES: Array<[AppMode, string]> = [["allow", "Allow"], ["cover", "Block feeds"], ["block", "Block app"]];
+
+/** Android only: Algone's own app blocking, through an Accessibility service in this app. */
+function AppBlocking() {
+  const apply = useApply();
+  const { settings } = useStored();
+  const [enabled, setEnabled] = useState(() => a11y?.isEnabled() ?? false);
+  if (!a11y) return null;
+  const turnOn = () =>
+    Alert.alert(
+      "Turn on app blocking",
+      "Algone will use Android's Accessibility service to see which screen is open in YouTube, Instagram, Facebook, TikTok and Reddit, and to go back when it is Shorts, Reels or a screen you blocked. It reads screen names and tab labels, never your posts or messages, and sends nothing anywhere. On the next page, find Algone app blocking and turn it on.",
+      [
+        { text: "Not now", style: "cancel" },
+        { text: "Continue", onPress: () => a11y?.openSettings() },
+      ],
+    );
+  return (
+    <Card>
+      <Body size={16}>Block in apps</Body>
+      <Body muted size={13}>
+        Algone can go back when an app opens Shorts, Reels or a blocked screen. It cannot change what an app recommends. App updates can break this until the rules are repaired.
+      </Body>
+      {enabled ? (
+        <Body size={14}>App blocking is on.</Body>
+      ) : (
+        <Button label="Turn on app blocking" onPress={turnOn} />
+      )}
+      <Button label="Check again" onPress={() => setEnabled(a11y?.isEnabled() ?? false)} />
+      {APPS.map((app) => {
+        const cfg = settings.apps.android?.[app.id] ?? { mode: "allow" as const };
+        const set = (config: AppPolicy) => void apply({ op: "setApp", platform: "android", app: app.id, config });
+        return (
+          <View key={app.id} style={{ gap: 6 }}>
+            <Body size={14}>{app.name}</Body>
+            <Choice value={cfg.mode === "pause" || cfg.mode === "limit" ? "cover" : cfg.mode} options={APP_MODES}
+              onChange={(mode) => set({ ...cfg, mode, ...(mode === "block" ? {} : { shortVideo: cfg.shortVideo ?? true }) })} />
+            {cfg.mode === "cover" && app.screens.some((s) => s.kind === "shortVideo") ? (
+              <Toggle label="Block Shorts and Reels" value={cfg.shortVideo !== false} onChange={(v) => set({ ...cfg, shortVideo: v })} />
+            ) : null}
+          </View>
+        );
+      })}
+    </Card>
+  );
+}
+
 export function SettingsScreen() {
   const nav = useNav();
   const apply = useApply();
@@ -322,6 +370,7 @@ export function SettingsScreen() {
       <Choice value={open} options={SITES.map((s) => [s.id, s.name])} onChange={setOpen} />
       {open ? <SiteSettings key={open} id={open} /> : null}
       <HealthySettings />
+      <AppBlocking />
       <BarrierForm />
       <Button label="Sync and settings file" onPress={() => nav.push({ name: "sync" })} />
       <Card>

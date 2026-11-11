@@ -1,0 +1,48 @@
+{
+    "logs": [
+        {
+            "outputFile": "io.github.joshwright22.algone.a11y.algone-a11y-mergeReleaseResources-0:/values/values.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\awsom\\.t3\\projects\\feed-blocker\\apps\\mobile\\modules\\algone-a11y\\android\\src\\main\\res\\values\\algone_a11y_strings.xml",
+                    "from": {
+                        "startLines": "3,2",
+                        "startColumns": "2,2",
+                        "startOffsets": "117,53",
+                        "endColumns": "361,63",
+                        "endOffsets": "476,114"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,419",
+                        "endColumns": "363,65",
+                        "endOffsets": "414,480"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "io.github.joshwright22.algone.a11y.algone-a11y-release-2:/values/values.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\awsom\\.t3\\projects\\feed-blocker\\apps\\mobile\\modules\\algone-a11y\\android\\src\\main\\res\\values\\algone_a11y_strings.xml",
+                    "from": {
+                        "startLines": "3,2",
+                        "startColumns": "2,2",
+                        "startOffsets": "117,53",
+                        "endColumns": "361,63",
+                        "endOffsets": "476,114"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,419",
+                        "endColumns": "363,65",
+                        "endOffsets": "414,480"
+                    }
+                }
+            ]
+        }
+    ]
+}

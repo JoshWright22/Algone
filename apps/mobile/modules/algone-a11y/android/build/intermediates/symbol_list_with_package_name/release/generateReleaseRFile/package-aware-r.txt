@@ -1,0 +1,4 @@
+io.github.joshwright22.algone.a11y
+string algone_a11y_description
+string algone_a11y_label
+xml algone_accessibility_service

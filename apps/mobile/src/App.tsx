@@ -16,6 +16,7 @@ import { RandomScreen } from "./screens/Random";
 import { SettingsScreen } from "./screens/Settings";
 import { SyncScreen } from "./screens/Sync";
 import { SiteScreen } from "./screens/Site";
+import { startAppBlocking } from "./appBlocking";
 import { store } from "./store";
 import { runSync, startSyncLoop } from "./sync";
 import { useColors } from "./theme";
@@ -105,10 +106,12 @@ export default function App() {
 
   useEffect(() => {
     let stopSync = () => {};
+    let stopBlocking = () => {};
     void store.load(rulesConfig.buildRev).then(() => {
       setReady(true);
       background();
       stopSync = startSyncLoop(store, Platform.OS);
+      stopBlocking = startAppBlocking();
     });
     const sub = AppState.addEventListener("change", (s) => {
       if (s === "active") background();
@@ -116,6 +119,7 @@ export default function App() {
     return () => {
       sub.remove();
       stopSync();
+      stopBlocking();
     };
   }, []);
 

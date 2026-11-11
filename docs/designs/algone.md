@@ -102,6 +102,8 @@ cannot be checked without logged-in accounts, which the author did not have. See
 
 ## Non-Goals
 
+> **Superseded in part (2026-11-10).** Native apps and the shared settings file are now in scope: see [system-wide.md](system-wide.md), decisions S-1 to S-8. D-26 and the Android Accessibility line below no longer hold. The rest of this list stands.
+
 *   Screen Time shielding, Android Accessibility features, overlays over other
     apps, or anything that acts on native apps (maintainer decision).
 *   Native desktop apps. Desktop is served by the extension (D-26).

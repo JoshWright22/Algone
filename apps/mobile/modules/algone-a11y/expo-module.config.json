@@ -1,0 +1,4 @@
+{
+  "platforms": ["android"],
+  "android": { "modules": ["io.github.joshwright22.algone.a11y.AlgoneA11yModule"] }
+}

@@ -1,0 +1,37 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="io.github.joshwright22.algone.a11y" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+5-->INJECTED
+5-->INJECTED
+6
+7    <application>
+7-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:2:3-15:17
+8        <service
+8-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:3:5-14:15
+9            android:name="io.github.joshwright22.algone.a11y.AlgoneAccessibilityService"
+9-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:4:7-83
+10            android:exported="false"
+10-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:5:7-31
+11            android:label="@string/algone_a11y_label"
+11-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:6:7-48
+12            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+12-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:7:7-73
+13            <intent-filter>
+13-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:8:7-10:23
+14                <action android:name="android.accessibilityservice.AccessibilityService" />
+14-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:9:9-84
+14-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:9:17-81
+15            </intent-filter>
+16
+17            <meta-data
+17-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:11:7-13:64
+18                android:name="android.accessibilityservice"
+18-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:12:9-52
+19                android:resource="@xml/algone_accessibility_service" />
+19-->C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\AndroidManifest.xml:13:9-61
+20        </service>
+21    </application>
+22
+23</manifest>

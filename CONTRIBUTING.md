@@ -33,7 +33,7 @@ You may use AI tools. You are responsible for everything in your PR.
 
 - No `eval`, `new Function`, or HTML strings. No remote code. No analytics.
 - Do not add permissions. Algone never asks for access to all websites.
-- No claims that Algone changes native apps or defeats any site's algorithm.
+- No claims that Algone defeats any site's algorithm. On native apps, claim only what the Android app rules actually do (go back or go home), and only for checks that ran.
 - Never gate a feature behind a tip.
 
 ## Before you open a PR
