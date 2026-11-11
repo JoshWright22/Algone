@@ -1,7 +1,7 @@
 import type { SiteRule } from "@algone/rules";
 import { applyPatch, describePatch } from "./commands";
 import { planSync } from "./diff";
-import { parsePolicy, settingsFromPolicy } from "./policy";
+import { parsePolicy, settingsFromPolicy, type Policy } from "./policy";
 import type { Patch, Pending, Settings } from "./types";
 
 export interface Where {
@@ -27,7 +27,17 @@ export function applyPolicyText(
 ): ApplyResult {
   const parsed = parsePolicy(text, rules);
   if (!parsed.ok) return parsed;
-  const incoming = settingsFromPolicy(parsed.policy, rules, {
+  return applyPolicy(local, parsed.policy, rules, where, source);
+}
+
+export function applyPolicy(
+  local: Settings,
+  policy: Policy,
+  rules: SiteRule[],
+  where: Where,
+  source: string,
+): ApplyResult {
+  const incoming = settingsFromPolicy(policy, rules, {
     ...where,
     local: { theme: local.theme, breakUntil: local.breakUntil, barrier: local.barrier },
   });
@@ -38,5 +48,5 @@ export function applyPolicyText(
     const patch: Patch = { op: "batch", patches: plan.pending, source };
     pending = { kind: "patch", patch, label: describePatch(patch) };
   }
-  return { ok: true, settings, applied: plan.applyNow.length, pending, rev: parsed.policy.rev };
+  return { ok: true, settings, applied: plan.applyNow.length, pending, rev: policy.rev };
 }
