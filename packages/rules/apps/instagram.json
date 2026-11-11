@@ -1,0 +1,12 @@
+{
+  "id": "instagram",
+  "name": "Instagram",
+  "packages": ["com.instagram.android"],
+  "screens": [
+    { "id": "reels", "label": "Reels", "kind": "shortVideo", "action": "back",
+      "match": { "viewIds": ["clips_viewer_view_pager", "clips_viewer_container", "clips_video_container"] } },
+    { "id": "explore", "label": "Explore grid", "kind": "feed", "action": "back",
+      "match": { "viewIds": ["explore_action_bar_container", "explore_grid_container"] } }
+  ],
+  "verified": { "date": "2026-11-10", "method": "unverified", "notes": "Not yet checked on a device." }
+}

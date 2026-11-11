@@ -1,0 +1,10 @@
+{
+  "id": "facebook",
+  "name": "Facebook",
+  "packages": ["com.facebook.katana"],
+  "screens": [
+    { "id": "reels", "label": "Reels", "kind": "shortVideo", "action": "back",
+      "match": { "descriptions": ["Reels", "Reel"] } }
+  ],
+  "verified": { "date": "2026-11-10", "method": "unverified", "notes": "Not yet checked on a device." }
+}

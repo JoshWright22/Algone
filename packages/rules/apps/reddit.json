@@ -1,0 +1,10 @@
+{
+  "id": "reddit",
+  "name": "Reddit",
+  "packages": ["com.reddit.frontpage"],
+  "screens": [
+    { "id": "videoFeed", "label": "Full-screen video feed", "kind": "shortVideo", "action": "back",
+      "match": { "descriptions": ["Video feed", "Watch"] } }
+  ],
+  "verified": { "date": "2026-11-10", "method": "unverified", "notes": "Not yet checked on a device." }
+}

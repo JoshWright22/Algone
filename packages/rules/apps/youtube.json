@@ -1,0 +1,10 @@
+{
+  "id": "youtube",
+  "name": "YouTube",
+  "packages": ["com.google.android.youtube"],
+  "screens": [
+    { "id": "shorts", "label": "Shorts player", "kind": "shortVideo", "action": "back",
+      "match": { "viewIds": ["reel_recycler", "reel_player_page_container", "shorts_container"] } }
+  ],
+  "verified": { "date": "2026-11-10", "method": "unverified", "notes": "View ids from public descriptions of the app, not yet checked on a device." }
+}

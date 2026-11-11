@@ -1,0 +1,9 @@
+{
+  "id": "tiktok",
+  "name": "TikTok",
+  "packages": ["com.zhiliaoapp.musically", "com.ss.android.ugc.trill"],
+  "screens": [
+    { "id": "app", "label": "The whole app", "kind": "shortVideo", "action": "home", "match": { "always": true } }
+  ],
+  "verified": { "date": "2026-11-10", "method": "unverified", "notes": "TikTok is short video throughout, so the whole app counts." }
+}
