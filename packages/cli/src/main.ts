@@ -13,7 +13,7 @@ async function installOrUpdate(): Promise<number> {
   const [cmd, ...rest] = args;
   const fromAt = rest.indexOf("--from");
   const from = fromAt >= 0 ? rest[fromAt + 1] : undefined;
-  const browsers = browsersIn(rest.filter((_, i) => i !== fromAt && i !== fromAt + 1));
+  const browsers = browsersIn(fromAt >= 0 ? rest.filter((_, i) => i !== fromAt && i !== fromAt + 1) : rest);
   let failed = 0;
   for (const b of browsers) {
     try {

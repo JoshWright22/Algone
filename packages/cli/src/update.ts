@@ -93,9 +93,18 @@ export async function update(browser: Browser, log: (s: string) => void): Promis
     writeFileSync(zip, Buffer.from(await download.arrayBuffer()));
     const out = join(temp, "build");
     mkdirSync(out);
-    // tar reads zip files on Windows 10 and later, and on macOS and Linux.
-    execFileSync("tar", ["-xf", zip, "-C", out], { stdio: "ignore" });
-    const { rev } = checkBuild(out);
+    // Windows' own tar (bsdtar) reads zip files; a GNU tar earlier on PATH would not.
+    const tar = process.platform === "win32" ? join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe") : "tar";
+    execFileSync(tar, ["-xf", zip, "-C", out], { stdio: "ignore" });
+    let rev: number;
+    try {
+      ({ rev } = checkBuild(out));
+    } catch {
+      // Remembered, so the hourly check does not download it again.
+      writeFileSync(join(dir, MARKER), `${pick.tag}\n`);
+      log(`${browser}: ${pick.tag} is older than automatic updates; keeping the installed build`);
+      return false;
+    }
     if (installedRev(dir) >= rev) {
       writeFileSync(join(dir, MARKER), `${pick.tag}\n`);
       log(`${browser}: the installed build is as new as ${pick.tag}`);
