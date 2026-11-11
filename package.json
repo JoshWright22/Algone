@@ -18,7 +18,8 @@
     "check:logged-in": "node tests/live/run.mjs --logged-in",
     "snapshot:scan": "node tests/live/scan-snapshots.mjs",
     "assets": "node scripts/make-assets.mjs",
-    "website": "npm run build --workspace apps/website"
+    "website": "npm run build --workspace apps/website",
+    "cli": "node packages/cli/scripts/build.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

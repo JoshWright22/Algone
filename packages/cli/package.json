@@ -1,0 +1,5 @@
+{ "name": "@algone/cli", "version": "0.1.0", "private": true, "type": "module",
+  "description": "algone: read, check and edit the Algone settings file; build a Zen filter list.",
+  "bin": { "algone": "dist/algone.mjs" },
+  "scripts": { "build": "node scripts/build.mjs" },
+  "dependencies": { "@algone/core": "*", "@algone/rules": "*" } }
