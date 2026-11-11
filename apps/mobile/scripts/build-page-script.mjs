@@ -19,7 +19,8 @@ const result = await build({
   write: false,
   alias: {
     "@algone/core": pkg("core/src/index.ts"),
-    "@algone/engine": pkg("engine/src/index.ts"),
+    // A folder, so "@algone/engine/healthy" resolves too.
+    "@algone/engine": pkg("engine/src"),
     "@algone/rules": pkg("rules/src/index.ts"),
   },
 });

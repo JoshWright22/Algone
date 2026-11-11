@@ -5,4 +5,6 @@ export const MOBILE_COPY = {
     "YouTube sign-in may not work here, because Google blocks sign-in in embedded web views.",
   notFiltering: "Filtering is not active on this page.",
   launchPause: "What did you come here to do?",
+  healthyNote: (site: string) =>
+    `Picked from what ${site} already loaded, without outrage, clickbait and doom where the words give it away. It misses some and wrongly catches some.`,
 } as const;

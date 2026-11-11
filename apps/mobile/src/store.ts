@@ -1,8 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  addFeedItems, addMinute, checkBreak, emptyHealthyStore, markSeen, rateCreator, safeHttps, validatePatch,
+  type HealthyStore, type Rating,
+  applyPolicyText, diffSettings, emptySyncState, isLocalPatch, policyFromSettings,
+  type SyncResult, type SyncState,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime,
   describePatch, isWeakening, migrateSettings, moveInQueue, recordPass, removeFromQueue, removeSource,
-  startRecovery, startSnooze, useEscape, validateBarrier,
+  startRecovery, startSnooze, useEscape,
   type BarrierConfig, type FeedStore, type Overlay, type Patch, type Pending, type QueueItem,
   type Runtime, type Settings,
 } from "@algone/core";
@@ -14,12 +18,42 @@ export interface Stored {
   queue: QueueItem[];
   feeds: FeedStore;
   rulesOverlay: Overlay | null;
+  /** The healthy feed's pools, batches, ratings and minutes. Never synced. */
+  healthy: HealthyStore;
+  /** A random id that names this device in the shared policy. */
+  device: string;
+  /** Sync state, plus the settings as last synced: the base the outbox is worked out from. */
+  sync: MobileSync;
+  /**
+   * The GitHub token. expo-secure-store is not a dependency, so it is kept here, in the
+   * app's own storage like everything else, and never handed to a page.
+   */
+  syncToken: string;
 }
+
+export type MobileSync = SyncState & { base: Settings | null };
 
 export interface Result {
   ok: boolean;
   needsBarrier?: boolean;
   error?: string;
+  /** Settings changed by an import or a sync round. */
+  applied?: number;
+}
+
+const emptySync = (): MobileSync => ({ ...emptySyncState(), base: null });
+
+function newDeviceId(): string {
+  const bytes = new Uint8Array(4);
+  const c = (globalThis as { crypto?: { getRandomValues?: (a: Uint8Array) => Uint8Array } }).crypto;
+  if (c?.getRandomValues) c.getRandomValues(bytes);
+  else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  return `app-${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** This device's changes since the last sync round. Theme, breaks and partner passwords stay here. */
+export function outboxOf(s: Stored): Patch[] {
+  return diffSettings(s.sync.base ?? s.settings, s.settings, SITES).filter((p) => !isLocalPatch(p));
 }
 
 export interface KeyValue {
@@ -39,7 +73,27 @@ function initialState(raw?: Partial<Stored>): Stored {
     queue: raw?.queue ?? [],
     feeds: raw?.feeds ?? { sources: [], items: [] },
     rulesOverlay: raw?.rulesOverlay ?? null,
+    healthy: { ...emptyHealthyStore(), ...raw?.healthy },
+    device: typeof raw?.device === "string" && raw.device ? raw.device : newDeviceId(),
+    sync: { ...emptySync(), ...raw?.sync },
+    syncToken: typeof raw?.syncToken === "string" ? raw.syncToken : "",
   };
+}
+
+const RATINGS: Rating[] = ["worth", "notWorth", "worse"];
+
+/**
+ * Items a page reported from its hidden feed. The page is the site's, so everything is
+ * checked again here, as the extension's background does: the URL is on this site's hosts.
+ */
+export function cleanFeedItems(site: string, items: unknown): Array<{ title: string; channel: string; url: string }> {
+  const rule = siteMap()[site];
+  if (!rule || !Array.isArray(items)) return [];
+  return items.slice(0, 60).flatMap((i) => {
+    const url = typeof i?.url === "string" && i.url.length <= 2048 ? safeHttps(i.url) : null;
+    if (!url || !rule.hosts.includes(new URL(url).hostname) || typeof i.title !== "string" || !i.title) return [];
+    return [{ title: i.title.slice(0, 200), channel: typeof i.channel === "string" ? i.channel.slice(0, 100) : "", url }];
+  });
 }
 
 /** A lock that has run out behaves as the barrier it was set to return to. */
@@ -91,11 +145,19 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
     ...(patch.op === "useBundledRules" ? { rulesOverlay: null } : {}),
   });
 
+  /** Applies a change whose barrier was passed (or escaped). The one place this happens. */
   const finishPending = (s: Stored, pending: Pending, settings: Settings, runtime: Runtime): Step => {
     const cleared = { ...runtime, pending: null };
-    return pending.kind === "snooze"
-      ? { next: { settings, runtime: startSnooze(cleared, pending.site, pending.minutes, clock()) } }
-      : { next: { runtime: cleared, ...withPatch(s, pending.patch, settings) } };
+    if (pending.kind === "snooze") {
+      return { next: { settings, runtime: startSnooze(cleared, pending.site, pending.minutes, clock()) } };
+    }
+    // Checked again: time has passed, and the one-a-week rule counts from the last break taken.
+    const { patch } = pending;
+    const error = validatePatch(patch, SITES, clock())
+      ?? (patch.op === "startBreak" ? checkBreak(patch.until, s.runtime, clock()) : null);
+    if (error) return { next: { settings, runtime: cleared }, result: { ok: false, error } };
+    const next = patch.op === "startBreak" ? { ...cleared, lastBreakAt: clock() } : cleared;
+    return { next: { runtime: next, ...withPatch(s, patch, settings) } };
   };
 
   return {
@@ -130,10 +192,10 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
 
     patch(patch: Patch) {
       return run((s) => {
-        if (patch.op === "setBarrier") {
-          const error = validateBarrier(patch.barrier, clock());
-          if (error) return { result: { ok: false, error } };
-        }
+        // Every change, from any source, is checked first, as the extension's handlePatch does.
+        const error = validatePatch(patch, SITES, clock())
+          ?? (patch.op === "startBreak" ? checkBreak(patch.until, s.runtime, clock()) : null);
+        if (error) return { result: { ok: false, error } };
         if (isWeakening(s.settings, patch, SITES)) {
           const name = "site" in patch ? siteMap()[patch.site]?.name : "";
           return requestPending(s, { kind: "patch", patch, label: describePatch(patch, name) });
@@ -222,6 +284,87 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
     /** Network results arrive here, so they merge with whatever changed meanwhile. */
     updateFeeds(change: (feeds: FeedStore) => FeedStore) {
       return run((s) => ({ next: { feeds: change(s.feeds) } }));
+    },
+
+    /** Feed items a site page read from its hidden feed. */
+    healthyFeedItems(site: string, items: unknown) {
+      return run((s) => {
+        const clean = cleanFeedItems(site, items);
+        if (!clean.length) return { result: { ok: false } };
+        return { next: { healthy: addFeedItems(s.healthy, site, clean, s.settings, clock()) } };
+      });
+    },
+    healthySeen(id: string) {
+      return run((s) => {
+        if (typeof id !== "string" || id.length > 2048) return { result: { ok: false } };
+        return { next: { healthy: markSeen(s.healthy, id) } };
+      });
+    },
+    rate(channel: string, rating: Rating) {
+      return run((s) => {
+        if (!RATINGS.includes(rating) || typeof channel !== "string" || channel.length > 100) {
+          return { result: { ok: false } };
+        }
+        return { next: { healthy: rateCreator(s.healthy, channel, rating) } };
+      });
+    },
+    /** One visible minute on a page opened from the batch. */
+    healthyMinute() {
+      return run((s) => ({ next: { healthy: addMinute(s.healthy, clock()) } }));
+    },
+
+    /** The settings file. The partner password becomes a stand-in; theme and breaks stay out. */
+    exportPolicy(): string {
+      return JSON.stringify(policyFromSettings(state.settings, 0, state.device, clock()), null, 2);
+    },
+    /** Stricter settings apply at once, looser ones wait for the barrier. */
+    importPolicy(text: string, platform: string) {
+      return run((s) => {
+        if (typeof text !== "string" || !text.trim()) return { result: { ok: false, error: "Paste a settings file first." } };
+        const where = { platform, deviceId: s.device };
+        const r = applyPolicyText(s.settings, text, SITES, where, "an imported file", clock());
+        if (!r.ok) return { result: { ok: false, error: r.error } };
+        if (!r.pending) return { next: { settings: r.settings }, result: { ok: true, applied: r.applied } };
+        const step = requestPending({ ...s, settings: r.settings }, r.pending);
+        return { next: { settings: r.settings, ...step.next }, result: { ...step.result!, applied: r.applied } };
+      });
+    },
+
+    syncConnect(token: string) {
+      return run(() => ({ next: { syncToken: token, sync: emptySync() } }));
+    },
+    syncDisconnect() {
+      return run(() => ({ next: { syncToken: "", sync: emptySync() } }));
+    },
+    /**
+     * Lands a sync round. Settings changed here while the round was out are kept on top of
+     * what it brought, and stay out of the base, so the next round sends them.
+     */
+    syncFinish(token: string, before: Settings, r: SyncResult) {
+      return run((s) => {
+        if (s.syncToken !== token) return { result: { ok: false, error: "Signed out" } };
+        const later = s.settings === before ? [] : diffSettings(before, s.settings, SITES);
+        const { base: _drop, ...synced } = r.state as MobileSync;
+        return {
+          next: { settings: later.reduce(applyPatch, r.settings), sync: { ...synced, base: r.settings } },
+          result: { ok: true, applied: r.applied },
+        };
+      });
+    },
+    syncFailed(token: string, error: string) {
+      return run((s) => {
+        if (s.syncToken !== token) return { result: { ok: false, error } };
+        return { next: { sync: { ...s.sync, lastError: error, lastSync: clock() } }, result: { ok: false, error } };
+      });
+    },
+    /** Looser changes from another device: through this device's barrier, like any other. */
+    syncReview() {
+      return run((s) => {
+        const pending = s.sync.pending;
+        if (!pending) return { result: { ok: false, error: "Nothing is waiting" } };
+        const step = requestPending(s, pending);
+        return { next: { ...step.next, sync: { ...s.sync, pending: null } }, result: step.result };
+      });
     },
 
     recordRuleCheck(update: { at: number; error: string; lastAcceptedRev?: number; overlay?: Overlay | null }) {

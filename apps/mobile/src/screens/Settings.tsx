@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Switch, View } from "react-native";
 import {
-  COPY, createPartnerBarrier, isHidden, KIND_LABELS, MOBILE_ITERATIONS,
-  type BarrierConfig, type Mode, type Patch, type Theme,
+  AVOID_IDS, COPY, createPartnerBarrier, isHidden, KIND_LABELS, localDay, MOBILE_ITERATIONS,
+  type AvoidId, type BarrierConfig, type Mode, type Patch, type Theme,
 } from "@algone/core";
 import { SITES } from "@algone/rules";
 import { rulesConfig } from "../config";
@@ -125,6 +125,110 @@ function SiteSettings({ id }: { id: string }) {
   );
 }
 
+/** Partial, so a list added in core shows under its id until it gets a label here. */
+const AVOID_LABELS: Partial<Record<AvoidId, string>> = {
+  outrage: "Outrage and ragebait",
+  clickbait: "Clickbait",
+  comparison: "Rich, perfect-life and looks comparison",
+  doom: "Doom and disaster",
+};
+
+const BREAK_HOURS: Array<["1" | "4" | "12" | "24", string]> = [["1", "1 hour"], ["4", "4 hours"], ["12", "12 hours"], ["24", "24 hours"]];
+
+function HealthySettings() {
+  const apply = useApply();
+  const { settings, healthy } = useStored();
+  const [batchSize, setBatchSize] = useState(String(settings.healthy.batchSize));
+  const [budget, setBudget] = useState(String(settings.healthy.dailyBudgetMinutes));
+  const [activities, setActivities] = useState(settings.activities.join("\n"));
+  const [hours, setHours] = useState<(typeof BREAK_HOURS)[number][0]>("1");
+  const [error, setError] = useState("");
+  const now = Date.now();
+  const used = healthy.usage.day === localDay(now) ? healthy.usage.minutes : 0;
+  const onBreak = settings.breakUntil > now;
+
+  const run = async (patch: Patch) => setError(await apply(patch));
+
+  return (
+    <Card>
+      <Body strong>Healthy feed</Body>
+      <Body muted size={13}>
+        On sites in Healthy mode, Algone hides the feed and shows a short batch picked from what the site already loaded: its own picks and the people you follow. It pushes out outrage, clickbait and doom, then ends so you can go.
+      </Body>
+      <Body muted size={13}>
+        It ranks only what the site loaded. It cannot change the site's own ranking or rerank inside apps. The word lists miss some and wrongly catch some.
+      </Body>
+      <Field
+        accessibilityLabel="Items per day, per site"
+        placeholder="Items per day, per site"
+        value={batchSize}
+        onChangeText={setBatchSize}
+        onEndEditing={() => void run({ op: "setHealthy", batchSize: Number(batchSize) })}
+        keyboardType="number-pad"
+      />
+      <Body muted size={13}>Items per day, per site (1 to 50)</Body>
+      <Field
+        accessibilityLabel="Minutes per day on picked items"
+        placeholder="Minutes per day on picked items"
+        value={budget}
+        onChangeText={setBudget}
+        onEndEditing={() => void run({ op: "setHealthy", dailyBudgetMinutes: Number(budget) })}
+        keyboardType="number-pad"
+      />
+      <Body muted size={13}>
+        {`Minutes per day on picked items. Used today on this device: ${used} of ${settings.healthy.dailyBudgetMinutes} minutes.`}
+      </Body>
+      <Body strong>Keep out</Body>
+      {AVOID_IDS.map((id) => (
+        <Toggle
+          key={id}
+          label={AVOID_LABELS[id] ?? id}
+          value={settings.avoid.includes(id)}
+          onChange={(on) =>
+            void run({ op: "setAvoid", ids: on ? [...settings.avoid, id] : settings.avoid.filter((a) => a !== id) })
+          }
+        />
+      ))}
+      <Body strong>Instead</Body>
+      <Body muted size={13}>Things you'd rather do, one per line. They show when a batch ends.</Body>
+      <Field
+        accessibilityLabel="Things you'd rather do, one per line"
+        value={activities}
+        onChangeText={setActivities}
+        multiline
+      />
+      <Button
+        label="Save"
+        onPress={() =>
+          void run({
+            op: "setActivities",
+            items: activities.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 20),
+          })
+        }
+      />
+      <Body strong>Take a break</Body>
+      <Body muted size={13}>
+        Shows the sites' feeds for a while, then Algone comes back by itself. Shorts, Reels and autoplay stay off. One break a week, through your barrier.
+      </Body>
+      {onBreak ? (
+        <>
+          <Body>{`On a break until ${new Date(settings.breakUntil).toLocaleString()}`}</Body>
+          <Button label="End the break now" onPress={() => void run({ op: "endBreak" })} />
+        </>
+      ) : (
+        <>
+          <Choice value={hours} options={BREAK_HOURS} onChange={setHours} />
+          <Button
+            label="Start a break"
+            onPress={() => void run({ op: "startBreak", until: Date.now() + Number(hours) * 3_600_000 })}
+          />
+        </>
+      )}
+      {error ? <Body muted>{error}</Body> : null}
+    </Card>
+  );
+}
+
 function BarrierForm() {
   const apply = useApply();
   const { settings } = useStored();
@@ -208,6 +312,7 @@ function BarrierForm() {
 }
 
 export function SettingsScreen() {
+  const nav = useNav();
   const apply = useApply();
   const { settings, runtime } = useStored();
   const [open, setOpen] = useState(SITES[0]?.id ?? "");
@@ -216,7 +321,9 @@ export function SettingsScreen() {
     <Screen title="Settings">
       <Choice value={open} options={SITES.map((s) => [s.id, s.name])} onChange={setOpen} />
       {open ? <SiteSettings key={open} id={open} /> : null}
+      <HealthySettings />
       <BarrierForm />
+      <Button label="Sync and settings file" onPress={() => nav.push({ name: "sync" })} />
       <Card>
         <Choice
           value={settings.theme}
