@@ -27,6 +27,25 @@ function skipped(item: Element, kinds: Record<string, string> | undefined): bool
   });
 }
 
+/** Paths that open the item itself rather than its author: a post, a video, a pin, an article. */
+const ITEM_PATH = /\/(post|status|watch|p|comments|video|pin|live|reel)(\/|\?|$)/;
+
+/** The link to the item. Feeds put the author's profile link first, so prefer one that opens the item. */
+function itemLink(item: Element): string | null {
+  const links = [...item.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? "");
+  return links.find((h) => ITEM_PATH.test(h)) ?? links[0] ?? null;
+}
+
+/** When a site's title selector misses, the longest text block in the item is the post text. */
+function fallbackTitle(item: Element): string {
+  let best = "";
+  for (const el of item.querySelectorAll('[dir="auto"], p, h1, h2, h3')) {
+    const t = el.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    if (t.length > best.length) best = t;
+  }
+  return best.length >= 12 ? best : "";
+}
+
 /**
  * Reads the items the site already loaded into its hidden feed: its own picks and the
  * people the user follows. Nothing is clicked or scrolled; only what is on the page counts.
@@ -42,8 +61,8 @@ export function collectFeed(tuned: Tuned): PickedItem[] {
   for (const item of items) {
     if (sent.size >= MAX_ITEMS) break;
     if (skipped(item, tuned.kinds)) continue;
-    const title = text(item, tuned.title);
-    const href = item.querySelector("a[href]")?.getAttribute("href");
+    const title = text(item, tuned.title) || fallbackTitle(item);
+    const href = itemLink(item);
     if (!title || !href) continue;
     let url: URL;
     try {

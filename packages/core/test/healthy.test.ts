@@ -108,3 +108,10 @@ describe("daily batch", () => {
     expect(dailyBatch(undefined, [], ctx(), "d").saved).toBeNull();
   });
 });
+
+describe("politics", () => {
+  it("keeps calm-sounding political headlines out by default", () => {
+    expect(avoidHits("Democrats will have a 56-seat majority in the US Senate", ["politics"])).toEqual(["politics"]);
+    expect(avoidHits("A quiet walk through the senate gardens of Kyoto", ["outrage"])).toEqual([]);
+  });
+});

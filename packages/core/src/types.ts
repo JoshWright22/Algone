@@ -1,6 +1,6 @@
 export type Mode = "nofeed" | "random" | "healthy" | "tuned" | "custom";
-export type AvoidId = "outrage" | "clickbait" | "comparison" | "doom";
-export const AVOID_IDS: AvoidId[] = ["outrage", "clickbait", "comparison", "doom"];
+export type AvoidId = "outrage" | "clickbait" | "comparison" | "doom" | "politics";
+export const AVOID_IDS: AvoidId[] = ["outrage", "clickbait", "comparison", "doom", "politics"];
 
 /** What Algone asks of a native app. Ordered from loosest to strictest. */
 export const APP_MODES = ["allow", "limit", "cover", "pause", "block"] as const;

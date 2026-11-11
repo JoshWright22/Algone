@@ -24,7 +24,7 @@ const tok = (id: string) => `youtube.${id}`;
 describe("defaults", () => {
   it("starts every site with a feed rule on the healthy feed", () => {
     const s = defaultSettings(SITES);
-    expect(Object.values(s.sites).every((site) => site.mode === "healthy")).toBe(true);
+    expect(Object.entries(s.sites).every(([id, site]) => site.mode === (id === "tiktok" ? "nofeed" : "healthy"))).toBe(true);
     expect(computeView(s, rt(), yt, NOW).panel?.content).toBe("healthy");
     expect(computeView(s, rt(), yt, NOW).show).not.toContain(tok("home"));
   });
@@ -170,7 +170,7 @@ describe("isWeakening", () => {
     expect(w({ op: "setHealthy", batchSize: 5 })).toBe(false);
     expect(w({ op: "setHealthy", batchSize: 20 })).toBe(true);
     expect(w({ op: "setHealthy", dailyBudgetMinutes: 60 })).toBe(true);
-    expect(w({ op: "setAvoid", ids: ["outrage", "clickbait", "comparison", "doom"] })).toBe(false);
+    expect(w({ op: "setAvoid", ids: ["outrage", "clickbait", "comparison", "doom", "politics"] })).toBe(false);
     expect(w({ op: "setAvoid", ids: ["outrage"] })).toBe(true);
     expect(w({ op: "setActivities", items: ["Walk"] })).toBe(false);
     expect(w({ op: "startBreak", until: NOW + 3_600_000 })).toBe(true);

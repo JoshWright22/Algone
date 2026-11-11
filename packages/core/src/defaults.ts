@@ -1,6 +1,8 @@
 import type { SiteRule } from "@algone/rules";
 import { AVOID_IDS, type Runtime, type Settings, type SiteSettings, type TunedFilters } from "./types";
 
+export const SHORT_VIDEO_SITES = ["tiktok"];
+
 export const emptyTuned = (): TunedFilters => ({
   blockKeywords: [],
   blockChannels: [],
@@ -20,8 +22,9 @@ export const defaultSite = (): SiteSettings => ({
 export function defaultSettings(rules: SiteRule[]): Settings {
   return {
     schema: 2,
-    // Healthy where the rule can read the site's feed, otherwise No feed.
-    sites: Object.fromEntries(rules.map((r) => [r.id, { ...defaultSite(), mode: r.tuned ? "healthy" : "nofeed" }])),
+    // Healthy where the rule can read the site's feed, otherwise No feed. TikTok's feed is
+    // nothing but short video, so a "healthy" batch of it would still be short video.
+    sites: Object.fromEntries(rules.map((r) => [r.id, { ...defaultSite(), mode: r.tuned && !SHORT_VIDEO_SITES.includes(r.id) ? "healthy" : "nofeed" }])),
     barrier: { type: "pause", seconds: 30 },
     snoozeMinutes: 10,
     stopAtEnd: true,

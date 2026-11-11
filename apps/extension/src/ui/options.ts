@@ -211,6 +211,7 @@ const AVOID_LABELS: Record<AvoidId, string> = {
   clickbait: "Clickbait",
   comparison: "Rich, perfect-life and looks comparison",
   doom: "Doom and disaster",
+  politics: "Politics and culture war",
 };
 
 function healthyTab(s: Stored): HTMLElement {
