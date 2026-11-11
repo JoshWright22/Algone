@@ -32,6 +32,8 @@ export function applyPatch(settings: Settings, patch: Patch): Settings {
       return { ...settings, [patch.key]: patch.value };
     case "useBundledRules":
       return { ...settings, ruleUpdates: false };
+    case "batch":
+      return patch.patches.reduce(applyPatch, settings);
   }
 }
 
@@ -52,6 +54,8 @@ export function describePatch(patch: Patch, siteName = ""): string {
       return `Loosen Tuned filters on ${siteName}`;
     case "useBundledRules":
       return "Use bundled rules and stop rule updates";
+    case "batch":
+      return `Loosen ${patch.patches.length} ${patch.patches.length === 1 ? "setting" : "settings"} from ${patch.source}`;
     default:
       return "Change a setting";
   }

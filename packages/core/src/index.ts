@@ -14,3 +14,5 @@ export * from "./puzzles";
 export * from "./random";
 export * from "./links";
 export * from "./copy";
+export * from "./diff";
+export * from "./policy";

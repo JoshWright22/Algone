@@ -84,7 +84,9 @@ export type Patch =
   | { op: "setGlobal"; key: GlobalKey; value: unknown }
   | { op: "setBarrier"; barrier: BarrierConfig }
   | { op: "setTuned"; site: string; filters: TunedFilters }
-  | { op: "useBundledRules" };
+  | { op: "useBundledRules" }
+  /** Several changes from one sync or import. Weakening if any part is. */
+  | { op: "batch"; patches: Patch[]; source: string };
 
 export type Pending =
   | { kind: "patch"; patch: Patch; label: string }

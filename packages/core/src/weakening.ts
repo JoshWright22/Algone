@@ -1,4 +1,5 @@
 import type { SiteRule } from "@algone/rules";
+import { applyPatch } from "./commands";
 import { isHidden } from "./defaults";
 import type { BarrierConfig, Patch, Settings, TunedFilters } from "./types";
 
@@ -65,6 +66,14 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
     case "setTuned": {
       const site = settings.sites[patch.site];
       return !site || !tunedTightens(site.tuned, patch.filters);
+    }
+    case "batch": {
+      let current = settings;
+      for (const p of patch.patches) {
+        if (isWeakening(current, p, rules)) return true;
+        current = applyPatch(current, p);
+      }
+      return false;
     }
     default:
       return true;
