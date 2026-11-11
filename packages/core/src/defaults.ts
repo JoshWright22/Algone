@@ -42,11 +42,31 @@ export const defaultRuntime = (): Runtime => ({
   lastAcceptedRev: 0,
 });
 
-/** Fills in sites added by a newer version, without touching existing choices. */
+/** Fills in every field added by a newer version, at every depth, without touching existing choices. */
 export function migrateSettings(saved: Settings | undefined, rules: SiteRule[]): Settings {
   const base = defaultSettings(rules);
   if (!saved) return base;
-  return { ...base, ...saved, sites: { ...base.sites, ...saved.sites } };
+  const sites: Record<string, SiteSettings> = { ...base.sites };
+  for (const [id, site] of Object.entries(saved.sites ?? {})) sites[id] = migrateSite(site);
+  return {
+    ...base,
+    ...saved,
+    schema: base.schema,
+    sites,
+    webSources: { ...base.webSources, ...saved.webSources },
+  };
+}
+
+export function migrateSite(saved: Partial<SiteSettings> | undefined): SiteSettings {
+  const base = defaultSite();
+  if (!saved) return base;
+  return {
+    ...base,
+    ...saved,
+    elements: { ...saved.elements },
+    tuned: { ...base.tuned, ...saved.tuned },
+    intent: { ...base.intent, ...saved.intent },
+  };
 }
 
 export function isHidden(

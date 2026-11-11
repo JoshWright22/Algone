@@ -33,6 +33,17 @@ describe("defaults", () => {
     expect(m.sites.substack).toBeDefined();
     expect(m.snoozeMinutes).toBe(5);
   });
+  it("migration fills nested fields an older version did not have", () => {
+    const s = base();
+    const old = s.sites.youtube as unknown as Record<string, unknown>;
+    old.tuned = { blockKeywords: ["prank"] };
+    delete old.intent;
+    s.sites.youtube!.elements = { comments: true };
+    const m = migrateSettings(s, SITES);
+    expect(m.sites.youtube!.tuned).toEqual({ ...emptyTuned(), blockKeywords: ["prank"] });
+    expect(m.sites.youtube!.intent.searchHome).toBe(false);
+    expect(m.sites.youtube!.elements).toEqual({ comments: true });
+  });
 });
 
 describe("computeView", () => {
