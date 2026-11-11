@@ -1,7 +1,12 @@
 // Runs in the page's main world, so page scripts can see and forge anything here.
-// It holds no state of its own beyond the boot object, and can only send three hints.
-import { primeRoutes, start, type Hint, type PageHost, type PagePayload } from "@algone/engine";
+// It holds no state of its own beyond the boot object, and can only send four hints.
+import { matchRoutes, primeRoutes, start, type Hint, type PageHost, type PagePayload } from "@algone/engine";
+import { collectFeed } from "@algone/engine/healthy";
 import type { PageBoot } from "./boot";
+
+/** Matches FEED_CHUNK in src/hints.ts, which rejects larger messages. */
+const FEED_CHUNK = 10;
+const FEED_EVERY_MS = 2000;
 
 /** Supplied by the wrapper in src/injection.ts. */
 declare const __algoneBoot: PageBoot;
@@ -89,6 +94,18 @@ function main(): void {
   });
 
   start(host);
+
+  // The engine reports feed items through host.extension, which the app has no use for:
+  // its batch is a native screen. So the items read from the hidden feed come this way.
+  setInterval(() => {
+    const { view, site } = current;
+    if (document.hidden || view.panel?.content !== "healthy" || !site.tuned) return;
+    if (!matchRoutes(site.routes, location.pathname, location.search).includes("home")) return;
+    const items = collectFeed(site.tuned);
+    for (let i = 0; i < items.length; i += FEED_CHUNK) {
+      bridge?.postMessage(JSON.stringify({ type: "feedItems", items: items.slice(i, i + FEED_CHUNK) }));
+    }
+  }, FEED_EVERY_MS);
 }
 
 whenRootExists(main);

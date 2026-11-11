@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { handleMessage, parseHint, type HintTargets } from "../src/hints";
+import { FEED_CHUNK, handleMessage, parseHint, type HintTargets } from "../src/hints";
 import { injectionWatchdog } from "../src/watchdog";
 
 const GOOD = "https://www.youtube.com/watch?v=1";
@@ -9,6 +9,7 @@ const targets = (): HintTargets & Record<string, ReturnType<typeof vi.fn>> => ({
   injectionConfirmed: vi.fn(),
   routeChanged: vi.fn(),
   showEndSheet: vi.fn(),
+  feedItems: vi.fn(),
 });
 
 describe("hints", () => {
@@ -45,6 +46,26 @@ describe("hints", () => {
     handleMessage('{"type":"videoEnded"}', GOOD, { stopAtEnd: true }, t);
     expect(t.showEndSheet).toHaveBeenCalledTimes(1);
     expect(t.routeChanged).not.toHaveBeenCalled();
+  });
+
+  it("passes feed items through only in their exact shape and size", () => {
+    const item = { title: "A video", channel: "Someone", url: "https://www.youtube.com/watch?v=2" };
+    const t = targets();
+    handleMessage(JSON.stringify({ type: "feedItems", items: [{ ...item, extra: 1 }] }), GOOD, { stopAtEnd: false }, t);
+    expect(t.feedItems).toHaveBeenCalledWith([item]);
+    for (const items of [
+      [],
+      "x",
+      Array.from({ length: FEED_CHUNK + 1 }, () => item),
+      [{ ...item, title: "" }],
+      [{ ...item, title: "t".repeat(201) }],
+      [{ ...item, channel: 7 }],
+      [{ ...item, url: "https://www.youtube.com/" + "a".repeat(2048) }],
+      [null],
+    ]) {
+      expect(parseHint(JSON.stringify({ type: "feedItems", items }), GOOD)).toBeNull();
+    }
+    expect(parseHint(JSON.stringify({ type: "feedItems", items: [item] }), "https://evil.example/")).toBeNull();
   });
 
   it("forged messages reach nothing", () => {

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AppState, BackHandler, Linking, Modal, View } from "react-native";
+import { AppState, BackHandler, Linking, Modal, ScrollView, View } from "react-native";
+import type { HealthyItem } from "@algone/core";
 import { WebView } from "react-native-webview";
 import type {
   ShouldStartLoadRequest,
@@ -21,6 +22,9 @@ import { store } from "../store";
 import { useColors, useStored } from "../theme";
 import { Body, Button, Card, Field, Row, Screen } from "../ui";
 import { injectionWatchdog } from "../watchdog";
+import { HealthyBatch } from "./HealthyBatch";
+
+const MINUTE = 60_000;
 
 function LaunchPause(props: { name: string; onLeave: () => void; onContinue: () => void }) {
   return (
@@ -86,6 +90,9 @@ function SiteWeb({ site, url, active }: { site: string; url: string; active: boo
   const [ended, setEnded] = useState(false);
   const [saved, setSaved] = useState(false);
   const [query, setQuery] = useState("");
+  // Set once a page is opened from the healthy batch. Like the extension's tab session, time
+  // on this screen then counts toward the day's budget, also after following the site's links.
+  const [picked, setPicked] = useState(false);
 
   const boot = useMemo(() => buildBoot(state, rule, now), [state, rule, now]);
   const script = useMemo(() => injectionScript(boot), [boot]);
@@ -103,6 +110,23 @@ function SiteWeb({ site, url, active }: { site: string; url: string; active: boo
     const timer = setTimeout(() => setNow(Date.now()), Math.max(0, view.snoozedUntil - Date.now()) + 50);
     return () => clearTimeout(timer);
   }, [view.snoozedUntil]);
+
+  // A break ends by itself, so the page is told when.
+  const breakUntil = state.settings.breakUntil;
+  useEffect(() => {
+    if (breakUntil <= Date.now()) return;
+    const timer = setTimeout(() => setNow(Date.now()), Math.min(breakUntil - Date.now() + 50, 2 ** 31 - 1));
+    return () => clearTimeout(timer);
+  }, [breakUntil]);
+
+  // One tick per visible minute, as the extension's content script sends.
+  useEffect(() => {
+    if (!picked || !active) return;
+    const timer = setInterval(() => {
+      if (AppState.currentState === "active") void store.healthyMinute();
+    }, MINUTE);
+    return () => clearInterval(timer);
+  }, [picked, active]);
 
   useEffect(() => {
     const sub = AppState.addEventListener("change", (s) => {
@@ -153,6 +177,7 @@ function SiteWeb({ site, url, active }: { site: string; url: string; active: boo
       },
       routeChanged: setPath,
       showEndSheet: () => setEnded(true),
+      feedItems: (items) => void store.healthyFeedItems(site, items),
     });
 
   const onNavigation = (n: WebViewNavigation) => {
@@ -184,9 +209,19 @@ function SiteWeb({ site, url, active }: { site: string; url: string; active: boo
     void store.queueAdd({ url: page.url, title: page.title, site }).then(() => setSaved(true));
   };
 
+  const go = (target: string) => web.current?.injectJavaScript(`location.assign(${JSON.stringify(target)});true;`);
+
   const search = () => {
     const target = searchUrlFor(rule, query);
-    if (target) web.current?.injectJavaScript(`location.assign(${JSON.stringify(target)});true;`);
+    if (target) go(target);
+  };
+
+  /** Batch items were checked to be on this site's hosts when they arrived. */
+  const openPick = (item: HealthyItem) => {
+    if (!isAllowedUrl(item.url)) return;
+    void store.healthySeen(item.id);
+    setPicked(true);
+    go(item.url);
   };
 
   const onHome = matchRoutes(boot.payload.site.routes, path, "").includes("home");
@@ -228,6 +263,11 @@ function SiteWeb({ site, url, active }: { site: string; url: string; active: boo
         {panel?.content === "random" ? <Button label="Open Random" onPress={() => nav.push({ name: "random" })} /> : null}
         {panel?.content === "custom" ? <Button label="Open Custom feed" onPress={() => nav.push({ name: "custom" })} /> : null}
       </View>
+      {panel?.content === "healthy" ? (
+        <ScrollView style={{ maxHeight: "60%" }} contentContainerStyle={{ padding: 8 }}>
+          <HealthyBatch site={site} name={rule.name} onOpen={openPick} onLeave={nav.pop} />
+        </ScrollView>
+      ) : null}
       <WebView<object>
         ref={web}
         source={start}

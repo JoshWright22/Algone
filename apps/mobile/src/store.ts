@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  addFeedItems, addMinute, emptyHealthyStore, markSeen, rateCreator, safeHttps,
+  type HealthyStore, type Rating,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime,
   describePatch, isWeakening, migrateSettings, moveInQueue, recordPass, removeFromQueue, removeSource,
   startRecovery, startSnooze, useEscape, validateBarrier,
@@ -14,6 +16,8 @@ export interface Stored {
   queue: QueueItem[];
   feeds: FeedStore;
   rulesOverlay: Overlay | null;
+  /** The healthy feed's pools, batches, ratings and minutes. Never synced. */
+  healthy: HealthyStore;
 }
 
 export interface Result {
@@ -39,7 +43,24 @@ function initialState(raw?: Partial<Stored>): Stored {
     queue: raw?.queue ?? [],
     feeds: raw?.feeds ?? { sources: [], items: [] },
     rulesOverlay: raw?.rulesOverlay ?? null,
+    healthy: { ...emptyHealthyStore(), ...raw?.healthy },
   };
+}
+
+const RATINGS: Rating[] = ["worth", "notWorth", "worse"];
+
+/**
+ * Items a page reported from its hidden feed. The page is the site's, so everything is
+ * checked again here, as the extension's background does: the URL is on this site's hosts.
+ */
+export function cleanFeedItems(site: string, items: unknown): Array<{ title: string; channel: string; url: string }> {
+  const rule = siteMap()[site];
+  if (!rule || !Array.isArray(items)) return [];
+  return items.slice(0, 60).flatMap((i) => {
+    const url = typeof i?.url === "string" && i.url.length <= 2048 ? safeHttps(i.url) : null;
+    if (!url || !rule.hosts.includes(new URL(url).hostname) || typeof i.title !== "string" || !i.title) return [];
+    return [{ title: i.title.slice(0, 200), channel: typeof i.channel === "string" ? i.channel.slice(0, 100) : "", url }];
+  });
 }
 
 /** A lock that has run out behaves as the barrier it was set to return to. */
@@ -222,6 +243,33 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
     /** Network results arrive here, so they merge with whatever changed meanwhile. */
     updateFeeds(change: (feeds: FeedStore) => FeedStore) {
       return run((s) => ({ next: { feeds: change(s.feeds) } }));
+    },
+
+    /** Feed items a site page read from its hidden feed. */
+    healthyFeedItems(site: string, items: unknown) {
+      return run((s) => {
+        const clean = cleanFeedItems(site, items);
+        if (!clean.length) return { result: { ok: false } };
+        return { next: { healthy: addFeedItems(s.healthy, site, clean, s.settings, clock()) } };
+      });
+    },
+    healthySeen(id: string) {
+      return run((s) => {
+        if (typeof id !== "string" || id.length > 2048) return { result: { ok: false } };
+        return { next: { healthy: markSeen(s.healthy, id) } };
+      });
+    },
+    rate(channel: string, rating: Rating) {
+      return run((s) => {
+        if (!RATINGS.includes(rating) || typeof channel !== "string" || channel.length > 100) {
+          return { result: { ok: false } };
+        }
+        return { next: { healthy: rateCreator(s.healthy, channel, rating) } };
+      });
+    },
+    /** One visible minute on a page opened from the batch. */
+    healthyMinute() {
+      return run((s) => ({ next: { healthy: addMinute(s.healthy, clock()) } }));
     },
 
     recordRuleCheck(update: { at: number; error: string; lastAcceptedRev?: number; overlay?: Overlay | null }) {
