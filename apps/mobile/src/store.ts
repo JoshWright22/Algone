@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  addFeedItems, addMinute, emptyHealthyStore, markSeen, rateCreator, safeHttps,
+  addFeedItems, addMinute, checkBreak, emptyHealthyStore, markSeen, rateCreator, safeHttps, validatePatch,
   type HealthyStore, type Rating,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime,
   describePatch, isWeakening, migrateSettings, moveInQueue, recordPass, removeFromQueue, removeSource,
-  startRecovery, startSnooze, useEscape, validateBarrier,
+  startRecovery, startSnooze, useEscape,
   type BarrierConfig, type FeedStore, type Overlay, type Patch, type Pending, type QueueItem,
   type Runtime, type Settings,
 } from "@algone/core";
@@ -112,11 +112,19 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
     ...(patch.op === "useBundledRules" ? { rulesOverlay: null } : {}),
   });
 
+  /** Applies a change whose barrier was passed (or escaped). The one place this happens. */
   const finishPending = (s: Stored, pending: Pending, settings: Settings, runtime: Runtime): Step => {
     const cleared = { ...runtime, pending: null };
-    return pending.kind === "snooze"
-      ? { next: { settings, runtime: startSnooze(cleared, pending.site, pending.minutes, clock()) } }
-      : { next: { runtime: cleared, ...withPatch(s, pending.patch, settings) } };
+    if (pending.kind === "snooze") {
+      return { next: { settings, runtime: startSnooze(cleared, pending.site, pending.minutes, clock()) } };
+    }
+    // Checked again: time has passed, and the one-a-week rule counts from the last break taken.
+    const { patch } = pending;
+    const error = validatePatch(patch, SITES, clock())
+      ?? (patch.op === "startBreak" ? checkBreak(patch.until, s.runtime, clock()) : null);
+    if (error) return { next: { settings, runtime: cleared }, result: { ok: false, error } };
+    const next = patch.op === "startBreak" ? { ...cleared, lastBreakAt: clock() } : cleared;
+    return { next: { runtime: next, ...withPatch(s, patch, settings) } };
   };
 
   return {
@@ -151,10 +159,10 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
 
     patch(patch: Patch) {
       return run((s) => {
-        if (patch.op === "setBarrier") {
-          const error = validateBarrier(patch.barrier, clock());
-          if (error) return { result: { ok: false, error } };
-        }
+        // Every change, from any source, is checked first, as the extension's handlePatch does.
+        const error = validatePatch(patch, SITES, clock())
+          ?? (patch.op === "startBreak" ? checkBreak(patch.until, s.runtime, clock()) : null);
+        if (error) return { result: { ok: false, error } };
         if (isWeakening(s.settings, patch, SITES)) {
           const name = "site" in patch ? siteMap()[patch.site]?.name : "";
           return requestPending(s, { kind: "patch", patch, label: describePatch(patch, name) });

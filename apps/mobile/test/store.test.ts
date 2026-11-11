@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { createPartnerBarrier, MOBILE_ITERATIONS, webKdf, verifyPassword, type Overlay } from "@algone/core";
+import { createPartnerBarrier, MOBILE_ITERATIONS, webKdf, verifyPassword, type Overlay, type Patch } from "@algone/core";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@react-native-async-storage/async-storage", () => ({ default: {} }));
@@ -125,6 +125,68 @@ describe("store", () => {
   it("an expired lock checks the barrier it returns to", () => {
     const after = { type: "partner" as const, salt: "s", hash: "h", iterations: 1, recoveryAt: null };
     expect(activeBarrier({ type: "locked", until: 5, escapeUsed: false, after }, 6)).toBe(after);
+  });
+
+  it("every change passes validatePatch first, and a bad one changes nothing", async () => {
+    const { store } = await ready();
+    const before = store.get().settings;
+    for (const patch of [
+      { op: "setHealthy", batchSize: 0 },
+      { op: "setHealthy", dailyBudgetMinutes: 99_999 },
+      { op: "setAvoid", ids: ["nonsense"] },
+      { op: "setActivities", items: Array.from({ length: 21 }, () => "walk") },
+      { op: "setMode", site: "nosuchsite", mode: "nofeed" },
+      { op: "startBreak", until: Number.NaN },
+    ] as Patch[]) {
+      const r = await store.patch(patch);
+      expect(r.ok).toBe(false);
+      expect(r.needsBarrier).toBeUndefined();
+    }
+    expect(store.get().settings).toBe(before);
+    expect(store.get().runtime.pending).toBeNull();
+  });
+
+  it("healthy settings: stricter applies at once, looser waits", async () => {
+    const { store } = await ready();
+    expect(await store.patch({ op: "setHealthy", batchSize: 5 })).toEqual({ ok: true });
+    expect(store.get().settings.healthy.batchSize).toBe(5);
+    expect((await store.patch({ op: "setHealthy", dailyBudgetMinutes: 60 })).needsBarrier).toBe(true);
+    await store.barrierCancel();
+    expect(store.get().settings.healthy.dailyBudgetMinutes).toBe(30);
+    expect((await store.patch({ op: "setAvoid", ids: ["outrage"] })).needsBarrier).toBe(true);
+    await store.barrierCancel();
+    expect(await store.patch({ op: "setActivities", items: ["Call a friend"] })).toEqual({ ok: true });
+    expect(store.get().settings.activities).toEqual(["Call a friend"]);
+  });
+
+  it("a break goes through the barrier, records lastBreakAt, and only one a week", async () => {
+    let t = 1_800_000_000_000;
+    const { store } = await ready(memory(), () => t);
+    expect((await store.patch({ op: "startBreak", until: t + 25 * 3_600_000 })).ok).toBe(false);
+    expect((await store.patch({ op: "startBreak", until: t + 3_600_000 })).needsBarrier).toBe(true);
+    expect(store.get().settings.breakUntil).toBe(0);
+    expect((await store.barrierPass()).ok).toBe(true);
+    expect(store.get().settings.breakUntil).toBe(t + 3_600_000);
+    expect(store.get().runtime.lastBreakAt).toBe(t);
+    expect(await store.patch({ op: "endBreak" })).toEqual({ ok: true });
+    expect(store.get().settings.breakUntil).toBe(0);
+    t += 86_400_000;
+    const again = await store.patch({ op: "startBreak", until: t + 3_600_000 });
+    expect(again.ok).toBe(false);
+    expect(again.error).toMatch(/One break a week/);
+  });
+
+  it("a break is checked again when the barrier passes", async () => {
+    let t = 1_800_000_000_000;
+    const { store } = await ready(memory(), () => t);
+    await store.patch({ op: "startBreak", until: t + 3_600_000 });
+    // The wait outlasted the break it asked for.
+    t += 2 * 3_600_000;
+    const r = await store.barrierPass();
+    expect(r.ok).toBe(false);
+    expect(store.get().settings.breakUntil).toBe(0);
+    expect(store.get().runtime.pending).toBeNull();
+    expect(store.get().runtime.lastBreakAt).toBe(0);
   });
 
   it("rejects an invalid barrier", async () => {
