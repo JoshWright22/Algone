@@ -20,7 +20,8 @@ export const defaultSite = (): SiteSettings => ({
 export function defaultSettings(rules: SiteRule[]): Settings {
   return {
     schema: 2,
-    sites: Object.fromEntries(rules.map((r) => [r.id, defaultSite()])),
+    // Healthy where the rule can read the site's feed, otherwise No feed.
+    sites: Object.fromEntries(rules.map((r) => [r.id, { ...defaultSite(), mode: r.tuned ? "healthy" : "nofeed" }])),
     barrier: { type: "pause", seconds: 30 },
     snoozeMinutes: 10,
     stopAtEnd: true,

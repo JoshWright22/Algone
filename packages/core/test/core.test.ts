@@ -11,12 +11,23 @@ import {
 } from "../src/index";
 
 const yt = siteMap().youtube as SiteRule;
-const base = () => defaultSettings(SITES);
+/** Older tests start from No feed everywhere; the healthy default has its own test. */
+const base = (): Settings => {
+  const s = defaultSettings(SITES);
+  for (const id of Object.keys(s.sites)) s.sites[id] = { ...s.sites[id]!, mode: "nofeed" };
+  return s;
+};
 const rt = defaultRuntime;
 const NOW = new Date(2026, 9, 31, 12, 0, 0).getTime();
 const tok = (id: string) => `youtube.${id}`;
 
 describe("defaults", () => {
+  it("starts every site with a feed rule on the healthy feed", () => {
+    const s = defaultSettings(SITES);
+    expect(Object.values(s.sites).every((site) => site.mode === "healthy")).toBe(true);
+    expect(computeView(s, rt(), yt, NOW).panel?.content).toBe("healthy");
+    expect(computeView(s, rt(), yt, NOW).show).not.toContain(tok("home"));
+  });
   it("hides algorithmic and shows extras", () => {
     const v = computeView(base(), rt(), yt, NOW);
     expect(v.show).toEqual([]);
@@ -135,7 +146,10 @@ describe("isWeakening", () => {
     expect(w({ op: "setMode", site: "youtube", mode: "healthy" })).toBe(true);
     const c = applyPatch(s, { op: "setMode", site: "youtube", mode: "custom" });
     expect(w({ op: "setMode", site: "youtube", mode: "tuned" }, c)).toBe(true);
-    expect(w({ op: "setMode", site: "youtube", mode: "healthy" }, c)).toBe(false);
+    expect(w({ op: "setMode", site: "youtube", mode: "healthy" }, c)).toBe(true);
+    const hl = applyPatch(s, { op: "setMode", site: "youtube", mode: "healthy" });
+    expect(w({ op: "setMode", site: "youtube", mode: "custom" }, hl)).toBe(true);
+    expect(w({ op: "setMode", site: "youtube", mode: "random" }, hl)).toBe(false);
   });
   it("healthy, avoid, break and apps", () => {
     expect(w({ op: "setHealthy", batchSize: 5 })).toBe(false);
@@ -179,15 +193,19 @@ describe("isWeakening", () => {
     expect(w({ op: "setGlobal", key: "wikipedia", value: true })).toBe(true);
     expect(w({ op: "useBundledRules" })).toBe(true);
   });
-  it("barriers: a stronger type, or stricter within a type, is tightening", () => {
+  it("barriers: only stricter within a type is tightening", () => {
     expect(isStricterBarrier({ type: "pause", seconds: 30 }, { type: "pause", seconds: 60 })).toBe(true);
     expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 60 } })).toBe(false);
     expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 10 } })).toBe(true);
-    expect(w({ op: "setBarrier", barrier: { type: "typing", length: 60 } })).toBe(false);
+    expect(w({ op: "setBarrier", barrier: { type: "typing", length: 60 } })).toBe(true);
     const typing = applyPatch(s, { op: "setBarrier", barrier: { type: "typing", length: 60 } });
     expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 120 } }, typing)).toBe(true);
-    const schedule: BarrierConfig = { type: "schedule", windows: [{ days: [1], start: "09:00", end: "10:00" }] };
-    expect(w({ op: "setBarrier", barrier: schedule })).toBe(false);
+    const schedule: BarrierConfig = { type: "schedule", windows: [{ days: [1], start: "00:00", end: "23:59" }] };
+    expect(w({ op: "setBarrier", barrier: schedule })).toBe(true);
+    const lock = (until: number, after: BarrierConfig): BarrierConfig => ({ type: "locked", until, escapeUsed: false, after });
+    expect(isStricterBarrier(lock(NOW + 10, { type: "typing", length: 200 }), lock(NOW + 20, { type: "pause", seconds: 10 }))).toBe(false);
+    expect(isStricterBarrier(lock(NOW + 10, { type: "pause", seconds: 30 }), lock(NOW + 20, { type: "pause", seconds: 60 }))).toBe(true);
+    expect(w({ op: "setBarrier", barrier: lock(NOW + 60_000, { type: "pause", seconds: 10 }) })).toBe(true);
     expect(w({ op: "setBarrier", barrier: schedule }, applyPatch(s, { op: "setBarrier", barrier: schedule }))).toBe(true);
     expect(
       isStricterBarrier({ type: "daily", limit: 3, step: "pause" }, { type: "daily", limit: 1, step: "pause" }),

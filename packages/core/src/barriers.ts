@@ -172,7 +172,7 @@ export function validateBarrier(b: BarrierConfig, now: number): string | null {
         ? null
         : "Length must be 20 to 200 characters";
     case "daily":
-      return b.limit >= 0 ? null : "Limit cannot be negative";
+      return b.limit >= 1 && b.limit <= 100 ? null : "Allow 1 to 100 unlocks a day";
     case "schedule":
       return b.windows.some((w) => w.days.length > 0) ? null : "Add at least one weekly window";
     case "locked":

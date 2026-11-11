@@ -37,6 +37,12 @@ export interface CapturedItem {
   url: string;
 }
 
+export interface PickedItem {
+  title: string;
+  channel: string;
+  url: string;
+}
+
 export interface PageHost {
   payload(): Promise<PagePayload>;
   onPayload(cb: (p: PagePayload) => void): void;
@@ -46,5 +52,7 @@ export interface PageHost {
   extension?: {
     panelUrl(kind: PanelKind): string;
     capture(items: CapturedItem[]): void;
+    /** Items read from the hidden feed, for the healthy batch. */
+    feedItems(items: PickedItem[]): void;
   };
 }

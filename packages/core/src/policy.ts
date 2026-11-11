@@ -32,13 +32,23 @@ export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartia
 
 export type PolicyResult = { ok: true; policy: Policy } | { ok: false; error: string };
 
-/** The shared part of settings. Barrier progress (a used escape, a running recovery) stays local. */
+/** Shared in place of a partner password, which never leaves the device it was set on. */
+export const PARTNER_STAND_IN: BarrierConfig = { type: "typing", length: 200 };
+
+/**
+ * The shared part of settings. Barrier progress (a used escape) stays local, and so does
+ * a partner password: its hash in a file the person can read could be guessed offline.
+ */
 export function sharedSettings(settings: Settings): SharedSettings {
   const { theme: _t, breakUntil: _b, ...shared } = settings;
-  const b = shared.barrier;
-  if (b.type === "locked") shared.barrier = { ...b, escapeUsed: false };
-  if (b.type === "partner") shared.barrier = { ...b, recoveryAt: null };
+  shared.barrier = shareBarrier(shared.barrier);
   return shared;
+}
+
+function shareBarrier(b: BarrierConfig): BarrierConfig {
+  if (b.type === "partner") return PARTNER_STAND_IN;
+  if (b.type === "locked") return { ...b, escapeUsed: false, after: shareBarrier(b.after) };
+  return b;
 }
 
 export function policyFromSettings(settings: Settings, rev: number, updatedBy: string, now: number): Policy {
@@ -77,15 +87,12 @@ export function settingsFromPolicy(
   }
   const { theme, breakUntil, barrier: localBarrier } = where.local;
   let barrier = shared.barrier;
-  // Same barrier as here: keep this device's progress through it.
-  if (sameBarrier(barrier, localBarrier)) barrier = localBarrier;
+  // A partner password set here stays. Otherwise keep this device's escape if a lock is still on.
+  if (localBarrier.type === "partner") barrier = localBarrier;
+  else if (barrier.type === "locked" && localBarrier.type === "locked") {
+    barrier = { ...barrier, escapeUsed: barrier.escapeUsed || localBarrier.escapeUsed };
+  }
   return migrateSettings({ ...shared, barrier, theme, breakUntil } as Settings, rules);
-}
-
-function sameBarrier(a: BarrierConfig, b: BarrierConfig): boolean {
-  const strip = (x: BarrierConfig) =>
-    x.type === "locked" ? { ...x, escapeUsed: false } : x.type === "partner" ? { ...x, recoveryAt: null } : x;
-  return JSON.stringify(strip(a)) === JSON.stringify(strip(b));
 }
 
 // ---- Validation. Strict on shape, so a typo is an error and not a silent loosening.
@@ -126,7 +133,7 @@ function barrier(v: unknown, path: string, depth = 0): void {
     case "typing":
       return num(b.length, `${path}.length`, 20, 200);
     case "daily":
-      num(b.limit, `${path}.limit`, 0, 100);
+      num(b.limit, `${path}.limit`, 1, 100);
       return need(b.step === "pause" || b.step === "typing", `${path}.step must be "pause" or "typing"`);
     case "schedule": {
       need(Array.isArray(b.windows) && b.windows.length > 0 && b.windows.length <= 50, `${path}.windows needs 1 to 50 windows`);
@@ -146,13 +153,11 @@ function barrier(v: unknown, path: string, depth = 0): void {
     case "locked":
       need(depth === 0, `${path} cannot nest a lock in a lock`);
       num(b.until, `${path}.until`, 0, Number.MAX_SAFE_INTEGER);
+      // How far ahead is checked against the clock where it is applied (validateBarrier, 7 days).
       bool(b.escapeUsed, `${path}.escapeUsed`);
       return barrier(b.after, `${path}.after`, depth + 1);
     case "partner":
-      need(typeof b.salt === "string" && typeof b.hash === "string" && b.hash !== "", `${path} needs salt and hash`);
-      num(b.iterations, `${path}.iterations`, 1, 10_000_000);
-      need(b.recoveryAt === null || typeof b.recoveryAt === "number", `${path}.recoveryAt must be a time or null`);
-      return;
+      throw new Invalid(`${path}: a partner password is set on each device, not in the policy`);
     default:
       throw new Invalid(`${path}.type is not a known barrier`);
   }

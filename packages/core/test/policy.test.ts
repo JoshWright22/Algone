@@ -33,7 +33,7 @@ describe("policy file", () => {
     if (!r.ok) return;
     expect(r.policy.settings.sites.youtube?.mode).toBe("tuned");
     expect(r.policy.settings.sites.youtube?.tuned.blockKeywords).toEqual([]);
-    expect(r.policy.settings.sites.reddit?.mode).toBe("nofeed");
+    expect(r.policy.settings.sites.reddit?.mode).toBe("healthy");
   });
 
   it.each([
@@ -85,7 +85,7 @@ describe("policy file", () => {
     const s = settingsFromPolicy(p, SITES, here);
     expect(s.sites.youtube?.mode).toBe("tuned");
     expect(s.snoozeMinutes).toBe(5);
-    expect(settingsFromPolicy(p, SITES, { ...here, platform: "firefox", deviceId: "x" }).sites.youtube?.mode).toBe("nofeed");
+    expect(settingsFromPolicy(p, SITES, { ...here, platform: "firefox", deviceId: "x" }).sites.youtube?.mode).toBe("healthy");
   });
 
   it("counts revisions", () => {
@@ -170,5 +170,27 @@ describe("sync plan", () => {
     expect(isWeakening(base(), batch, SITES)).toBe(true);
     expect(describePatch(batch)).toBe("Loosen 2 settings from sync");
     expect(applyPatch(base(), batch).sites.youtube?.enabled).toBe(false);
+  });
+});
+
+describe("barriers in the policy", () => {
+  it("keeps a partner password on its device and shares a stand-in", () => {
+    const partner = { type: "partner" as const, salt: "s", hash: "h", iterations: 600_000, recoveryAt: null };
+    const s = { ...base(), barrier: partner };
+    const p = policyFromSettings(s, 1, "pc-1", NOW);
+    expect(p.settings.barrier).toEqual({ type: "typing", length: 200 });
+    expect(JSON.stringify(p)).not.toContain('"h"');
+    expect(settingsFromPolicy(p, SITES, { ...here, local: { theme: "dark", breakUntil: 0, barrier: partner } }).barrier).toEqual(partner);
+    expect(validatePolicy({ ...p, settings: { ...p.settings, barrier: partner } }, SITES).ok).toBe(false);
+  });
+  it("re-sending a lock does not give a fresh escape", () => {
+    const lock = (until: number, escapeUsed: boolean) => ({ type: "locked" as const, until, escapeUsed, after: { type: "pause" as const, seconds: 30 } });
+    const p = policyFromSettings({ ...base(), barrier: lock(NOW + 5000, false) }, 1, "pc-1", NOW);
+    const local = { theme: "dark" as const, breakUntil: 0, barrier: lock(NOW + 4000, true) };
+    expect(settingsFromPolicy(p, SITES, { ...here, local }).barrier).toMatchObject({ escapeUsed: true, until: NOW + 5000 });
+  });
+  it("refuses a daily limit of zero", () => {
+    const p = policyFromSettings(base(), 1, "pc-1", NOW);
+    expect(validatePolicy({ ...p, settings: { ...p.settings, barrier: { type: "daily", limit: 0, step: "pause" } } }, SITES).ok).toBe(false);
   });
 });

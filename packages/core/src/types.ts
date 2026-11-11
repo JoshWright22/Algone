@@ -3,7 +3,7 @@ export type AvoidId = "outrage" | "clickbait" | "comparison" | "doom";
 export const AVOID_IDS: AvoidId[] = ["outrage", "clickbait", "comparison", "doom"];
 
 /** What Algone asks of a native app. Ordered from loosest to strictest. */
-export const APP_MODES = ["allow", "limit", "pause", "cover", "block"] as const;
+export const APP_MODES = ["allow", "limit", "cover", "pause", "block"] as const;
 export type AppMode = (typeof APP_MODES)[number];
 export const APP_PLATFORMS = ["android", "ios", "desktop"] as const;
 export type AppPlatform = (typeof APP_PLATFORMS)[number];

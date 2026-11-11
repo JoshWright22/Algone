@@ -1,5 +1,6 @@
 import { clearAll, writeOff, writeRoute, writeView } from "./attrs";
 import { collectItems } from "./capture";
+import { collectFeed } from "./healthy";
 import { runEffects, subscriptionsRedirect } from "./effects";
 import { launchPassed } from "./launch";
 import { pauseHiddenMedia } from "./media";
@@ -61,6 +62,10 @@ export function start(host: PageHost): () => void {
         host.hint({ type: "videoEnded" });
         showEndedPanel(host, video);
       });
+    }
+    if (view.panel?.content === "healthy" && site.tuned && host.extension && routes.includes("home")) {
+      const items = collectFeed(site.tuned);
+      if (items.length) host.extension.feedItems(items);
     }
     if (site.capture && host.extension && site.capture.routes.some((r) => routes.includes(r))) {
       const items = collectItems(site.capture);

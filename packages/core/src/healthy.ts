@@ -1,6 +1,7 @@
 import avoidLists from "./content/avoid.json" with { type: "json" };
-import { matchesTopic } from "./tuned";
-import type { AvoidId, HealthySettings } from "./types";
+import { localDay } from "./barriers";
+import { matchesTopic, shouldHide } from "./tuned";
+import type { AvoidId, HealthySettings, Settings } from "./types";
 
 /**
  * The healthy feed: a short batch picked from what the site already loaded, ranked for
@@ -124,4 +125,85 @@ export function dailyBatch(
   }
   const batch = healthyBatch(available, ctx);
   return { saved: batch.items.length ? { day, items: batch.items } : null, batch };
+}
+
+/** Everything the healthy feed keeps on this device. Never synced. */
+export interface HealthyStore {
+  /** Items read from each site's hidden feed today. */
+  pools: Record<string, { day: string; items: HealthyItem[] }>;
+  batches: Record<string, SavedBatch>;
+  /** Ids opened from a batch. Kept for a week of batches at most. */
+  seen: string[];
+  ratings: Record<string, Rating>;
+  usage: { day: string; minutes: number };
+}
+
+export const emptyHealthyStore = (): HealthyStore => ({
+  pools: {},
+  batches: {},
+  seen: [],
+  ratings: {},
+  usage: { day: "", minutes: 0 },
+});
+
+const MAX_POOL = 100;
+const MAX_SEEN = 500;
+
+export function healthyContext(settings: Settings, site: string, store: HealthyStore, now: number): HealthyContext {
+  const day = localDay(now);
+  return {
+    ratings: store.ratings,
+    allowTopics: settings.sites[site]?.tuned.allowTopics ?? [],
+    avoid: settings.avoid,
+    healthy: settings.healthy,
+    usedMinutes: store.usage.day === day ? store.usage.minutes : 0,
+    seen: store.seen,
+    now,
+  };
+}
+
+/** Adds items read from a site's feed, then picks today's batch if none is kept yet. */
+export function addFeedItems(
+  store: HealthyStore,
+  site: string,
+  picked: Array<{ title: string; channel: string; url: string }>,
+  settings: Settings,
+  now: number,
+): HealthyStore {
+  const day = localDay(now);
+  const filters = settings.sites[site]?.tuned;
+  const old = store.pools[site]?.day === day ? store.pools[site].items : [];
+  const known = new Set(old.map((i) => i.id));
+  const fresh = picked
+    .filter((p) => !known.has(p.url) && !(filters && shouldHide({ title: p.title, channel: p.channel, kinds: [] }, filters)))
+    .map((p) => ({ id: p.url, title: p.title, channel: p.channel, url: p.url }));
+  const items = [...old, ...fresh].slice(0, MAX_POOL);
+  const { saved } = dailyBatch(store.batches[site], items, healthyContext(settings, site, store, now), day);
+  const batches = { ...store.batches };
+  if (saved) batches[site] = saved;
+  return { ...store, pools: { ...store.pools, [site]: { day, items } }, batches };
+}
+
+export function markSeen(store: HealthyStore, id: string): HealthyStore {
+  if (store.seen.includes(id)) return store;
+  return { ...store, seen: [...store.seen, id].slice(-MAX_SEEN) };
+}
+
+export function rateCreator(store: HealthyStore, channel: string, rating: Rating): HealthyStore {
+  const key = channel.trim().toLowerCase();
+  if (!key) return store;
+  return { ...store, ratings: { ...store.ratings, [key]: rating } };
+}
+
+/** One visible minute on a page opened from the batch. */
+export function addMinute(store: HealthyStore, now: number): HealthyStore {
+  const day = localDay(now);
+  const minutes = (store.usage.day === day ? store.usage.minutes : 0) + 1;
+  return { ...store, usage: { day, minutes } };
+}
+
+/** What the panel shows for a site now. */
+export function currentBatch(settings: Settings, site: string, store: HealthyStore, now: number): HealthyBatch {
+  const items = store.pools[site]?.day === localDay(now) ? store.pools[site].items : [];
+  return dailyBatch(store.batches[site], items, healthyContext(settings, site, store, now), localDay(now)).batch;
 }

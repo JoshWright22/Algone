@@ -9,13 +9,14 @@ import {
 /** Applying these never needs a barrier: they do not touch what is hidden. */
 const NEUTRAL_GLOBALS = new Set(["theme", "queueSoftCap", "customRanking"]);
 
-/** Barrier types from weakest to strongest. Locks are temporary and only compare with locks. */
-const BARRIER_RANK: Record<string, number> = { pause: 1, typing: 2, daily: 3, schedule: 4, partner: 5 };
-
-/** Mode strictness: a move to an equal or higher number never needs a barrier. */
-const MODE_RANK: Record<Mode, number> = { tuned: 0, custom: 1, healthy: 2, random: 3, nofeed: 3 };
+/**
+ * Mode strictness. A move to a higher number never needs a barrier. Healthy and Custom
+ * share a rank but differ (the site's picks vs your own sources), so moving between them waits.
+ */
+const MODE_RANK: Record<Mode, number> = { tuned: 0, custom: 1, healthy: 1, random: 2, nofeed: 2 };
 
 const APP_RANK = Object.fromEntries(APP_MODES.map((m, i) => [m, i])) as Record<AppMode, number>;
+const isMode = (m: Mode, rank: number) => MODE_RANK[m] === rank;
 
 function appTightens(before: AppPolicy | undefined, after: AppPolicy | null): boolean {
   if (!after) return !before || before.mode === "allow";
@@ -26,17 +27,22 @@ function appTightens(before: AppPolicy | undefined, after: AppPolicy | null): bo
   return true;
 }
 
-/** True if `after` is stricter than `before`: a stronger type, or the same type made stricter. */
+/**
+ * True if `after` is the same barrier type made stricter. A change of type always waits:
+ * type says little about strength (a schedule open all day is a 10 second wait), and a
+ * new partner password chosen by the person loosening would be no barrier at all.
+ */
 export function isStricterBarrier(before: BarrierConfig, after: BarrierConfig): boolean {
-  const rb = BARRIER_RANK[before.type];
-  const ra = BARRIER_RANK[after.type];
-  if (rb && ra && ra !== rb) return ra > rb;
   if (before.type === "pause" && after.type === "pause") return after.seconds > before.seconds;
   if (before.type === "typing" && after.type === "typing") return after.length > before.length;
   if (before.type === "daily" && after.type === "daily") {
     return after.limit < before.limit && after.step === before.step;
   }
-  if (before.type === "locked" && after.type === "locked") return after.until > before.until;
+  if (before.type === "locked" && after.type === "locked") {
+    // A later end, and what follows the lock is no weaker than before.
+    const sameAfter = JSON.stringify(after.after) === JSON.stringify(before.after);
+    return after.until > before.until && (sameAfter || isStricterBarrier(before.after, after.after));
+  }
   return false;
 }
 
@@ -71,6 +77,7 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
     case "setMode": {
       const current = settings.sites[patch.site]?.mode;
       if (patch.mode === current || !current) return patch.mode !== current;
+      if (MODE_RANK[patch.mode] === MODE_RANK[current]) return !isMode(patch.mode, 2);
       return MODE_RANK[patch.mode] < MODE_RANK[current];
     }
     case "setIntent":
