@@ -125,7 +125,8 @@ function SiteSettings({ id }: { id: string }) {
   );
 }
 
-const AVOID_LABELS: Record<AvoidId, string> = {
+/** Partial, so a list added in core shows under its id until it gets a label here. */
+const AVOID_LABELS: Partial<Record<AvoidId, string>> = {
   outrage: "Outrage and ragebait",
   clickbait: "Clickbait",
   comparison: "Rich, perfect-life and looks comparison",
@@ -181,7 +182,7 @@ function HealthySettings() {
       {AVOID_IDS.map((id) => (
         <Toggle
           key={id}
-          label={AVOID_LABELS[id]}
+          label={AVOID_LABELS[id] ?? id}
           value={settings.avoid.includes(id)}
           onChange={(on) =>
             void run({ op: "setAvoid", ids: on ? [...settings.avoid, id] : settings.avoid.filter((a) => a !== id) })
