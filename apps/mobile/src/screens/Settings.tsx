@@ -311,6 +311,7 @@ function BarrierForm() {
 }
 
 export function SettingsScreen() {
+  const nav = useNav();
   const apply = useApply();
   const { settings, runtime } = useStored();
   const [open, setOpen] = useState(SITES[0]?.id ?? "");
@@ -321,6 +322,7 @@ export function SettingsScreen() {
       {open ? <SiteSettings key={open} id={open} /> : null}
       <HealthySettings />
       <BarrierForm />
+      <Button label="Sync and settings file" onPress={() => nav.push({ name: "sync" })} />
       <Card>
         <Choice
           value={settings.theme}

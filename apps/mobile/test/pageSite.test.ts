@@ -1,4 +1,4 @@
-import { defaultRuntime, defaultSettings, emptyHealthyStore, handleRulesFile, type Overlay } from "@algone/core";
+import { defaultRuntime, defaultSettings, emptyHealthyStore, emptySyncState, handleRulesFile, type Overlay } from "@algone/core";
 import { SITES, siteMap, type SiteRule } from "@algone/rules";
 import { describe, expect, it, vi } from "vitest";
 
@@ -34,6 +34,9 @@ function state(overlay: Overlay | null = null): Stored {
     },
     rulesOverlay: overlay,
     healthy: { ...emptyHealthyStore(), ratings: { "secret creator": "worse" } },
+    device: "app-secretdevice",
+    sync: { ...emptySyncState(), gistId: "secretgistid", base: null },
+    syncToken: "github_pat_SECRETTOKEN",
   };
 }
 
@@ -83,7 +86,7 @@ describe("page payload", () => {
     const s = state();
     s.settings.barrier = { type: "partner", salt: "SALTSALT", hash: "HASHHASH", iterations: 5, recoveryAt: null };
     const text = JSON.stringify(buildBoot(s, youtube, NOW));
-    for (const secret of ["secret creator", "secret.example", "queued title", "SALTSALT", "HASHHASH", '"queue"', '"sources"', '"barrier"', '"password"']) {
+    for (const secret of ["SECRETTOKEN", "secretgistid", "secretdevice", "secret creator", "secret.example", "queued title", "SALTSALT", "HASHHASH", '"queue"', '"sources"', '"barrier"', '"password"']) {
       expect(text).not.toContain(secret);
     }
     const boot = buildBoot(s, youtube, NOW);

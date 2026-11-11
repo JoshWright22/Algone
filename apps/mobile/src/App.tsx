@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AppState, Linking, View } from "react-native";
+import { AppState, Linking, Platform, View } from "react-native";
 import { ShareIntentModule, useShareIntent } from "expo-share-intent";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -14,13 +14,16 @@ import { HomeScreen } from "./screens/Home";
 import { QueueScreen } from "./screens/Queue";
 import { RandomScreen } from "./screens/Random";
 import { SettingsScreen } from "./screens/Settings";
+import { SyncScreen } from "./screens/Sync";
 import { SiteScreen } from "./screens/Site";
 import { store } from "./store";
+import { runSync, startSyncLoop } from "./sync";
 import { useColors } from "./theme";
 
 function background(): void {
   void checkRules(store, rulesConfig);
   void refreshFeeds(store);
+  if (store.get().syncToken) void runSync(store, Platform.OS);
 }
 
 /** Saved links stay inert text in the queue until the user taps one. */
@@ -75,6 +78,8 @@ function screen(route: Route, active: boolean) {
       return <SettingsScreen />;
     case "barrier":
       return <BarrierScreen />;
+    case "sync":
+      return <SyncScreen />;
   }
 }
 
@@ -99,14 +104,19 @@ export default function App() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let stopSync = () => {};
     void store.load(rulesConfig.buildRev).then(() => {
       setReady(true);
       background();
+      stopSync = startSyncLoop(store, Platform.OS);
     });
     const sub = AppState.addEventListener("change", (s) => {
       if (s === "active") background();
     });
-    return () => sub.remove();
+    return () => {
+      sub.remove();
+      stopSync();
+    };
   }, []);
 
   return <SafeAreaProvider>{ready ? <Shell /> : null}</SafeAreaProvider>;

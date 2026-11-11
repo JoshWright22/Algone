@@ -8,7 +8,8 @@ export type Route =
   | { name: "custom" }
   | { name: "random" }
   | { name: "settings" }
-  | { name: "barrier" };
+  | { name: "barrier" }
+  | { name: "sync" };
 
 interface Nav {
   push(route: Route): void;
