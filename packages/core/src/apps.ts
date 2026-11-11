@@ -19,12 +19,14 @@ export interface ActiveAppRule {
  * What the Android service enforces now: the app rules this device's settings switch on.
  * `block` sends the person home from the whole app; `cover` and `pause` back out of feed
  * screens; `shortVideo` backs out of Shorts and Reels. Limits by minutes are not enforced
- * on Android yet and only add short-video blocking when asked.
+ * on Android yet; such an app still has Shorts and Reels blocked unless `shortVideo` is false.
  */
 export function activeAndroidRules(settings: Settings, apps: AppRule[], now: number): ActiveAppRule[] {
   if (settings.breakUntil > now) {
-    // A break opens feeds but keeps short video closed, as on the web.
+    // A break opens feeds but keeps short video closed, as on the web, for apps that block it.
     return apps.flatMap((a) => {
+      const cfg = settings.apps.android?.[a.id];
+      if (!cfg || cfg.mode === "allow" || (cfg.mode !== "block" && cfg.shortVideo === false)) return [];
       const screens = a.screens.filter((s) => s.kind === "shortVideo");
       return screens.length ? [{ packages: a.packages, screens }] : [];
     });

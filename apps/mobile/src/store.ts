@@ -118,7 +118,14 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
           const candidate = { ...state, ...next };
           await kv.setItem(STATE_KEY, JSON.stringify(candidate));
           state = candidate;
-          for (const fn of listeners) fn();
+          // Saved is saved: a listener's error must not report the change as failed.
+          for (const fn of listeners) {
+            try {
+              fn();
+            } catch {
+              // A broken listener (such as a missing native module) only loses its own update.
+            }
+          }
         }
         return result ?? { ok: true };
       } catch (e) {
@@ -291,7 +298,10 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
       return run((s) => {
         const clean = cleanFeedItems(site, items);
         if (!clean.length) return { result: { ok: false } };
-        return { next: { healthy: addFeedItems(s.healthy, site, clean, s.settings, clock()) } };
+        const healthy = addFeedItems(s.healthy, site, clean, s.settings, clock());
+        // The page sends every 2 s; write only when something actually changed.
+        if (JSON.stringify(healthy) === JSON.stringify(s.healthy)) return { result: { ok: true } };
+        return { next: { healthy } };
       });
     },
     healthySeen(id: string) {
@@ -345,8 +355,19 @@ export function createStore(kv: KeyValue, clock: () => number = Date.now) {
         if (s.syncToken !== token) return { result: { ok: false, error: "Signed out" } };
         const later = s.settings === before ? [] : diffSettings(before, s.settings, SITES);
         const { base: _drop, ...synced } = r.state as MobileSync;
+        // A change made here during the round lands on top only if it is no looser than what
+        // the round brought; otherwise it waits behind the barrier like any other loosening.
+        let settings = r.settings;
+        const waiting: Patch[] = [];
+        for (const p of later) {
+          if (isWeakening(settings, p, SITES)) waiting.push(p);
+          else settings = applyPatch(settings, p);
+        }
+        const pending = waiting.length
+          ? { kind: "patch" as const, patch: { op: "batch" as const, patches: waiting, source: "this device" }, label: `Loosen ${waiting.length} ${waiting.length === 1 ? "setting" : "settings"} from this device` }
+          : synced.pending ?? null;
         return {
-          next: { settings: later.reduce(applyPatch, r.settings), sync: { ...synced, base: r.settings } },
+          next: { settings, sync: { ...synced, pending, base: r.settings } },
           result: { ok: true, applied: r.applied },
         };
       });

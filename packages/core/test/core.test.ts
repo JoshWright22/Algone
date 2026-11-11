@@ -179,7 +179,7 @@ describe("isWeakening", () => {
     expect(w({ op: "setApp", platform: "android", app: "youtube", config: cover })).toBe(false);
     const a = applyPatch(s, { op: "setApp", platform: "android", app: "youtube", config: cover });
     expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "block" } }, a)).toBe(false);
-    expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "cover" } }, a)).toBe(true);
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "cover", shortVideo: false } }, a)).toBe(true);
     expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "limit", minutes: 5 } }, a)).toBe(true);
     expect(w({ op: "setApp", platform: "android", app: "youtube", config: null }, a)).toBe(true);
     const l = applyPatch(s, { op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 20 } });
@@ -553,5 +553,13 @@ describe("rising friction", () => {
     expect(barrierStep(pause, r, NOW + 86_400_000)).toEqual({ kind: "wait", seconds: 30 });
     const typing = barrierStep({ type: "typing", length: 20 }, recordPass(pause, rt(), NOW).runtime, NOW);
     expect(typing.kind === "typing" && typing.text.replace(/ /g, "").length).toBeGreaterThan(20);
+  });
+});
+
+describe("app settings review fixes", () => {
+  const s = defaultSettings(SITES);
+  it("turning short video off loosens even when the mode rank rises", () => {
+    expect(isWeakening(s, { op: "setApp", platform: "android", app: "youtube", config: { mode: "pause", shortVideo: false } }, SITES)).toBe(true);
+    expect(isWeakening(s, { op: "setApp", platform: "android", app: "youtube", config: { mode: "block" } }, SITES)).toBe(false);
   });
 });

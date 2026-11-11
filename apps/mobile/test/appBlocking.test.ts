@@ -7,13 +7,19 @@ vi.mock("expo", () => ({ requireOptionalNativeModule: () => null }));
 vi.mock("../src/store", () => ({ store: { get: () => ({ settings: defaultSettings(SITES) }), subscribe: () => () => {} } }));
 
 const { rulesJson, startAppBlocking } = await import("../src/appBlocking");
+const has = (list: Array<{ packages: string[] }>, pkg: string) => list.some((r) => r.packages.includes(pkg));
 
 describe("app blocking", () => {
-  it("sends the service the rules this device's settings switch on", () => {
-    const rules = JSON.parse(rulesJson(defaultSettings(SITES), 0));
-    expect(rules.some((r: { packages: string[] }) => r.packages.includes("com.google.android.youtube"))).toBe(true);
+  it("sends normal rules, break rules and the break's end, so the service can end a break alone", () => {
+    const yt = "com.google.android.youtube";
+    const r = JSON.parse(rulesJson(defaultSettings(SITES)));
+    expect(r.breakUntil).toBe(0);
+    expect(has(r.normal, yt)).toBe(true);
+    expect(has(r.onBreak, yt)).toBe(true);
     const off = applyPatch(defaultSettings(SITES), { op: "setApp", platform: "android", app: "youtube", config: { mode: "allow" } });
-    expect(JSON.parse(rulesJson(off, 0)).some((r: { packages: string[] }) => r.packages.includes("com.google.android.youtube"))).toBe(false);
+    expect(has(JSON.parse(rulesJson(off)).normal, yt)).toBe(false);
+    const broke = applyPatch(defaultSettings(SITES), { op: "startBreak", until: 1234 });
+    expect(JSON.parse(rulesJson(broke)).breakUntil).toBe(1234);
   });
   it("does nothing without the native module", () => {
     expect(() => startAppBlocking()()).not.toThrow();

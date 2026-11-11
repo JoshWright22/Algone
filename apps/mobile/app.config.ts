@@ -36,6 +36,8 @@ const config: ExpoConfig = {
   },
   android: {
     package: "io.github.joshwright22.algone",
+    // Keeps the sync token and settings out of Android's cloud backup and device transfer.
+    allowBackup: false,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-foreground.png",
       backgroundColor: "#14141c",

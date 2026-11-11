@@ -21,8 +21,9 @@ const isMode = (m: Mode, rank: number) => MODE_RANK[m] === rank;
 function appTightens(before: AppPolicy | undefined, after: AppPolicy | null): boolean {
   if (!after) return !before || before.mode === "allow";
   if (!before) return true; // A new entry only adds limits.
+  // Turning short-video blocking off loosens, whatever the mode, unless the whole app is blocked.
+  if (after.mode !== "block" && (before.shortVideo ?? true) && after.shortVideo === false) return false;
   if (APP_RANK[after.mode] !== APP_RANK[before.mode]) return APP_RANK[after.mode] > APP_RANK[before.mode];
-  if (before.shortVideo && !after.shortVideo) return false;
   if (after.mode === "limit") return (after.minutes ?? Infinity) <= (before.minutes ?? Infinity);
   return true;
 }
