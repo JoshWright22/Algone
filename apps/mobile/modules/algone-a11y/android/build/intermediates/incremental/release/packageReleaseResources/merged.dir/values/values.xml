@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="algone_a11y_description">Algone uses this to see which screen is open in YouTube, Instagram, Facebook, TikTok and Reddit, and to go back when it is Shorts, Reels or another screen you chose to block. It reads screen names and button labels, never your posts or messages, and sends nothing anywhere. You can turn it off here at any time.</string>
-    <string name="algone_a11y_label">Algone app blocking</string>
-</resources>

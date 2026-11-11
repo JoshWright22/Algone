@@ -1,3 +1,0 @@
-int string algone_a11y_description 0x0
-int string algone_a11y_label 0x0
-int xml algone_accessibility_service 0x0

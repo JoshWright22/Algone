@@ -1,9 +1,0 @@
-io.github.joshwright22.algone.a11y.algone-a11y-pngs-0 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\generated\res\pngs\release
-io.github.joshwright22.algone.a11y.algone-a11y-updated_navigation_xml-1 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\generated\updated_navigation_xml\release
-io.github.joshwright22.algone.a11y.algone-a11y-mergeReleaseResources-2 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
-io.github.joshwright22.algone.a11y.algone-a11y-mergeReleaseResources-3 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
-io.github.joshwright22.algone.a11y.algone-a11y-release-4 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\intermediates\merged_res\release\mergeReleaseResources
-io.github.joshwright22.algone.a11y.algone-a11y-release-5 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\build\intermediates\packaged_res\release\packageReleaseResources
-io.github.joshwright22.algone.a11y.algone-a11y-main-6 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\main\res
-io.github.joshwright22.algone.a11y.algone-a11y-release-7 C:\Users\awsom\.t3\projects\feed-blocker\apps\mobile\modules\algone-a11y\android\src\release\res
-gradleHome-0 C:\Users\awsom\.gradle
