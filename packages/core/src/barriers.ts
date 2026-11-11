@@ -71,12 +71,39 @@ export function typingText(length: number, random: () => number = Math.random): 
   return out;
 }
 
+/** Each pass after the first on the same day adds this much: a little more friction, never a lockout. */
+export const FRICTION_SECONDS = 15;
+export const FRICTION_CHARACTERS = 15;
+
+function passesToday(runtime: Runtime, now: number): number {
+  const p = runtime.passes;
+  return p && p.day === localDay(now) ? p.count : 0;
+}
+
+/** The barrier as it stands today: a pause or typing barrier grows with each pass. */
+export function withFriction(barrier: BarrierConfig, runtime: Runtime, now: number): BarrierConfig {
+  const extra = passesToday(runtime, now);
+  if (!extra) return barrier;
+  if (barrier.type === "pause") return { ...barrier, seconds: Math.min(PAUSE_MAX, barrier.seconds + extra * FRICTION_SECONDS) };
+  if (barrier.type === "typing") return { ...barrier, length: Math.min(TYPING_MAX, barrier.length + extra * FRICTION_CHARACTERS) };
+  return barrier;
+}
+
 /** What the unlock page must show now. */
 export function barrierStep(
   barrier: BarrierConfig,
   runtime: Runtime,
   now: number,
   random: () => number = Math.random,
+): BarrierStep {
+  return plainStep(withFriction(barrier, runtime, now), runtime, now, random);
+}
+
+function plainStep(
+  barrier: BarrierConfig,
+  runtime: Runtime,
+  now: number,
+  random: () => number,
 ): BarrierStep {
   switch (barrier.type) {
     case "pause":
@@ -149,7 +176,9 @@ export function recordPass(
     next = { type: "pause", seconds: 30 };
   }
   if (barrier.type === "locked" && now >= barrier.until) next = barrier.after;
-  return { barrier: next, runtime: { ...runtime, stats, daily } };
+  const day = localDay(now);
+  const passes = { day, count: passesToday(runtime, now) + 1 };
+  return { barrier: next, runtime: { ...runtime, stats, daily, passes } };
 }
 
 export function useEscape(barrier: BarrierConfig): BarrierConfig {

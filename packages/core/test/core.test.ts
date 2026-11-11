@@ -540,3 +540,18 @@ describe("effective view after patch", () => {
     expect(applyPatch(base(), { op: "setGlobal", key: "wikipedia", value: true }).webSources.wikipedia).toBe(true);
   });
 });
+
+describe("rising friction", () => {
+  it("each pass on the same day adds 15 seconds or 15 characters, capped, and resets tomorrow", () => {
+    let r = rt();
+    const pause: BarrierConfig = { type: "pause", seconds: 30 };
+    expect(barrierStep(pause, r, NOW)).toEqual({ kind: "wait", seconds: 30 });
+    r = recordPass(pause, r, NOW).runtime;
+    expect(barrierStep(pause, r, NOW)).toEqual({ kind: "wait", seconds: 45 });
+    for (let i = 0; i < 10; i++) r = recordPass(pause, r, NOW).runtime;
+    expect(barrierStep(pause, r, NOW)).toEqual({ kind: "wait", seconds: 120 });
+    expect(barrierStep(pause, r, NOW + 86_400_000)).toEqual({ kind: "wait", seconds: 30 });
+    const typing = barrierStep({ type: "typing", length: 20 }, recordPass(pause, rt(), NOW).runtime, NOW);
+    expect(typing.kind === "typing" && typing.text.replace(/ /g, "").length).toBeGreaterThan(20);
+  });
+});

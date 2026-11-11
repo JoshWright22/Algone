@@ -96,6 +96,8 @@ export interface Runtime {
   lastAcceptedRev: number;
   /** When the last break started, for the one-a-week rule. */
   lastBreakAt: number;
+  /** Barrier passes today, for rising friction. */
+  passes: { day: string; count: number };
 }
 
 export type GlobalKey =

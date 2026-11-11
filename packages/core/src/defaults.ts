@@ -50,6 +50,7 @@ export const defaultRuntime = (): Runtime => ({
   lastRuleError: "",
   lastAcceptedRev: 0,
   lastBreakAt: 0,
+  passes: { day: "", count: 0 },
 });
 
 /** Fills in every field added by a newer version, at every depth, without touching existing choices. */
