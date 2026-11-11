@@ -12,3 +12,4 @@ apps/mobile/src/generated/
 local-snapshots/
 .playwright-profile/
 apps/extension/dist-test/
+.claude/worktrees/
