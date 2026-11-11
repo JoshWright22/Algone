@@ -1,5 +1,5 @@
 import {
-  AVOID_IDS, COPY, GITHUB_CLIENT_ID, localDay, pollDeviceFlow, startDeviceFlow, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
+  AVOID_IDS, COPY, GITHUB_CLIENT_ID, localDay, newPipeExport, opmlExport, pollDeviceFlow, startDeviceFlow, youtubeChannels, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
   TOPIC_NAMES, webKdf, WEB_ITERATIONS, type AvoidId, type BarrierConfig, type Patch, type TunedFilters,
 } from "@algone/core";
 import { SITES, type SiteRule } from "@algone/rules";
@@ -276,7 +276,14 @@ function queueTab(s: Stored): HTMLElement {
   );
 }
 
+function download(name: string, text: string, type: string): void {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  h("a", { href: url, download: name }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
 function feedTab(s: Stored): HTMLElement {
+  const channels = youtubeChannels(s.feeds.sources);
   const input = h("input", { id: "source-url", placeholder: "Feed address, such as https://www.reddit.com/r/books/.rss", "aria-label": "Feed address" }) as HTMLInputElement;
   return h("div", { id: "feed-tab" },
     h("h2", {}, "Custom feed sources"),
@@ -299,6 +306,15 @@ function feedTab(s: Stored): HTMLElement {
         h("option", { value: "fair", selected: s.settings.customRanking === "fair" }, "Fair, one from each source"),
         h("option", { value: "oldestUnseen", selected: s.settings.customRanking === "oldestUnseen" }, "Oldest unseen first"),
       )),
+    h("h2", {}, "Use your channels in an app"),
+    h("p", { class: "muted" }, channels.length
+      ? `${channels.length} YouTube ${channels.length === 1 ? "channel" : "channels"} here. NewPipe (Android) and FreeTube (computer) show only what you subscribe to, with no recommendations. Both import this file.`
+      : "Follow YouTube channels in the Custom feed, and you can take them to NewPipe (Android) or FreeTube (computer), which show only your subscriptions."),
+    channels.length
+      ? h("div", { class: "row" },
+          h("button", { class: "ghost", id: "export-newpipe", onclick: () => download("algone-subscriptions.json", newPipeExport(channels), "application/json") }, "Export for NewPipe or FreeTube"),
+          h("button", { class: "ghost", id: "export-opml", onclick: () => download("algone-subscriptions.opml", opmlExport(channels), "text/x-opml") }, "Export as OPML"))
+      : null,
   );
 }
 

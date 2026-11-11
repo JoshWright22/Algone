@@ -23,3 +23,4 @@ export * from "./gist";
 export * from "./deviceFlow";
 export * from "./validatePatch";
 export * from "./apps";
+export * from "./subscriptions";
