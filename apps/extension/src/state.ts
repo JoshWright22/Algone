@@ -1,4 +1,4 @@
-import { defaultRuntime, migrateSettings } from "@algone/core";
+import { defaultRuntime, emptyHealthyStore, migrateSettings } from "@algone/core";
 import { SITES } from "@algone/rules";
 import { api } from "./browser";
 import type { Stored } from "./messages";
@@ -11,6 +11,7 @@ export async function loadState(): Promise<Stored> {
     "queue",
     "feeds",
     "rulesOverlay",
+    "healthy",
   ])) as Partial<Stored>;
   return {
     settings: migrateSettings(raw.settings, SITES),
@@ -18,5 +19,6 @@ export async function loadState(): Promise<Stored> {
     queue: raw.queue ?? [],
     feeds: raw.feeds ?? { sources: [], items: [] },
     rulesOverlay: raw.rulesOverlay ?? null,
+    healthy: { ...emptyHealthyStore(), ...raw.healthy },
   };
 }

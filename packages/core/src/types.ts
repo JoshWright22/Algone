@@ -94,6 +94,8 @@ export interface Runtime {
   lastRuleCheck: number;
   lastRuleError: string;
   lastAcceptedRev: number;
+  /** When the last break started, for the one-a-week rule. */
+  lastBreakAt: number;
 }
 
 export type GlobalKey =

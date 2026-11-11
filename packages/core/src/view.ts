@@ -18,7 +18,7 @@ export function computeView(
   const off = overlayOff(rule, overlay);
   const elements = [...rule.elements, ...overlayAdded(rule, overlay)];
   const onBreak = settings.breakUntil > now;
-  const inactive = !site || !site.enabled || onBreak;
+  const inactive = !site || !site.enabled;
 
   const show: string[] = [];
   const hide: string[] = [];
@@ -27,7 +27,9 @@ export function computeView(
     const t = token(rule.id, el.id);
     const hidden = site ? isHidden(el, site) : el.class === "algorithmic";
     const tunedFeed = site?.mode === "tuned" && el.feed;
-    const visible = inactive || snoozed || tunedFeed || !hidden;
+    // A break shows the feeds but keeps short-video loops and autoplay off.
+    const breakShows = onBreak && !(/shorts|reels/i.test(el.id) || el.effect === "stopAutoplay" || el.effect === "shortsToWatch");
+    const visible = inactive || snoozed || tunedFeed || breakShows || !hidden;
     if (el.class === "algorithmic") {
       if (visible) show.push(t);
       else if (el.effect) effects.push(el.id);
@@ -37,10 +39,10 @@ export function computeView(
   }
 
   const mode = site?.mode ?? "nofeed";
-  const active = !inactive && !snoozed;
+  const active = !inactive && !snoozed && !onBreak;
   return {
     site: rule.id,
-    enabled: !inactive,
+    enabled: !inactive && !onBreak,
     mode,
     show,
     hide,

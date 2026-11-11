@@ -49,7 +49,7 @@ test("no flash: feed never paints, on load or on client navigation", async ({ h 
     (window as unknown as { __flash: string[] }).__flash = log;
     const check = () => {
       for (const e of document.querySelectorAll('ytd-browse[page-subtype="home"]')) {
-        if (getComputedStyle(e).display !== "none") log.push("visible");
+        if (getComputedStyle(e).display !== "none" && e.getBoundingClientRect().right > 0) log.push("visible");
       }
     };
     new MutationObserver(check).observe(document, { childList: true, subtree: true });

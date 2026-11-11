@@ -1,7 +1,7 @@
 import { publishRules, SITES, siteMap, type SiteRule } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
-  addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
+  addSource, addToQueue, applyPatch, checkBreak, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
   defaultRuntime, defaultSettings, dueSources, effectiveRule, emptyTuned, feedUrlFor, handleRulesFile,
   inWindow, isLikelyAi, isStricterBarrier, isWeakening, localDay, makePuzzle, matchesTopic, mergeEntries,
   migrateSettings, moveInQueue, nextFetchAt, parseFeed, pickRandom, randomContentCount, rankItems, recordPass,
@@ -171,10 +171,21 @@ describe("isWeakening", () => {
     expect(w({ op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 10 } }, l)).toBe(false);
     expect(w({ op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 30 } }, l)).toBe(true);
   });
-  it("a break shows every site, then ends by itself", () => {
+  it("a break shows feeds but not Shorts or autoplay, then ends by itself", () => {
     const b = applyPatch(s, { op: "startBreak", until: NOW + 60_000 });
-    expect(computeView(b, rt(), yt, NOW).enabled).toBe(false);
+    const v = computeView(b, rt(), yt, NOW);
+    expect(v.enabled).toBe(false);
+    expect(v.show).toContain(tok("home"));
+    expect(v.show).not.toContain(tok("shortsShelf"));
+    expect(v.show).not.toContain(tok("autoplay"));
+    expect(v.effects).toContain("autoplay");
     expect(computeView(b, rt(), yt, NOW + 60_001).enabled).toBe(true);
+  });
+  it("breaks: at most 24 hours, one a week", () => {
+    expect(checkBreak(NOW + 3_600_000, rt(), NOW)).toBeNull();
+    expect(checkBreak(NOW + 25 * 3_600_000, rt(), NOW)).toMatch(/24 hours/);
+    expect(checkBreak(NOW + 3_600_000, { ...rt(), lastBreakAt: NOW - 86_400_000 }, NOW)).toMatch(/One break a week/);
+    expect(checkBreak(NOW + 3_600_000, { ...rt(), lastBreakAt: NOW - 8 * 86_400_000 }, NOW)).toBeNull();
   });
   it("site and intent", () => {
     expect(w({ op: "setSiteEnabled", site: "youtube", enabled: false })).toBe(true);

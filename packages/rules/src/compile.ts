@@ -20,10 +20,23 @@ function gate(t: string, el: RuleElement, withOff: boolean): string {
   return `${base}${off}${routeGate(el.routes)}`;
 }
 
+/**
+ * In Healthy mode the feed is moved off-screen instead of removed, so the site keeps
+ * rendering its items and Algone can read them. It cannot be seen, clicked or focused.
+ */
+const OFFSCREEN =
+  "{ display: block !important; position: fixed !important; left: -20000px !important; top: 0 !important; " +
+  "width: 1200px !important; height: 3000px !important; overflow: hidden !important; " +
+  "pointer-events: none !important; content-visibility: visible !important; }";
+
 /** One CSS rule per selector, so an invalid selector loses only itself. */
 function elementCss(siteId: string, el: RuleElement, withOff: boolean): string {
   const t = token(siteId, el.id);
-  return el.selectors.map((s) => `${gate(t, el, withOff)} ${s} ${HIDE}`).join("\n");
+  const rules = el.selectors.map((s) => `${gate(t, el, withOff)} ${s} ${HIDE}`);
+  if (el.feed && el.class === "algorithmic") {
+    rules.push(...el.selectors.map((s) => `${gate(t, el, withOff)}[data-algone-healthy="on"] ${s} ${OFFSCREEN}`));
+  }
+  return rules.join("\n");
 }
 
 function tunedCss(site: SiteRule): string {

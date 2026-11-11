@@ -15,6 +15,7 @@ import { useStored } from "../theme";
 import { Body, Button, Card, Choice, Field, Screen } from "../ui";
 
 const MODES: Array<[Mode, string]> = [
+  ["healthy", "Healthy"],
   ["nofeed", "No feed"],
   ["random", "Random"],
   ["tuned", "Tuned"],

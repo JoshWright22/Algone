@@ -62,10 +62,12 @@ function main(): void {
       panelUrl: (kind) =>
         api.runtime.getURL(`panel.html?kind=${kind}&site=${bundled.id}&url=${encodeURIComponent(location.href)}`),
       capture: (items) => void send({ t: "capture", site: bundled.id, items }),
+      feedItems: (items) => void send({ t: "feedItems", site: bundled.id, items }).catch(() => undefined),
     },
   };
 
   const stop = start(host);
+  countPickedMinutes();
 
   api.runtime.onMessage.addListener((msg: { t: string }, _sender, reply) => {
     if (msg.t === "whichSite") {
@@ -95,6 +97,24 @@ function main(): void {
       void send({ t: "rulesCheck" }).catch(() => undefined);
     }
   });
+}
+
+/**
+ * Time spent on a page opened from the healthy batch counts toward the daily budget:
+ * one tick per minute while the tab is visible. Leaving through the site's own links
+ * keeps counting until the tab session ends.
+ */
+function countPickedMinutes(): void {
+  const KEY = "algone-picked";
+  if (location.hash.includes("algone-pick")) {
+    sessionStorage.setItem(KEY, "1");
+    history.replaceState(history.state, "", location.href.replace(/#algone-pick$/, ""));
+  }
+  setInterval(() => {
+    if (sessionStorage.getItem(KEY) === "1" && !document.hidden && api.runtime?.id) {
+      void send({ t: "healthyMinute" }).catch(() => undefined);
+    }
+  }, 60_000);
 }
 
 main();

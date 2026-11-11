@@ -14,6 +14,7 @@ async function frame(page: import("@playwright/test").Page, kind: string) {
 }
 
 test("no feed mode has no panel", async ({ h }) => {
+  await configure(h, (s) => (s.sites.youtube.mode = "nofeed"));
   const page = await h.context.newPage();
   await page.goto("https://www.youtube.com/");
   await waitAttrs(page);
@@ -252,4 +253,54 @@ test("hidden feed stays hidden with panel fallback when the slot is missing", as
   await page.goto("https://www.youtube.com/");
   await frame(page, "feed");
   expect(await isHiddenEl(page, 'ytd-browse[page-subtype="home"]')).toBe(true);
+});
+
+test("healthy is the default: a short batch from the hidden feed, without ragebait, that ends", async ({ h }) => {
+  await configure(h, (s) => {
+    s.healthy.batchSize = 2;
+    s.activities = ["Go for a walk"];
+  });
+  const page = await h.context.newPage();
+  await page.goto("https://www.youtube.com/");
+  await waitAttrs(page);
+  await page.evaluate(() => {
+    const feed = document.querySelector('ytd-browse[page-subtype="home"]')!;
+    const add = (title: string, channel: string, id: string) => {
+      const item = document.createElement("ytd-rich-item-renderer");
+      const a = document.createElement("a");
+      a.href = `/watch?v=${id}`;
+      a.id = "video-title";
+      a.textContent = title;
+      const name = document.createElement("ytd-channel-name");
+      const c = document.createElement("a");
+      c.textContent = channel;
+      name.append(c);
+      item.append(a, name);
+      feed.append(item);
+    };
+    add("Pundit DESTROYS guest?!", "Rage TV", "r1");
+    add("How bread rises", "Bakers", "b1");
+    add("A quiet walk in Kyoto", "Walks", "w1");
+    add("Learning Rust, part 3", "Coders", "c1");
+  });
+  expect(await isHiddenEl(page, 'ytd-browse[page-subtype="home"]')).toBe(true);
+  const f = await frame(page, "feed");
+  await expect(f.locator("#healthy .row")).toHaveCount(2, { timeout: 5000 });
+  await expect(f.locator("#healthy")).not.toContainText("DESTROYS");
+  await expect(f.locator("#healthy-note")).toContainText("misses some");
+  const batch = await getStorage(h, "healthy");
+  const kept = batch.batches.youtube.items.map((i: { title: string }) => i.title);
+  // The batch is kept for the day: the same two after a reload.
+  await page.reload();
+  await waitAttrs(page);
+  const f2 = await frame(page, "feed");
+  await expect(f2.locator("#healthy .row")).toHaveCount(2);
+  for (const t of kept) await expect(f2.locator("#healthy")).toContainText(t);
+  // Opening both ends the batch.
+  for (const id of batch.batches.youtube.items.map((i: { id: string }) => i.id)) {
+    await h.worker.evaluate((x) => chrome.storage.local.get("healthy").then(({ healthy }) =>
+      chrome.storage.local.set({ healthy: { ...healthy, seen: [...healthy.seen, x] } })), id);
+  }
+  await expect(f2.locator(".healthy-done h2")).toHaveText("That's today's batch");
+  await expect(f2.locator("#activities")).toContainText("Go for a walk");
 });

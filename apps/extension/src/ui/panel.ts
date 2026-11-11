@@ -1,4 +1,7 @@
-import { COPY, pickRandom, rankItems, visibleQueue, type FeedItem, type QueueItem } from "@algone/core";
+import {
+  COPY, currentBatch, pickRandom, rankItems, visibleQueue, type FeedItem, type HealthyBatch, type QueueItem,
+  type Rating, type Settings, type HealthyStore,
+} from "@algone/core";
 import { siteMap } from "@algone/rules";
 import { api, now } from "../browser";
 import { send } from "../messages";
@@ -125,6 +128,50 @@ function customPanel(items: FeedItem[], sourceCount: number): HTMLElement {
   );
 }
 
+const RATINGS: Array<[Rating, string]> = [["worth", "Worth it"], ["notWorth", "Not worth it"], ["worse", "Made me feel worse"]];
+
+function healthyPanel(batch: HealthyBatch, settings: Settings, store: HealthyStore): HTMLElement {
+  const name = rule?.name ?? "this site";
+  const seen = new Set(store.seen);
+  const left = batch.items.filter((i) => !seen.has(i.id));
+  const ended = batch.end === "budget" || (batch.items.length > 0 && left.length === 0);
+  const honest = h("p", { class: "muted small", id: "healthy-note" },
+    `Picked from what ${name} already loaded, without outrage, clickbait and doom where the words give it away. It misses some and wrongly catches some.`);
+  if (ended) {
+    return h("section", { id: "healthy", class: "healthy-done" },
+      h("h2", {}, batch.end === "budget" ? "That's your time for today" : "That's today's batch"),
+      settings.activities.length
+        ? h("div", { id: "activities" }, h("p", {}, "Something else to do:"),
+            h("ul", {}, ...settings.activities.map((a) => h("li", {}, a))))
+        : h("p", { class: "muted" }, "Add a few things you'd rather do in Settings, and they'll show here."),
+      h("button", { class: "primary big", id: "leave", onclick: () => void send({ t: "closeTab" }) }, `Leave ${name}`),
+      honest);
+  }
+  if (!batch.items.length) {
+    return h("section", { id: "healthy" }, h("h2", {}, "Today's batch"),
+      h("p", { class: "muted" }, `Picking from what ${name} loaded. If nothing shows, search instead.`), honest);
+  }
+  return h(
+    "section",
+    { id: "healthy" },
+    h("h2", {}, "Today's batch"),
+    h("p", { class: "muted small" }, `${left.length} of ${batch.items.length} left`),
+    ...batch.items.map((i) => {
+      const opened = seen.has(i.id);
+      return h("div", { class: opened ? "row seen" : "row", "data-item": i.id },
+        h("div", {},
+          h("a", { href: `${i.url}#algone-pick`, target: "_top", onclick: () => void send({ t: "healthySeen", id: i.id }) }, i.title),
+          i.channel ? h("span", { class: "muted small" }, ` ${i.channel}`) : null),
+        opened && i.channel && !store.ratings[i.channel.toLowerCase()]
+          ? h("div", { class: "rate", role: "group", "aria-label": `Rate ${i.channel}` },
+              ...RATINGS.map(([r, label]) => h("button", { class: "ghost small", "data-rating": r, onclick: () => void send({ t: "rate", channel: i.channel, rating: r }) }, label)))
+          : null,
+      );
+    }),
+    honest,
+  );
+}
+
 async function renderFeed(): Promise<void> {
   const state = await loadState();
   applyTheme(state.settings.theme);
@@ -138,6 +185,9 @@ async function renderFeed(): Promise<void> {
     site.mode === "random" ? randomPanel() : null,
     site.mode === "custom"
       ? customPanel(rankItems(state.feeds.items, state.settings.customRanking), state.feeds.sources.length)
+      : null,
+    site.mode === "healthy"
+      ? healthyPanel(currentBatch(state.settings, siteId, state.healthy, now()), state.settings, state.healthy)
       : null,
   );
 }

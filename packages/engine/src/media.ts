@@ -4,7 +4,8 @@ export function pauseHiddenMedia(active: boolean): void {
   for (const video of document.querySelectorAll("video")) {
     if (video.paused && video.muted) continue;
     // getComputedStyle reports the element's own display, so hidden ancestors need this.
-    if (video.getClientRects().length === 0 && document.documentElement.contains(video)) {
+    const offscreen = video.getClientRects().length > 0 && video.getBoundingClientRect().right < 0;
+    if ((offscreen || video.getClientRects().length === 0) && document.documentElement.contains(video)) {
       if (!video.closest("[data-algone-panel]")) {
         video.muted = true;
         video.pause();

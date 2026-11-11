@@ -4,6 +4,7 @@ import { send } from "../messages";
 import { h, toggle } from "./h";
 
 export const MODES: Array<{ id: Mode; label: string; hint: string }> = [
+  { id: "healthy", label: "Healthy", hint: "A short batch from the site's own picks, without ragebait. Then it ends" },
   { id: "nofeed", label: "No feed", hint: "Clean empty space" },
   { id: "random", label: "Random", hint: "Quotes, facts, poems, art, puzzles" },
   { id: "tuned", label: "Tuned", hint: "The site's feed, with your filters" },

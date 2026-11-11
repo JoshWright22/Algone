@@ -115,3 +115,16 @@ export function clearSnooze(runtime: Runtime, site: string): Runtime {
   const { [site]: _gone, ...snoozes } = runtime.snoozes;
   return { ...runtime, snoozes };
 }
+
+export const BREAK_MAX_MS = 24 * 3_600_000;
+export const BREAK_EVERY_MS = 7 * 86_400_000;
+
+/** Returns an error, or null if a break may start now. */
+export function checkBreak(until: number, runtime: Runtime, now: number): string | null {
+  if (until <= now) return "Choose a time in the future";
+  if (until - now > BREAK_MAX_MS) return "A break can last at most 24 hours";
+  if (runtime.lastBreakAt && now - runtime.lastBreakAt < BREAK_EVERY_MS) {
+    return `One break a week. The next one is possible on ${new Date(runtime.lastBreakAt + BREAK_EVERY_MS).toLocaleDateString()}`;
+  }
+  return null;
+}

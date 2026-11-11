@@ -1,4 +1,5 @@
 import {
+  addFeedItems, addMinute, checkBreak, markSeen, rateCreator,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime, describePatch,
   dueSources, handleRulesFile, isWeakening, mergeEntries, migrateSettings, moveInQueue, nextFetchAt, parseFeed,
   recordPass, removeFromQueue, removeSource, RULES_URL, safeHttps, startRecovery, startSnooze, UNINSTALL_URL,
@@ -48,6 +49,10 @@ async function handlePatch(state: Stored, patch: Patch): Promise<CommandResult> 
     const error = validateBarrier(patch.barrier, now());
     if (error) return { ok: false, error };
   }
+  if (patch.op === "startBreak") {
+    const error = checkBreak(patch.until, state.runtime, now());
+    if (error) return { ok: false, error };
+  }
   if (isWeakening(state.settings, patch, SITES)) {
     const name = "site" in patch ? siteMap()[patch.site]?.name : "";
     return requestPending(state, { kind: "patch", patch, label: describePatch(patch, name) });
@@ -68,6 +73,14 @@ async function completePending(state: Stored): Promise<CommandResult> {
     runtime = startSnooze(runtime, pending.site, pending.minutes, now());
     await save({ settings, runtime });
   } else {
+    if (pending.patch.op === "startBreak") {
+      const error = checkBreak(pending.patch.until, state.runtime, now());
+      if (error) {
+        await save({ runtime });
+        return { ok: false, error };
+      }
+      runtime = { ...runtime, lastBreakAt: now() };
+    }
     settings = applyPatch(settings, pending.patch);
     const update: Partial<Stored> = { settings, runtime };
     if (pending.patch.op === "useBundledRules") update.rulesOverlay = null;
@@ -228,6 +241,25 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
       return { ok: true };
     case "feedRefresh":
       await refreshFeeds();
+      return { ok: true };
+    case "feedItems": {
+      if (!siteMap()[cmd.site] || !Array.isArray(cmd.items)) return { ok: false };
+      const items = cmd.items.slice(0, 60).flatMap((i) => {
+        const url = safeHttps(i.url);
+        return url && typeof i.title === "string" ? [{ title: i.title.slice(0, 200), channel: String(i.channel ?? "").slice(0, 100), url }] : [];
+      });
+      await save({ healthy: addFeedItems(state.healthy, cmd.site, items, state.settings, now()) });
+      return { ok: true };
+    }
+    case "healthySeen":
+      await save({ healthy: markSeen(state.healthy, cmd.id) });
+      return { ok: true };
+    case "rate":
+      if (!["worth", "notWorth", "worse"].includes(cmd.rating)) return { ok: false };
+      await save({ healthy: rateCreator(state.healthy, cmd.channel, cmd.rating) });
+      return { ok: true };
+    case "healthyMinute":
+      await save({ healthy: addMinute(state.healthy, now()) });
       return { ok: true };
     case "closeTab":
       if (sender.tab?.id !== undefined) await api.tabs.remove(sender.tab.id);

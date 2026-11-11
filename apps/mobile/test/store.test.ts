@@ -80,7 +80,7 @@ describe("store", () => {
   it("weakening waits for the barrier, tightening does not", async () => {
     const { store } = await ready();
     expect(await store.patch({ op: "setMode", site: "youtube", mode: "custom" })).toEqual({ ok: true, needsBarrier: true });
-    expect(store.get().settings.sites.youtube!.mode).toBe("nofeed");
+    expect(store.get().settings.sites.youtube!.mode).toBe("healthy");
     expect((await store.barrierPass()).ok).toBe(true);
     expect(store.get().settings.sites.youtube!.mode).toBe("custom");
     expect(store.get().runtime.pending).toBeNull();

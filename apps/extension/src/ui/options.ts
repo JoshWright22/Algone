@@ -1,6 +1,6 @@
 import {
-  COPY, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
-  TOPIC_NAMES, webKdf, WEB_ITERATIONS, type BarrierConfig, type Patch, type TunedFilters,
+  AVOID_IDS, COPY, localDay, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
+  TOPIC_NAMES, webKdf, WEB_ITERATIONS, type AvoidId, type BarrierConfig, type Patch, type TunedFilters,
 } from "@algone/core";
 import { SITES, type SiteRule } from "@algone/rules";
 import { api, now } from "../browser";
@@ -136,7 +136,7 @@ function barrierForm(s: Stored): HTMLElement {
       mount(body, number("b-length", "Text length", b.type === "typing" ? b.length : 60, 20, 200),
         h("button", { class: "primary", id: "barrier-save", onclick: () => void save({ type: "typing", length: val("b-length") }) }, "Save"));
     } else if (t === "daily") {
-      mount(body, number("b-limit", "Unlocks per day", b.type === "daily" ? b.limit : 3, 0, 50),
+      mount(body, number("b-limit", "Unlocks per day", b.type === "daily" ? b.limit : 3, 1, 50),
         h("button", { class: "primary", id: "barrier-save", onclick: () => void save({ type: "daily", limit: val("b-limit"), step: "pause" }) }, "Save"));
     } else if (t === "schedule") {
       mount(body,
@@ -203,6 +203,59 @@ function generalTab(s: Stored): HTMLElement {
       h("p", { id: "stats" }, `Unlocks started ${s.runtime.stats.started}, dismissed ${s.runtime.stats.dismissed}, completed ${s.runtime.stats.completed}.`),
       h("p", { class: "muted small" }, "These counts stay on this device."),
     ),
+  );
+}
+
+const AVOID_LABELS: Record<AvoidId, string> = {
+  outrage: "Outrage and ragebait",
+  clickbait: "Clickbait",
+  comparison: "Rich, perfect-life and looks comparison",
+  doom: "Doom and disaster",
+};
+
+function healthyTab(s: Stored): HTMLElement {
+  const st = s.settings;
+  const day = localDay(now());
+  const used = s.healthy.usage.day === day ? s.healthy.usage.minutes : 0;
+  const activities = h("textarea", { id: "activities", rows: 4, "aria-label": "Things you'd rather do, one per line" },
+    st.activities.join("\n")) as HTMLTextAreaElement;
+  const hours = h("select", { id: "break-hours", "aria-label": "Break length" },
+    ...[1, 4, 12, 24].map((n) => h("option", { value: n }, `${n} ${n === 1 ? "hour" : "hours"}`))) as HTMLSelectElement;
+  const breakError = h("p", { class: "muted", role: "status", id: "break-error" });
+  const onBreak = st.breakUntil > now();
+  return h("div", { id: "healthy-tab" },
+    h("h2", {}, "Healthy feed"),
+    h("p", {}, "On sites in Healthy mode, Algone hides the feed and shows a short batch picked from what the site already loaded: its own picks and the people you follow. It pushes out outrage, clickbait and doom, then ends so you can go."),
+    h("p", { class: "muted" }, "It ranks only what the site loaded. It cannot change the site's own ranking or rerank inside apps. The word lists miss some and wrongly catch some."),
+    h("section", {}, h("h2", {}, "Amount"),
+      h("label", { class: "field" }, "Items per day, per site",
+        h("input", { id: "batch-size", type: "number", min: 1, max: 50, value: st.healthy.batchSize,
+          onchange: (e: Event) => void patch({ op: "setHealthy", batchSize: Number((e.target as HTMLInputElement).value) }) })),
+      h("label", { class: "field" }, "Minutes per day on picked items",
+        h("input", { id: "budget", type: "number", min: 1, max: 1440, value: st.healthy.dailyBudgetMinutes,
+          onchange: (e: Event) => void patch({ op: "setHealthy", dailyBudgetMinutes: Number((e.target as HTMLInputElement).value) }) })),
+      h("p", { class: "muted small", id: "used-today" }, `Used today on this device: ${used} of ${st.healthy.dailyBudgetMinutes} minutes.`),
+    ),
+    h("section", {}, h("h2", {}, "Keep out"),
+      ...AVOID_IDS.map((id) => h("div", { class: "row" }, h("span", {}, AVOID_LABELS[id]),
+        toggle(st.avoid.includes(id), (v) => void patch({ op: "setAvoid", ids: v ? [...st.avoid, id] : st.avoid.filter((a) => a !== id) }), AVOID_LABELS[id]))),
+    ),
+    h("section", {}, h("h2", {}, "Instead"),
+      h("p", { class: "muted" }, "Things you'd rather do, one per line. They show when a batch ends."),
+      activities,
+      h("button", { class: "primary small", id: "activities-save", onclick: () =>
+        void patch({ op: "setActivities", items: activities.value.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 20) }) }, "Save")),
+    h("section", {}, h("h2", {}, "Take a break"),
+      h("p", {}, "Shows the sites' feeds for a while, then Algone comes back by itself. Shorts, Reels and autoplay stay off. One break a week, through your barrier."),
+      onBreak
+        ? h("div", { class: "row" }, h("span", { id: "break-status" }, `On a break until ${new Date(st.breakUntil).toLocaleString()}`),
+            h("button", { class: "ghost small", id: "break-end", onclick: () => void patch({ op: "endBreak" }) }, "End the break now"))
+        : h("div", { class: "row" }, hours,
+            h("button", { class: "ghost", id: "break-start", onclick: async () => {
+              const r = await send({ t: "patch", patch: { op: "startBreak", until: now() + Number(hours.value) * 3_600_000 } });
+              breakError.textContent = r.error ?? "";
+            } }, "Start a break")),
+      breakError),
   );
 }
 
@@ -279,7 +332,7 @@ async function render(): Promise<void> {
   const s = await loadState();
   applyTheme(s.settings.theme);
   const tabs: Array<[string, string]> = [
-    ["sites", "Sites"], ["general", "Barrier and general"], ["queue", "Queue"], ["feed", "Custom feed"], ["about", "About"],
+    ["sites", "Sites"], ["healthy", "Healthy feed"], ["general", "Barrier and general"], ["queue", "Queue"], ["feed", "Custom feed"], ["about", "About"],
   ];
   const active = document.activeElement?.id;
   mount(root,
@@ -298,6 +351,7 @@ async function render(): Promise<void> {
       ),
       h("main", { class: "content" },
         tab === "sites" ? sitesTab(s) : null,
+        tab === "healthy" ? healthyTab(s) : null,
         tab === "general" ? generalTab(s) : null,
         tab === "queue" ? queueTab(s) : null,
         tab === "feed" ? feedTab(s) : null,

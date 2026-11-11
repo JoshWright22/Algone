@@ -96,11 +96,11 @@ export async function getStorage<T = Record<string, any>>(h: Harness, key: strin
   return (await h.worker.evaluate((k) => chrome.storage.local.get(k), key))[key] as T;
 }
 
-/** True if the element exists and takes up no space. */
+/** True if the element exists and cannot be seen: no space, or moved off-screen (Healthy mode). */
 export const isHiddenEl = (page: Page, selector: string) =>
   page.evaluate((s) => {
     const e = document.querySelector(s);
-    return !!e && e.getClientRects().length === 0;
+    return !!e && (e.getClientRects().length === 0 || e.getBoundingClientRect().right <= 0);
   }, selector);
 
 export const isVisibleEl = (page: Page, selector: string) =>

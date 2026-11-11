@@ -1,4 +1,6 @@
-import type { BarrierConfig, FeedStore, Patch, QueueItem, Runtime, Settings } from "@algone/core";
+import type {
+  BarrierConfig, FeedStore, HealthyStore, Patch, QueueItem, Rating, Runtime, Settings,
+} from "@algone/core";
 import type { Overlay } from "@algone/core";
 import { api } from "./browser";
 
@@ -21,7 +23,11 @@ export type Command =
   | { t: "overlayCss"; css: string }
   | { t: "rulesCheck" }
   | { t: "feedRefresh" }
-  | { t: "closeTab" };
+  | { t: "closeTab" }
+  | { t: "feedItems"; site: string; items: Array<{ title: string; channel: string; url: string }> }
+  | { t: "healthySeen"; id: string }
+  | { t: "rate"; channel: string; rating: Rating }
+  | { t: "healthyMinute" };
 
 export interface CommandResult {
   ok: boolean;
@@ -37,4 +43,5 @@ export interface Stored {
   queue: QueueItem[];
   feeds: FeedStore;
   rulesOverlay: Overlay | null;
+  healthy: HealthyStore;
 }

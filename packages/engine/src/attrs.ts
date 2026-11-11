@@ -14,6 +14,7 @@ export function writeView(view: View): void {
   set("data-algone-show", view.show);
   set("data-algone-hide", view.hide);
   document.documentElement.setAttribute("data-algone-tuned", view.tuned ? "on" : "off");
+  document.documentElement.setAttribute("data-algone-healthy", view.panel?.content === "healthy" ? "on" : "off");
 }
 
 export function writeOff(tokens: string[]): void {
@@ -21,7 +22,7 @@ export function writeOff(tokens: string[]): void {
 }
 
 export function clearAll(): void {
-  for (const a of ["show", "hide", "route", "off", "tuned", "fade"]) {
+  for (const a of ["show", "hide", "route", "off", "tuned", "fade", "healthy"]) {
     document.documentElement.removeAttribute(`data-algone-${a}`);
   }
 }
