@@ -19,7 +19,7 @@ export interface ZenList {
 }
 
 /** Characters that would let a selector become more than a hide rule in adblock syntax. */
-const UNSAFE = /[{}\\]|#[@?$%]?#|\$\$|:style\(|:remove\(|:-abp-|^\s*$/;
+const UNSAFE = /[{}\\\r\n]|#[@?$%]?#|\$\$|@@|:style\(|:remove\(|:-abp-|^\s*$|^\s*(\+js\(|\^|!|\[\$)/;
 
 export function zenList(settings: Settings, rules: SiteRule[], generatedAt: string): ZenList {
   const lines: string[] = [];

@@ -28,7 +28,7 @@ export function computeView(
     const hidden = site ? isHidden(el, site) : el.class === "algorithmic";
     const tunedFeed = site?.mode === "tuned" && el.feed;
     // A break shows the feeds but keeps short-video loops and autoplay off.
-    const breakShows = onBreak && !(/shorts|reels/i.test(el.id) || el.effect === "stopAutoplay" || el.effect === "shortsToWatch");
+    const breakShows = onBreak && !isShortVideo(rule.id, el);
     const visible = inactive || snoozed || tunedFeed || breakShows || !hidden;
     if (el.class === "algorithmic") {
       if (visible) show.push(t);
@@ -42,7 +42,7 @@ export function computeView(
   const active = !inactive && !snoozed && !onBreak;
   return {
     site: rule.id,
-    enabled: !inactive && !onBreak,
+    enabled: !inactive,
     mode,
     show,
     hide,
@@ -73,4 +73,11 @@ function overlayOff(rule: SiteRule, overlay?: Overlay | null): string[] {
 
 function overlayAdded(rule: SiteRule, overlay?: Overlay | null) {
   return overlay?.sites[rule.id]?.added ?? [];
+}
+
+/** Short-video loops stay hidden during a break. TikTok is short video throughout. */
+function isShortVideo(site: string, el: { id: string; effect?: string }): boolean {
+  if (site === "tiktok") return true;
+  if (el.effect === "stopAutoplay" || el.effect === "shortsToWatch") return true;
+  return /shorts|reels|watchfeed|clips|spotlight/i.test(el.id);
 }

@@ -1,7 +1,7 @@
 import avoidLists from "./content/avoid.json" with { type: "json" };
 import { localDay } from "./barriers";
 import { matchesTopic, shouldHide } from "./tuned";
-import type { AvoidId, HealthySettings, Settings } from "./types";
+import type { AvoidId, HealthySettings, Settings, TunedFilters } from "./types";
 
 /**
  * The healthy feed: a short batch picked from what the site already loaded, ranked for
@@ -32,6 +32,8 @@ export interface HealthyContext {
   /** Item ids opened before. */
   seen: string[];
   now: number;
+  /** The site's Tuned filters, which the healthy feed also honors. */
+  filters?: TunedFilters;
 }
 
 export interface HealthyBatch {
@@ -67,8 +69,14 @@ export function avoidHits(title: string, avoid: AvoidId[]): string[] {
   return hits;
 }
 
+/** Own properties only: a channel named "constructor" must not read the object's prototype. */
+export function ratingOf(ratings: Record<string, Rating>, channel: string): Rating | undefined {
+  const key = channel.trim().toLowerCase();
+  return Object.hasOwn(ratings, key) ? ratings[key] : undefined;
+}
+
 export function healthyScore(item: HealthyItem, ctx: HealthyContext): number {
-  const rating = ctx.ratings[item.channel.toLowerCase()];
+  const rating = ratingOf(ctx.ratings, item.channel);
   const creator = rating ? RATING_SCORE[rating] : UNRATED;
   const topic = ctx.allowTopics.some((t) => matchesTopic(item.title, t)) ? 1 : 0;
   const recency = item.time ? Math.exp(-Math.max(0, ctx.now - item.time) / 3_600_000 / 48) : 0.5;
@@ -84,10 +92,11 @@ export function healthyBatch(items: HealthyItem[], ctx: HealthyContext): Healthy
     .filter((i) => i.title && !seenIds.has(i.id) && seenIds.add(i.id))
     .map((item) => ({ item, score: healthyScore(item, ctx), hits: avoidHits(item.title, ctx.avoid).length }))
     // Matched an avoid rule and nothing outweighs it, or the person said it made them feel worse.
-    .filter((s) => !(s.hits > 0 && s.score < 0) && ctx.ratings[s.item.channel.toLowerCase()] !== "worse")
+    .filter((s) => !(s.hits > 0 && s.score < 0) && ratingOf(ctx.ratings, s.item.channel) !== "worse")
+    .filter((s) => !(ctx.filters && shouldHide({ title: s.item.title, channel: s.item.channel, kinds: [] }, ctx.filters)))
     .filter((s) => !ctx.seen.includes(s.item.id))
     .sort((a, b) => b.score - a.score || (b.item.time ?? 0) - (a.item.time ?? 0) || (a.item.id < b.item.id ? -1 : 1));
-  const cap = Math.max(1, Math.ceil(ctx.healthy.batchSize / 3));
+  const cap = Math.max(1, Math.floor(ctx.healthy.batchSize / 3));
   const perCreator = new Map<string, number>();
   const out: HealthyItem[] = [];
   for (const { item } of scored) {
@@ -120,8 +129,18 @@ export function dailyBatch(
     return { saved: saved ?? null, batch: { items: [], end: "budget" } };
   }
   if (saved?.day === day && saved.items.length) {
-    const left = saved.items.filter((i) => !ctx.seen.includes(i.id));
-    return { saved, batch: { items: saved.items, end: left.length ? "batch" : "empty" } };
+    // Stricter settings apply to today's batch at once: what no longer qualifies drops out.
+    const still = healthyBatch(saved.items, { ...ctx, seen: [] }).items;
+    const kept = saved.items.filter((i) => still.some((s) => s.id === i.id)).slice(0, ctx.healthy.batchSize);
+    // A feed that was still loading may have filled less than a batch: top up, never reshuffle.
+    const room = ctx.healthy.batchSize - kept.length;
+    const extra = room > 0 && saved.items.length < ctx.healthy.batchSize
+      ? healthyBatch(available.filter((i) => !saved.items.some((s) => s.id === i.id)), { ...ctx, healthy: { ...ctx.healthy, batchSize: room } }).items
+      : [];
+    const items = [...kept, ...extra];
+    const next = extra.length ? { day, items: [...saved.items, ...extra] } : saved;
+    const left = items.filter((i) => !ctx.seen.includes(i.id));
+    return { saved: next, batch: { items, end: left.length ? "batch" : "empty" } };
   }
   const batch = healthyBatch(available, ctx);
   return { saved: batch.items.length ? { day, items: batch.items } : null, batch };
@@ -154,6 +173,7 @@ export function healthyContext(settings: Settings, site: string, store: HealthyS
   return {
     ratings: store.ratings,
     allowTopics: settings.sites[site]?.tuned.allowTopics ?? [],
+    filters: settings.sites[site]?.tuned,
     avoid: settings.avoid,
     healthy: settings.healthy,
     usedMinutes: store.usage.day === day ? store.usage.minutes : 0,
@@ -189,10 +209,15 @@ export function markSeen(store: HealthyStore, id: string): HealthyStore {
   return { ...store, seen: [...store.seen, id].slice(-MAX_SEEN) };
 }
 
+const MAX_RATINGS = 1000;
+
 export function rateCreator(store: HealthyStore, channel: string, rating: Rating): HealthyStore {
   const key = channel.trim().toLowerCase();
-  if (!key) return store;
-  return { ...store, ratings: { ...store.ratings, [key]: rating } };
+  if (!key || key === "__proto__") return store;
+  const ratings = { ...store.ratings, [key]: rating };
+  const keys = Object.keys(ratings);
+  if (keys.length > MAX_RATINGS) delete ratings[keys[0]!];
+  return { ...store, ratings };
 }
 
 /** One visible minute on a page opened from the batch. */

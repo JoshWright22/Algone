@@ -45,6 +45,14 @@ describe("Zen filter list", () => {
     }
   });
 
+  it("never writes a selector that adblock syntax would read as more than a hide rule", () => {
+    const bad = ['div[title="x\n@@||*^$document"]', "+js(alert)", "^script", "a##b", "div:style(color:red)", "x { }", "!comment", "@@||x"];
+    const rule = { ...(siteMap().youtube as SiteRule), elements: [{ id: "home", label: "x", group: "g", class: "algorithmic" as const, selectors: bad }] };
+    const list = zenList(defaultSettings(SITES), [rule], AT);
+    expect(list.rules).toBe(0);
+    expect(list.skipped).toEqual(["youtube.home"]);
+  });
+
   it("is stable for the same input", () => {
     expect(zenList(defaultSettings(SITES), SITES, AT)).toEqual(zenList(defaultSettings(SITES), SITES, AT));
   });

@@ -1,7 +1,7 @@
 import { publishRules, SITES, siteMap, type SiteRule } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
-  addSource, addToQueue, applyPatch, checkBreak, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
+  addSource, addToQueue, applyPatch, checkBreak, validatePatch, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
   defaultRuntime, defaultSettings, dueSources, effectiveRule, emptyTuned, feedUrlFor, handleRulesFile,
   inWindow, isLikelyAi, isStricterBarrier, isWeakening, localDay, makePuzzle, matchesTopic, mergeEntries,
   migrateSettings, moveInQueue, nextFetchAt, parseFeed, pickRandom, randomContentCount, rankItems, recordPass,
@@ -151,6 +151,21 @@ describe("isWeakening", () => {
     expect(w({ op: "setMode", site: "youtube", mode: "custom" }, hl)).toBe(true);
     expect(w({ op: "setMode", site: "youtube", mode: "random" }, hl)).toBe(false);
   });
+  it("healthy settings fail closed on anything but a number", () => {
+    expect(w({ op: "setHealthy", batchSize: Number.NaN })).toBe(true);
+    expect(w({ op: "setHealthy", batchSize: "lots" as unknown as number })).toBe(true);
+    expect(validatePatch({ op: "setHealthy", batchSize: 0 }, SITES, NOW)).toMatch(/1 to 50/);
+    expect(validatePatch({ op: "setActivities", items: ["x".repeat(201)] }, SITES, NOW)).not.toBeNull();
+    expect(validatePatch({ op: "setGlobal", key: "breakUntil" as never, value: 1 }, SITES, NOW)).not.toBeNull();
+    expect(validatePatch({ op: "setMode", site: "youtube", mode: "all" as never }, SITES, NOW)).not.toBeNull();
+    const farLock: BarrierConfig = { type: "locked", until: NOW + 365 * 86_400_000, escapeUsed: false, after: { type: "pause", seconds: 30 } };
+    expect(validatePatch({ op: "batch", source: "x", patches: [{ op: "setBarrier", barrier: farLock }] }, SITES, NOW)).toMatch(/7 days/);
+    expect(applyPatch(s, { op: "nonsense" } as unknown as Patch)).toBe(s);
+  });
+  it("hiding an element a rules update added is stricter", () => {
+    expect(w({ op: "setElement", site: "youtube", element: "fromOverlay", hidden: true })).toBe(false);
+    expect(w({ op: "setElement", site: "youtube", element: "fromOverlay", hidden: false })).toBe(true);
+  });
   it("healthy, avoid, break and apps", () => {
     expect(w({ op: "setHealthy", batchSize: 5 })).toBe(false);
     expect(w({ op: "setHealthy", batchSize: 20 })).toBe(true);
@@ -174,12 +189,14 @@ describe("isWeakening", () => {
   it("a break shows feeds but not Shorts or autoplay, then ends by itself", () => {
     const b = applyPatch(s, { op: "startBreak", until: NOW + 60_000 });
     const v = computeView(b, rt(), yt, NOW);
-    expect(v.enabled).toBe(false);
+    expect(v.panel).toBeNull();
+    const tiktok = siteMap().tiktok as SiteRule;
+    expect(computeView(b, rt(), tiktok, NOW).show).toEqual([]);
     expect(v.show).toContain(tok("home"));
     expect(v.show).not.toContain(tok("shortsShelf"));
     expect(v.show).not.toContain(tok("autoplay"));
     expect(v.effects).toContain("autoplay");
-    expect(computeView(b, rt(), yt, NOW + 60_001).enabled).toBe(true);
+    expect(computeView(b, rt(), yt, NOW + 60_001).show).not.toContain(tok("home"));
   });
   it("breaks: at most 24 hours, one a week", () => {
     expect(checkBreak(NOW + 3_600_000, rt(), NOW)).toBeNull();

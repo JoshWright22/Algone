@@ -64,13 +64,13 @@ Device-local, never synced: `theme`, `barrier.escapeUsed`, `barrier.recoveryAt` 
 | `setHealthy {batchSize?, dailyBudgetMinutes?}` | both not larger | either larger |
 | `setAvoid {ids}` | a superset | anything else |
 | `setActivities {items}` | always neutral | |
-| `startBreak {until}` | | always; `until` capped at now + 24 h |
+| `startBreak {until}` | | always; at most 24 h, one break per 7 days; Shorts, Reels, TikTok and autoplay stay hidden during it |
 | `endBreak` | always | |
-| `setApp {platform, app, config}` | stricter mode in `allow < limit < pause < cover < block`, or fewer minutes | the reverse |
+| `setApp {platform, app, config}` | stricter mode in `allow < limit < cover < pause < block`, or fewer minutes | the reverse, turning `shortVideo` off, or removing the app |
 
-Mode order for `setMode`: `nofeed` and `random` are strictest, then `healthy`, then `custom`, then `tuned`. Moving to an equal or stricter mode applies at once. Today's rule already treats `nofeed`/`random` as safe targets; `healthy` joins them only when moving from `custom` or `tuned`.
+Mode order for `setMode`: `nofeed` and `random` are strictest, then `healthy` and `custom` (different, so moving between them waits), then `tuned`. Moving to a stricter mode applies at once.
 
-Barriers across types: a barrier received from the policy is applied at once if it passes `validateBarrier` and ranks higher in `pause < typing < daily < schedule < partner`, or is the same type and stricter. A newly paired device adopts the policy's barrier unconditionally. Locks and `daily.limit: 0` are capped by `validateBarrier` (7 days), so no edit can lock devices for longer.
+Barriers: only the same type made stricter applies at once. Any change of type waits, because type says little about strength (a schedule open all day is a 10 second wait) and a new partner password chosen by the person loosening is no barrier. A lock must keep what follows it at least as strict, and a used escape stays used. Partner passwords never leave their device; the policy carries a typing-200 stand-in. Every change, from any source, passes `validatePatch`: locks at most 7 days, daily limits from 1, every number in range. Pairing and importing go through the same split, so nothing is adopted unconditionally.
 
 ## Healthy mode
 

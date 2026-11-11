@@ -201,7 +201,7 @@ describe("applying a policy file", () => {
     let remote = applyPatch(base(), { op: "setElement", site: "youtube", element: "comments", hidden: true });
     remote = applyPatch(remote, { op: "setSiteEnabled", site: "reddit", enabled: false });
     const text = JSON.stringify(policyFromSettings(remote, 7, "agent:claude", NOW));
-    const r = applyPolicyText(base(), text, SITES, where, "an imported file");
+    const r = applyPolicyText(base(), text, SITES, where, "an imported file", NOW);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.settings.sites.youtube?.elements.comments).toBe(true);
@@ -209,7 +209,20 @@ describe("applying a policy file", () => {
     expect(r.pending?.label).toBe("Loosen 1 setting from an imported file");
     expect(r.rev).toBe(7);
   });
+  it("refuses a lock longer than 7 days, even onto a locked device", () => {
+    const lock = (until: number) => ({ type: "locked" as const, until, escapeUsed: false, after: { type: "pause" as const, seconds: 30 } });
+    const local = { ...base(), barrier: lock(NOW + 60_000) };
+    const text = JSON.stringify(policyFromSettings({ ...base(), barrier: lock(9e15) }, 2, "agent:x", NOW));
+    expect(applyPolicyText(local, text, SITES, where, "x", NOW)).toMatchObject({ ok: false, error: expect.stringMatching(/7 days/) });
+  });
+  it("round-trips a lock over a partner password without a change", () => {
+    const partner = { type: "partner" as const, salt: "s", hash: "h", iterations: 600_000, recoveryAt: null };
+    const local = { ...base(), barrier: { type: "locked" as const, until: NOW + 60_000, escapeUsed: false, after: partner } };
+    const text = JSON.stringify(policyFromSettings(local, 2, "pc-1", NOW));
+    const r = applyPolicyText(local, text, SITES, where, "x", NOW);
+    expect(r).toMatchObject({ ok: true, applied: 0, pending: null });
+  });
   it("reports a bad file and changes nothing", () => {
-    expect(applyPolicyText(base(), "{}", SITES, where, "x")).toMatchObject({ ok: false });
+    expect(applyPolicyText(base(), "{}", SITES, where, "x", NOW)).toMatchObject({ ok: false });
   });
 });

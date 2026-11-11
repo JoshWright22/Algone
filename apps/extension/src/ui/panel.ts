@@ -1,5 +1,5 @@
 import {
-  COPY, currentBatch, pickRandom, rankItems, visibleQueue, type FeedItem, type HealthyBatch, type QueueItem,
+  COPY, currentBatch, ratingOf, pickRandom, rankItems, visibleQueue, type FeedItem, type HealthyBatch, type QueueItem,
   type Rating, type Settings, type HealthyStore,
 } from "@algone/core";
 import { siteMap } from "@algone/rules";
@@ -162,7 +162,7 @@ function healthyPanel(batch: HealthyBatch, settings: Settings, store: HealthySto
         h("div", {},
           h("a", { href: `${i.url}#algone-pick`, target: "_top", onclick: () => void send({ t: "healthySeen", id: i.id }) }, i.title),
           i.channel ? h("span", { class: "muted small" }, ` ${i.channel}`) : null),
-        opened && i.channel && !store.ratings[i.channel.toLowerCase()]
+        opened && i.channel && !ratingOf(store.ratings, i.channel)
           ? h("div", { class: "rate", role: "group", "aria-label": `Rate ${i.channel}` },
               ...RATINGS.map(([r, label]) => h("button", { class: "ghost small", "data-rating": r, onclick: () => void send({ t: "rate", channel: i.channel, rating: r }) }, label)))
           : null,
@@ -278,4 +278,9 @@ const renderers: Record<string, () => unknown> = {
 
 document.documentElement.dataset.panel = kind;
 void renderers[kind]?.();
-if (kind === "feed") api.storage.onChanged.addListener(() => void renderFeed());
+// Only keys the feed panel shows; other writes (sync, counters) would redraw it under the pointer.
+if (kind === "feed") {
+  api.storage.onChanged.addListener((changes) => {
+    if (["settings", "queue", "feeds", "healthy"].some((k) => k in changes)) void renderFeed();
+  });
+}

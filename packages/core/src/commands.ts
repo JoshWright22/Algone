@@ -29,6 +29,7 @@ export function applyPatch(settings: Settings, patch: Patch): Settings {
       if (patch.key === "wikipedia") {
         return { ...settings, webSources: { wikipedia: patch.value === true } };
       }
+      if (!GLOBAL_KEYS.includes(patch.key)) return settings;
       return { ...settings, [patch.key]: patch.value };
     case "useBundledRules":
       return { ...settings, ruleUpdates: false };
@@ -56,8 +57,12 @@ export function applyPatch(settings: Settings, patch: Patch): Settings {
       else delete list[patch.app];
       return { ...settings, apps: { ...settings.apps, [patch.platform]: list } };
     }
+    default:
+      return settings;
   }
 }
+
+const GLOBAL_KEYS = ["snoozeMinutes", "stopAtEnd", "ruleUpdates", "theme", "queueSoftCap", "customRanking"];
 
 export const MODE_NAMES: Record<Mode, string> = {
   nofeed: "No feed",

@@ -91,6 +91,9 @@ export function settingsFromPolicy(
   if (localBarrier.type === "partner") barrier = localBarrier;
   else if (barrier.type === "locked" && localBarrier.type === "locked") {
     barrier = { ...barrier, escapeUsed: barrier.escapeUsed || localBarrier.escapeUsed };
+    if (localBarrier.after.type === "partner" && JSON.stringify(barrier.after) === JSON.stringify(PARTNER_STAND_IN)) {
+      barrier = { ...barrier, after: localBarrier.after };
+    }
   }
   return migrateSettings({ ...shared, barrier, theme, breakUntil } as Settings, rules);
 }

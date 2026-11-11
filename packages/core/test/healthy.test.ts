@@ -55,6 +55,8 @@ describe("healthy batch", () => {
     const b = healthyBatch(items, ctx({ healthy: { batchSize: 6, dailyBudgetMinutes: 30 } }));
     expect(b.items).toHaveLength(6);
     expect(b.items.filter((i) => i.channel === "Same")).toHaveLength(2);
+    const ten = healthyBatch(items, ctx({ healthy: { batchSize: 10, dailyBudgetMinutes: 30 } }));
+    expect(ten.items.filter((i) => i.channel === "Same")).toHaveLength(3);
   });
   it("ends when the day's budget is used", () => {
     expect(healthyBatch([item("x")], ctx({ usedMinutes: 30 }))).toEqual({ items: [], end: "budget" });
@@ -75,12 +77,32 @@ describe("daily batch", () => {
     const first = [item("One"), item("Two")];
     const r1 = dailyBatch(undefined, first, ctx(), "2026-11-10");
     expect(r1.saved?.items).toHaveLength(2);
+    // Two items came first while the feed loaded; the batch of 3 tops up once, then stays.
     const r2 = dailyBatch(r1.saved!, [item("Three"), item("Four")], ctx(), "2026-11-10");
-    expect(r2.batch.items.map((i) => i.title)).toEqual(["One", "Two"]);
-    const done = dailyBatch(r1.saved!, [item("Five")], ctx({ seen: first.map((i) => i.id) }), "2026-11-10");
+    expect(r2.batch.items.map((i) => i.title)).toEqual(["One", "Two", "Three"]);
+    const r3 = dailyBatch(r2.saved!, [item("Five")], ctx(), "2026-11-10");
+    expect(r3.batch.items.map((i) => i.title)).toEqual(["One", "Two", "Three"]);
+    const done = dailyBatch(r2.saved!, [item("Six")], ctx({ seen: r2.saved!.items.map((i) => i.id) }), "2026-11-10");
     expect(done.batch.end).toBe("empty");
     const tomorrow = dailyBatch(r1.saved!, [item("Six")], ctx(), "2026-11-11");
     expect(tomorrow.batch.items.map((i) => i.title)).toEqual(["Six"]);
+  });
+  it("stricter settings apply to today's batch at once", () => {
+    const a = item("Calm video", "Gloomy");
+    const b = item("Another calm one", "Fine");
+    const r = dailyBatch(undefined, [a, b], ctx(), "d");
+    expect(r.batch.items).toHaveLength(2);
+    const after = dailyBatch(r.saved!, [], ctx({ ratings: { gloomy: "worse" } }), "d");
+    expect(after.batch.items.map((i) => i.id)).toEqual([b.id]);
+    const smaller = dailyBatch(r.saved!, [], ctx({ healthy: { batchSize: 1, dailyBudgetMinutes: 30 } }), "d");
+    expect(smaller.batch.items).toHaveLength(1);
+    const blocked = dailyBatch(r.saved!, [], ctx({ filters: { blockKeywords: ["another"], blockChannels: [], blockTopics: [], allowTopics: [], hideKinds: [] } }), "d");
+    expect(blocked.batch.items.map((i) => i.id)).toEqual([a.id]);
+  });
+  it("a channel named like a built-in property is just a name", () => {
+    const x = item("Pundit DESTROYS guest", "constructor");
+    expect(Number.isNaN(healthyScore(x, ctx()))).toBe(false);
+    expect(healthyBatch([x], ctx()).items).toEqual([]);
   });
   it("does not keep an empty pick", () => {
     expect(dailyBatch(undefined, [], ctx(), "d").saved).toBeNull();

@@ -172,7 +172,7 @@ export async function syncOnce(
 
   // Receive what other devices changed: stricter now, looser waits.
   if (remote.rev > s.seenRev) {
-    const r = applyPolicy(local, rebase(remote), rules, where, "another device");
+    const r = applyPolicy(local, rebase(remote), rules, where, "another device", now);
     if (!r.ok) throw new GistError(r.error);
     settings = r.settings;
     applied = r.applied;

@@ -1,6 +1,6 @@
 import {
   addFeedItems, addMinute, applyPolicyText, checkBreak, diffSettings, emptySyncState, GistError, isLocalPatch,
-  markSeen, policyFromSettings, rateCreator, syncOnce, type Settings, type SyncState,
+  markSeen, policyFromSettings, rateCreator, syncOnce, validatePatch, type Settings, type SyncState,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime, describePatch,
   dueSources, handleRulesFile, isWeakening, mergeEntries, migrateSettings, moveInQueue, nextFetchAt, parseFeed,
   recordPass, removeFromQueue, removeSource, RULES_URL, safeHttps, startRecovery, startSnooze, UNINSTALL_URL,
@@ -55,10 +55,8 @@ async function applyWithSideEffects(state: Stored, patch: Patch): Promise<void> 
 }
 
 async function handlePatch(state: Stored, patch: Patch): Promise<CommandResult> {
-  if (patch.op === "setBarrier") {
-    const error = validateBarrier(patch.barrier, now());
-    if (error) return { ok: false, error };
-  }
+  const invalid = validatePatch(patch, SITES, now());
+  if (invalid) return { ok: false, error: invalid };
   if (patch.op === "startBreak") {
     const error = checkBreak(patch.until, state.runtime, now());
     if (error) return { ok: false, error };
@@ -77,25 +75,27 @@ async function completePending(state: Stored): Promise<CommandResult> {
   const step = barrierStep(state.settings.barrier, state.runtime, now());
   if (step.kind === "blocked") return { ok: false, error: step.reason };
   const pass = recordPass(state.settings.barrier, state.runtime, now());
-  let runtime: Runtime = { ...pass.runtime, pending: null };
-  let settings = { ...state.settings, barrier: pass.barrier };
+  const runtime: Runtime = { ...pass.runtime, pending: null };
+  return finishPending(pending, { ...state.settings, barrier: pass.barrier }, runtime, state.runtime);
+}
+
+/** Applies a change whose barrier was passed (or escaped). The one place this happens. */
+async function finishPending(pending: Pending, settings: Settings, runtime: Runtime, before: Runtime): Promise<CommandResult> {
   if (pending.kind === "snooze") {
-    runtime = startSnooze(runtime, pending.site, pending.minutes, now());
-    await save({ settings, runtime });
-  } else {
-    if (pending.patch.op === "startBreak") {
-      const error = checkBreak(pending.patch.until, state.runtime, now());
-      if (error) {
-        await save({ runtime });
-        return { ok: false, error };
-      }
-      runtime = { ...runtime, lastBreakAt: now() };
-    }
-    settings = applyPatch(settings, pending.patch);
-    const update: Partial<Stored> = { settings, runtime };
-    if (pending.patch.op === "useBundledRules") update.rulesOverlay = null;
-    await save(update);
+    await save({ settings, runtime: startSnooze(runtime, pending.site, pending.minutes, now()) });
+    return { ok: true };
   }
+  // Checked again: time has passed, and the one-a-week rule counts from the last break taken.
+  const invalid = validatePatch(pending.patch, SITES, now());
+  const breakError = pending.patch.op === "startBreak" ? checkBreak(pending.patch.until, before, now()) : null;
+  if (invalid || breakError) {
+    await save({ settings, runtime });
+    return { ok: false, error: invalid ?? breakError ?? "" };
+  }
+  const next = pending.patch.op === "startBreak" ? { ...runtime, lastBreakAt: now() } : runtime;
+  const update: Partial<Stored> = { settings: applyPatch(settings, pending.patch), runtime: next };
+  if (pending.patch.op === "useBundledRules") update.rulesOverlay = null;
+  await save(update);
   return { ok: true };
 }
 
@@ -214,13 +214,7 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
         const pending = fresh.runtime.pending;
         if (!pending) return { ok: false, error: "Nothing is waiting" };
         const stats = { ...fresh.runtime.stats, completed: fresh.runtime.stats.completed + 1 };
-        let runtime: Runtime = { ...fresh.runtime, pending: null, stats };
-        if (pending.kind === "snooze") {
-          runtime = startSnooze(runtime, pending.site, pending.minutes, now());
-          await save({ runtime });
-        } else {
-          await save({ settings: applyPatch(fresh.settings, pending.patch), runtime });
-        }
+        return finishPending(pending, fresh.settings, { ...fresh.runtime, pending: null, stats }, fresh.runtime);
       }
       return { ok: true };
     }
@@ -285,19 +279,25 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
       await refreshFeeds();
       return { ok: true };
     case "feedItems": {
-      if (!siteMap()[cmd.site] || !Array.isArray(cmd.items)) return { ok: false };
+      // From a content script, which reads a page the site controls: check everything.
+      const rule = siteMap()[cmd.site];
+      if (!rule || !Array.isArray(cmd.items)) return { ok: false };
       const items = cmd.items.slice(0, 60).flatMap((i) => {
-        const url = safeHttps(i.url);
-        return url && typeof i.title === "string" ? [{ title: i.title.slice(0, 200), channel: String(i.channel ?? "").slice(0, 100), url }] : [];
+        const url = typeof i?.url === "string" && i.url.length <= 2048 ? safeHttps(i.url) : null;
+        if (!url || !rule.hosts.includes(new URL(url).hostname) || typeof i.title !== "string") return [];
+        return [{ title: i.title.slice(0, 200), channel: typeof i.channel === "string" ? i.channel.slice(0, 100) : "", url }];
       });
       await save({ healthy: addFeedItems(state.healthy, cmd.site, items, state.settings, now()) });
       return { ok: true };
     }
     case "healthySeen":
+      if (typeof cmd.id !== "string" || cmd.id.length > 2048) return { ok: false };
       await save({ healthy: markSeen(state.healthy, cmd.id) });
       return { ok: true };
     case "rate":
-      if (!["worth", "notWorth", "worse"].includes(cmd.rating)) return { ok: false };
+      if (!["worth", "notWorth", "worse"].includes(cmd.rating) || typeof cmd.channel !== "string" || cmd.channel.length > 100) {
+        return { ok: false };
+      }
       await save({ healthy: rateCreator(state.healthy, cmd.channel, cmd.rating) });
       return { ok: true };
     case "healthyMinute":
@@ -309,7 +309,7 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
     }
     case "importPolicy": {
       if (typeof cmd.text !== "string") return { ok: false, error: "No file" };
-      const r = applyPolicyText(state.settings, cmd.text, SITES, { platform: BUILD_TARGET, deviceId: await deviceId() }, "an imported file");
+      const r = applyPolicyText(state.settings, cmd.text, SITES, { platform: BUILD_TARGET, deviceId: await deviceId() }, "an imported file", now());
       if (!r.ok) return { ok: false, error: r.error };
       await save({ settings: r.settings });
       if (r.pending) {

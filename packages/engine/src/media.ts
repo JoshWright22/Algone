@@ -7,7 +7,8 @@ export function pauseHiddenMedia(active: boolean): void {
     const offscreen = video.getClientRects().length > 0 && video.getBoundingClientRect().right < 0;
     if ((offscreen || video.getClientRects().length === 0) && document.documentElement.contains(video)) {
       if (!video.closest("[data-algone-panel]")) {
-        video.muted = true;
+        // A video moved off-screen is only paused; muting it would carry over when the site reuses it.
+        if (!offscreen) video.muted = true;
         video.pause();
       }
     }

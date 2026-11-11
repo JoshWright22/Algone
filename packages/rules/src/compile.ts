@@ -22,12 +22,13 @@ function gate(t: string, el: RuleElement, withOff: boolean): string {
 
 /**
  * In Healthy mode the feed is moved off-screen instead of removed, so the site keeps
- * rendering its items and Algone can read them. It cannot be seen, clicked or focused.
+ * rendering its items and Algone can read them. `visibility: hidden` keeps it out of the
+ * tab order and screen readers; its text stays readable to Algone.
  */
 const OFFSCREEN =
   "{ display: block !important; position: fixed !important; left: -20000px !important; top: 0 !important; " +
   "width: 1200px !important; height: 3000px !important; overflow: hidden !important; " +
-  "pointer-events: none !important; content-visibility: visible !important; }";
+  "pointer-events: none !important; visibility: hidden !important; content-visibility: visible !important; }";
 
 /** One CSS rule per selector, so an invalid selector loses only itself. */
 function elementCss(siteId: string, el: RuleElement, withOff: boolean): string {

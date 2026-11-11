@@ -68,14 +68,15 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
     case "setElement": {
       const site = settings.sites[patch.site];
       const el = rules.find((r) => r.id === patch.site)?.elements.find((e) => e.id === patch.element);
-      if (!site || !el) return true;
-      if (patch.hidden) return false;
-      return isHidden(el, site);
+      if (!site) return true;
+      if (patch.hidden === true) return false;
+      return !el || isHidden(el, site);
     }
     case "setSiteEnabled":
       return !patch.enabled;
     case "setMode": {
       const current = settings.sites[patch.site]?.mode;
+      if (!(patch.mode in MODE_RANK)) return true;
       if (patch.mode === current || !current) return patch.mode !== current;
       if (MODE_RANK[patch.mode] === MODE_RANK[current]) return !isMode(patch.mode, 2);
       return MODE_RANK[patch.mode] < MODE_RANK[current];
@@ -98,8 +99,10 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
       return !site || !tunedTightens(site.tuned, patch.filters);
     }
     case "setHealthy": {
+      // Fails closed: anything but a finite number no larger than now waits.
       const h = settings.healthy;
-      return (patch.batchSize ?? 0) > h.batchSize || (patch.dailyBudgetMinutes ?? 0) > h.dailyBudgetMinutes;
+      const looser = (v: unknown, now: number) => v !== undefined && !(typeof v === "number" && Number.isFinite(v) && v <= now);
+      return looser(patch.batchSize, h.batchSize) || looser(patch.dailyBudgetMinutes, h.dailyBudgetMinutes);
     }
     case "setAvoid":
       return !isSubset(settings.avoid, patch.ids);

@@ -107,6 +107,9 @@ test("hiding an extra is instant, and needs no barrier", async ({ h }) => {
 });
 
 test("hidden video is muted, and a shown one is left alone", async ({ h }) => {
+  const settings = await getStorage(h, "settings");
+  settings.sites.youtube.mode = "nofeed";
+  await setStorage(h, { settings });
   const page = await h.context.newPage();
   await page.goto("https://www.youtube.com/");
   await waitAttrs(page);
@@ -123,6 +126,22 @@ test("hidden video is muted, and a shown one is left alone", async ({ h }) => {
   });
   expect(state.shownMuted).toBe(false);
   expect(state.hiddenMuted).toBe(true);
+});
+
+test("a video in the off-screen healthy feed is not muted, so a reused player keeps its sound", async ({ h }) => {
+  const page = await h.context.newPage();
+  await page.goto("https://www.youtube.com/");
+  await waitAttrs(page);
+  const state = await page.evaluate(async () => {
+    const v = document.createElement("video");
+    v.style.cssText = "display:block;width:10px;height:10px";
+    document.querySelector('ytd-browse[page-subtype="home"]')!.append(v);
+    // Content scripts cannot see page-side stand-ins, so pausing itself is not observable here.
+    await new Promise((r) => setTimeout(r, 300));
+    return { muted: v.muted, right: v.getBoundingClientRect().right };
+  });
+  expect(state.right).toBeLessThan(0);
+  expect(state.muted).toBe(false);
 });
 
 test("autoplay toggle is switched off once", async ({ h }) => {
