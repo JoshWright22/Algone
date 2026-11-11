@@ -384,12 +384,30 @@ api.runtime.onInstalled.addListener(async (details) => {
   await save(update);
   await api.alarms.create("rules", { periodInMinutes: 24 * 60, delayInMinutes: 1 });
   await api.alarms.create("feeds", { periodInMinutes: 60, delayInMinutes: 2 });
+  await api.alarms.create("selfUpdate", { periodInMinutes: 10, delayInMinutes: 10 });
   if (details.reason === "install") {
     await api.tabs.create({ url: api.runtime.getURL("welcome.html") });
     api.runtime.setUninstallURL?.(UNINSTALL_URL);
   }
   await injectOpenTabs();
 });
+
+/**
+ * Auto-update for copies installed from a folder (Load unpacked), which no store updates.
+ * The `algone update` task replaces the folder's files; the browser serves them from disk,
+ * so a newer build.json means newer code is waiting, and a reload picks it up.
+ * Store copies have an update_url and are left to the store.
+ */
+async function checkSelfUpdate(): Promise<void> {
+  if ((api.runtime.getManifest() as { update_url?: string }).update_url) return;
+  try {
+    const res = await fetch(api.runtime.getURL("build.json"), { cache: "no-store" });
+    const build = (await res.json()) as { rev?: number };
+    if (typeof build.rev === "number" && build.rev > BUILD_REV) api.runtime.reload();
+  } catch {
+    // An old or partly copied folder: try again at the next alarm.
+  }
+}
 
 api.runtime.onStartup?.addListener(() => {
   void serial(checkRules);
@@ -399,6 +417,7 @@ api.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "rules") void serial(checkRules);
   else if (alarm.name === "feeds") void serial(refreshFeeds);
   else if (alarm.name === "sync" || alarm.name === "syncSoon") void serial(runSync);
+  else if (alarm.name === "selfUpdate") void serial(checkSelfUpdate);
 });
 
 // A settings change is sent half a minute later, so a burst of clicks is one write.

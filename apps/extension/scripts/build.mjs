@@ -138,6 +138,8 @@ async function one(target) {
   cpSync(join(app, "src/ui/theme.css"), join(out, "theme.css"));
   cpSync(join(app, "public"), out, { recursive: true });
   writeFileSync(join(out, "manifest.json"), `${JSON.stringify(manifest(target), null, 2)}\n`);
+  // Read by the extension to notice that the updater replaced its files (installs outside a store).
+  writeFileSync(join(out, "build.json"), `${JSON.stringify({ version, rev: BUILD_REV, target })}\n`);
 }
 
 for (const t of targets) await one(t);

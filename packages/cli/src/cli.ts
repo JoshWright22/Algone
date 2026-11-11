@@ -28,6 +28,10 @@ export const HELP = `algone: the Algone settings file from a terminal.
   algone export-zen <file> [out]      Build a Zen filter list (hide rules only)
   algone pull <file>                  Download the synced file from your Gist
   algone push <file>                  Upload a file to your Gist as the next revision
+  algone install [chrome] [edge]      Install Algone from the newest release, and keep it updated
+  algone install --from <dist>        Install from a local build (apps/extension/dist)
+  algone update [chrome] [edge]       Update now (the scheduled task runs this every hour)
+  algone stop-updates                 Remove the scheduled update
 
 Paths are inside "settings", like sites.youtube.mode or healthy.batchSize.
 Use overrides.platform:android.<path> for one platform.
