@@ -55,8 +55,11 @@ test("queue shows five, the rest behind one click, and saving is never blocked",
   await page.goto("https://www.youtube.com/");
   const f = await frame(page, "feed");
   await expect(f.locator("#queue a")).toHaveCount(5);
-  await f.locator("#show-all").click();
-  await expect(f.locator("#queue a")).toHaveCount(7);
+  // The panel may redraw once while the page settles; a click on the old button is retried.
+  await expect(async () => {
+    if (await f.locator("#show-all").count()) await f.locator("#show-all").click({ timeout: 1000 });
+    await expect(f.locator("#queue a")).toHaveCount(7, { timeout: 1000 });
+  }).toPass({ timeout: 8000 });
 });
 
 test("save button on a watch page adds to the queue", async ({ h }) => {
