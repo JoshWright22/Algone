@@ -1,5 +1,5 @@
 import type { SiteRule } from "@algone/rules";
-import type { Runtime, Settings, SiteSettings, TunedFilters } from "./types";
+import { AVOID_IDS, type Runtime, type Settings, type SiteSettings, type TunedFilters } from "./types";
 
 export const emptyTuned = (): TunedFilters => ({
   blockKeywords: [],
@@ -19,7 +19,7 @@ export const defaultSite = (): SiteSettings => ({
 
 export function defaultSettings(rules: SiteRule[]): Settings {
   return {
-    schema: 1,
+    schema: 2,
     sites: Object.fromEntries(rules.map((r) => [r.id, defaultSite()])),
     barrier: { type: "pause", seconds: 30 },
     snoozeMinutes: 10,
@@ -29,6 +29,11 @@ export function defaultSettings(rules: SiteRule[]): Settings {
     theme: "system",
     queueSoftCap: 5,
     customRanking: "newest",
+    healthy: { batchSize: 10, dailyBudgetMinutes: 30 },
+    avoid: [...AVOID_IDS],
+    activities: [],
+    breakUntil: 0,
+    apps: {},
   };
 }
 
@@ -54,6 +59,7 @@ export function migrateSettings(saved: Settings | undefined, rules: SiteRule[]):
     schema: base.schema,
     sites,
     webSources: { ...base.webSources, ...saved.webSources },
+    healthy: { ...base.healthy, ...saved.healthy },
   };
 }
 

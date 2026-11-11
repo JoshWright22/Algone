@@ -1,13 +1,36 @@
 import type { SiteRule } from "@algone/rules";
 import { applyPatch } from "./commands";
 import { isHidden } from "./defaults";
-import type { BarrierConfig, Patch, Settings, TunedFilters } from "./types";
+import {
+  APP_MODES, type AppMode, type AppPolicy, type BarrierConfig, type Mode, type Patch, type Settings,
+  type TunedFilters,
+} from "./types";
 
 /** Applying these never needs a barrier: they do not touch what is hidden. */
 const NEUTRAL_GLOBALS = new Set(["theme", "queueSoftCap", "customRanking"]);
 
-/** True if `after` is stricter than `before` and both are the same barrier type. */
+/** Barrier types from weakest to strongest. Locks are temporary and only compare with locks. */
+const BARRIER_RANK: Record<string, number> = { pause: 1, typing: 2, daily: 3, schedule: 4, partner: 5 };
+
+/** Mode strictness: a move to an equal or higher number never needs a barrier. */
+const MODE_RANK: Record<Mode, number> = { tuned: 0, custom: 1, healthy: 2, random: 3, nofeed: 3 };
+
+const APP_RANK = Object.fromEntries(APP_MODES.map((m, i) => [m, i])) as Record<AppMode, number>;
+
+function appTightens(before: AppPolicy | undefined, after: AppPolicy | null): boolean {
+  if (!after) return !before || before.mode === "allow";
+  if (!before) return true; // A new entry only adds limits.
+  if (APP_RANK[after.mode] !== APP_RANK[before.mode]) return APP_RANK[after.mode] > APP_RANK[before.mode];
+  if (before.shortVideo && !after.shortVideo) return false;
+  if (after.mode === "limit") return (after.minutes ?? Infinity) <= (before.minutes ?? Infinity);
+  return true;
+}
+
+/** True if `after` is stricter than `before`: a stronger type, or the same type made stricter. */
 export function isStricterBarrier(before: BarrierConfig, after: BarrierConfig): boolean {
+  const rb = BARRIER_RANK[before.type];
+  const ra = BARRIER_RANK[after.type];
+  if (rb && ra && ra !== rb) return ra > rb;
   if (before.type === "pause" && after.type === "pause") return after.seconds > before.seconds;
   if (before.type === "typing" && after.type === "typing") return after.length > before.length;
   if (before.type === "daily" && after.type === "daily") {
@@ -47,8 +70,8 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
       return !patch.enabled;
     case "setMode": {
       const current = settings.sites[patch.site]?.mode;
-      if (patch.mode === current) return false;
-      return !(patch.mode === "nofeed" || patch.mode === "random");
+      if (patch.mode === current || !current) return patch.mode !== current;
+      return MODE_RANK[patch.mode] < MODE_RANK[current];
     }
     case "setIntent":
       return !patch.value;
@@ -67,6 +90,20 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
       const site = settings.sites[patch.site];
       return !site || !tunedTightens(site.tuned, patch.filters);
     }
+    case "setHealthy": {
+      const h = settings.healthy;
+      return (patch.batchSize ?? 0) > h.batchSize || (patch.dailyBudgetMinutes ?? 0) > h.dailyBudgetMinutes;
+    }
+    case "setAvoid":
+      return !isSubset(settings.avoid, patch.ids);
+    case "setActivities":
+      return false;
+    case "startBreak":
+      return true;
+    case "endBreak":
+      return false;
+    case "setApp":
+      return !appTightens(settings.apps[patch.platform]?.[patch.app], patch.config);
     case "batch": {
       let current = settings;
       for (const p of patch.patches) {

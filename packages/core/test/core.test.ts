@@ -129,8 +129,38 @@ describe("isWeakening", () => {
     expect(w({ op: "setMode", site: "youtube", mode: "tuned" })).toBe(true);
     expect(w({ op: "setMode", site: "youtube", mode: "custom" })).toBe(true);
     const t = applyPatch(s, { op: "setMode", site: "youtube", mode: "tuned" });
-    expect(w({ op: "setMode", site: "youtube", mode: "custom" }, t)).toBe(true);
+    expect(w({ op: "setMode", site: "youtube", mode: "custom" }, t)).toBe(false);
+    expect(w({ op: "setMode", site: "youtube", mode: "healthy" }, t)).toBe(false);
     expect(w({ op: "setMode", site: "youtube", mode: "nofeed" }, t)).toBe(false);
+    expect(w({ op: "setMode", site: "youtube", mode: "healthy" })).toBe(true);
+    const c = applyPatch(s, { op: "setMode", site: "youtube", mode: "custom" });
+    expect(w({ op: "setMode", site: "youtube", mode: "tuned" }, c)).toBe(true);
+    expect(w({ op: "setMode", site: "youtube", mode: "healthy" }, c)).toBe(false);
+  });
+  it("healthy, avoid, break and apps", () => {
+    expect(w({ op: "setHealthy", batchSize: 5 })).toBe(false);
+    expect(w({ op: "setHealthy", batchSize: 20 })).toBe(true);
+    expect(w({ op: "setHealthy", dailyBudgetMinutes: 60 })).toBe(true);
+    expect(w({ op: "setAvoid", ids: ["outrage", "clickbait", "comparison", "doom"] })).toBe(false);
+    expect(w({ op: "setAvoid", ids: ["outrage"] })).toBe(true);
+    expect(w({ op: "setActivities", items: ["Walk"] })).toBe(false);
+    expect(w({ op: "startBreak", until: NOW + 3_600_000 })).toBe(true);
+    expect(w({ op: "endBreak" })).toBe(false);
+    const cover = { mode: "cover" as const, shortVideo: true };
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: cover })).toBe(false);
+    const a = applyPatch(s, { op: "setApp", platform: "android", app: "youtube", config: cover });
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "block" } }, a)).toBe(false);
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "cover" } }, a)).toBe(true);
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: { mode: "limit", minutes: 5 } }, a)).toBe(true);
+    expect(w({ op: "setApp", platform: "android", app: "youtube", config: null }, a)).toBe(true);
+    const l = applyPatch(s, { op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 20 } });
+    expect(w({ op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 10 } }, l)).toBe(false);
+    expect(w({ op: "setApp", platform: "ios", app: "instagram", config: { mode: "limit", minutes: 30 } }, l)).toBe(true);
+  });
+  it("a break shows every site, then ends by itself", () => {
+    const b = applyPatch(s, { op: "startBreak", until: NOW + 60_000 });
+    expect(computeView(b, rt(), yt, NOW).enabled).toBe(false);
+    expect(computeView(b, rt(), yt, NOW + 60_001).enabled).toBe(true);
   });
   it("site and intent", () => {
     expect(w({ op: "setSiteEnabled", site: "youtube", enabled: false })).toBe(true);
@@ -149,11 +179,16 @@ describe("isWeakening", () => {
     expect(w({ op: "setGlobal", key: "wikipedia", value: true })).toBe(true);
     expect(w({ op: "useBundledRules" })).toBe(true);
   });
-  it("barriers: only stricter within a type is tightening", () => {
+  it("barriers: a stronger type, or stricter within a type, is tightening", () => {
     expect(isStricterBarrier({ type: "pause", seconds: 30 }, { type: "pause", seconds: 60 })).toBe(true);
     expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 60 } })).toBe(false);
     expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 10 } })).toBe(true);
-    expect(w({ op: "setBarrier", barrier: { type: "typing", length: 60 } })).toBe(true);
+    expect(w({ op: "setBarrier", barrier: { type: "typing", length: 60 } })).toBe(false);
+    const typing = applyPatch(s, { op: "setBarrier", barrier: { type: "typing", length: 60 } });
+    expect(w({ op: "setBarrier", barrier: { type: "pause", seconds: 120 } }, typing)).toBe(true);
+    const schedule: BarrierConfig = { type: "schedule", windows: [{ days: [1], start: "09:00", end: "10:00" }] };
+    expect(w({ op: "setBarrier", barrier: schedule })).toBe(false);
+    expect(w({ op: "setBarrier", barrier: schedule }, applyPatch(s, { op: "setBarrier", barrier: schedule }))).toBe(true);
     expect(
       isStricterBarrier({ type: "daily", limit: 3, step: "pause" }, { type: "daily", limit: 1, step: "pause" }),
     ).toBe(true);

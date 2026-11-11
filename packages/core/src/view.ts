@@ -17,7 +17,8 @@ export function computeView(
   const snoozed = !!snooze && snooze.until > now;
   const off = overlayOff(rule, overlay);
   const elements = [...rule.elements, ...overlayAdded(rule, overlay)];
-  const inactive = !site || !site.enabled;
+  const onBreak = settings.breakUntil > now;
+  const inactive = !site || !site.enabled || onBreak;
 
   const show: string[] = [];
   const hide: string[] = [];
@@ -56,7 +57,7 @@ export function computeView(
 }
 
 function panelFor(mode: string, search: boolean, prompt: boolean): PanelSpec | null {
-  const content = mode === "random" || mode === "custom" ? mode : null;
+  const content = mode === "random" || mode === "custom" || mode === "healthy" ? mode : null;
   if (!search && !content) return null;
   return { search, prompt: search && prompt, content };
 }

@@ -1,4 +1,4 @@
-import type { Patch, Runtime, Settings } from "./types";
+import type { Mode, Patch, Runtime, Settings } from "./types";
 
 /** Applies one patch and returns new settings. Pure. */
 export function applyPatch(settings: Settings, patch: Patch): Settings {
@@ -34,8 +34,38 @@ export function applyPatch(settings: Settings, patch: Patch): Settings {
       return { ...settings, ruleUpdates: false };
     case "batch":
       return patch.patches.reduce(applyPatch, settings);
+    case "setHealthy":
+      return {
+        ...settings,
+        healthy: {
+          batchSize: patch.batchSize ?? settings.healthy.batchSize,
+          dailyBudgetMinutes: patch.dailyBudgetMinutes ?? settings.healthy.dailyBudgetMinutes,
+        },
+      };
+    case "setAvoid":
+      return { ...settings, avoid: [...patch.ids] };
+    case "setActivities":
+      return { ...settings, activities: [...patch.items] };
+    case "startBreak":
+      return { ...settings, breakUntil: patch.until };
+    case "endBreak":
+      return { ...settings, breakUntil: 0 };
+    case "setApp": {
+      const list = { ...settings.apps[patch.platform] };
+      if (patch.config) list[patch.app] = patch.config;
+      else delete list[patch.app];
+      return { ...settings, apps: { ...settings.apps, [patch.platform]: list } };
+    }
   }
 }
+
+export const MODE_NAMES: Record<Mode, string> = {
+  nofeed: "No feed",
+  random: "Random",
+  healthy: "Healthy",
+  custom: "Custom",
+  tuned: "Tuned",
+};
 
 /** Short user-facing text for a pending change. */
 export function describePatch(patch: Patch, siteName = ""): string {
@@ -45,7 +75,7 @@ export function describePatch(patch: Patch, siteName = ""): string {
     case "setSiteEnabled":
       return `Turn Algone off on ${siteName}`;
     case "setMode":
-      return `Switch ${siteName} to ${patch.mode === "tuned" ? "Tuned" : "Custom"}`;
+      return `Switch ${siteName} to ${MODE_NAMES[patch.mode]}`;
     case "setIntent":
       return `Turn off an intent feature on ${siteName}`;
     case "setBarrier":
@@ -54,6 +84,14 @@ export function describePatch(patch: Patch, siteName = ""): string {
       return `Loosen Tuned filters on ${siteName}`;
     case "useBundledRules":
       return "Use bundled rules and stop rule updates";
+    case "setHealthy":
+      return "Show more in the healthy feed";
+    case "setAvoid":
+      return "Show more of the content you chose to avoid";
+    case "startBreak":
+      return `Take a break until ${new Date(patch.until).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" })}`;
+    case "setApp":
+      return `Loosen ${patch.app} on ${patch.platform}`;
     case "batch":
       return `Loosen ${patch.patches.length} ${patch.patches.length === 1 ? "setting" : "settings"} from ${patch.source}`;
     default:

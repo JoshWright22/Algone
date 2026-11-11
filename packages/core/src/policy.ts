@@ -1,6 +1,9 @@
 import type { SiteRule } from "@algone/rules";
 import { migrateSettings } from "./defaults";
-import type { BarrierConfig, Mode, Ranking, Settings } from "./types";
+import {
+  APP_MODES, APP_PLATFORMS, AVOID_IDS, type AppMode, type AvoidId, type BarrierConfig, type Mode, type Ranking,
+  type Settings,
+} from "./types";
 
 /**
  * The shared policy: one JSON file every Algone surface reads, and that people and
@@ -9,22 +12,9 @@ import type { BarrierConfig, Mode, Ranking, Settings } from "./types";
 export const POLICY_SCHEMA = "algone-policy/1";
 export const MAX_POLICY_BYTES = 256 * 1024;
 
-/** What Algone asks of a native app. Ordered from loosest to strictest. */
-export const APP_MODES = ["allow", "limit", "pause", "cover", "block"] as const;
-export type AppMode = (typeof APP_MODES)[number];
-
-export interface AppPolicy {
-  mode: AppMode;
-  /** Daily minutes, for `limit`. */
-  minutes?: number;
-  /** Block Shorts, Reels and similar short-video tabs. */
-  shortVideo?: boolean;
-}
-
-export type PolicyPlatform = "android" | "ios" | "desktop";
-
 /** Settings minus what stays on each device. */
-export type SharedSettings = Omit<Settings, "theme">;
+export type SharedSettings = Omit<Settings, "theme" | "breakUntil">;
+type Local = Pick<Settings, "theme" | "breakUntil" | "barrier">;
 
 export interface Policy {
   schema: typeof POLICY_SCHEMA;
@@ -34,8 +24,6 @@ export interface Policy {
   /** Device id, or "agent:<name>" for an agent's edit. */
   updatedBy: string;
   settings: SharedSettings;
-  /** Native apps, keyed by platform then app id, such as "youtube". */
-  apps: Partial<Record<PolicyPlatform, Record<string, AppPolicy>>>;
   /** Partial settings applied on top, keyed "platform:<name>" or "device:<id>". */
   overrides: Record<string, DeepPartial<SharedSettings>>;
 }
@@ -44,15 +32,22 @@ export type DeepPartial<T> = { [K in keyof T]?: T[K] extends object ? DeepPartia
 
 export type PolicyResult = { ok: true; policy: Policy } | { ok: false; error: string };
 
+/** The shared part of settings. Barrier progress (a used escape, a running recovery) stays local. */
+export function sharedSettings(settings: Settings): SharedSettings {
+  const { theme: _t, breakUntil: _b, ...shared } = settings;
+  const b = shared.barrier;
+  if (b.type === "locked") shared.barrier = { ...b, escapeUsed: false };
+  if (b.type === "partner") shared.barrier = { ...b, recoveryAt: null };
+  return shared;
+}
+
 export function policyFromSettings(settings: Settings, rev: number, updatedBy: string, now: number): Policy {
-  const { theme: _local, ...shared } = settings;
   return {
     schema: POLICY_SCHEMA,
     rev,
     updatedAt: new Date(now).toISOString(),
     updatedBy,
-    settings: shared,
-    apps: {},
+    settings: sharedSettings(settings),
     overrides: {},
   };
 }
@@ -74,18 +69,28 @@ function mergeDeep<T>(base: T, patch: unknown): T {
 export function settingsFromPolicy(
   policy: Policy,
   rules: SiteRule[],
-  where: { platform: string; deviceId: string; theme: Settings["theme"] },
+  where: { platform: string; deviceId: string; local: Local },
 ): Settings {
   let shared = policy.settings;
   for (const key of [`platform:${where.platform}`, `device:${where.deviceId}`]) {
     if (policy.overrides[key]) shared = mergeDeep(shared, policy.overrides[key]);
   }
-  return migrateSettings({ ...shared, theme: where.theme } as Settings, rules);
+  const { theme, breakUntil, barrier: localBarrier } = where.local;
+  let barrier = shared.barrier;
+  // Same barrier as here: keep this device's progress through it.
+  if (sameBarrier(barrier, localBarrier)) barrier = localBarrier;
+  return migrateSettings({ ...shared, barrier, theme, breakUntil } as Settings, rules);
+}
+
+function sameBarrier(a: BarrierConfig, b: BarrierConfig): boolean {
+  const strip = (x: BarrierConfig) =>
+    x.type === "locked" ? { ...x, escapeUsed: false } : x.type === "partner" ? { ...x, recoveryAt: null } : x;
+  return JSON.stringify(strip(a)) === JSON.stringify(strip(b));
 }
 
 // ---- Validation. Strict on shape, so a typo is an error and not a silent loosening.
 
-const MODES: Mode[] = ["nofeed", "random", "tuned", "custom"];
+const MODES: Mode[] = ["nofeed", "random", "healthy", "tuned", "custom"];
 const RANKINGS: Ranking[] = ["newest", "fair", "oldestUnseen"];
 const MAX_LIST = 500;
 const MAX_TEXT = 200;
@@ -195,18 +200,37 @@ function settings(v: unknown, path: string, partial: boolean, rules: SiteRule[])
     need(isObj(s.webSources), `${path}.webSources must be an object`);
     bool((s.webSources as Record<string, unknown>).wikipedia, `${path}.webSources.wikipedia`);
   }
+  if (has("healthy")) {
+    need(isObj(s.healthy), `${path}.healthy must be an object`);
+    const h = s.healthy as Record<string, unknown>;
+    if (h.batchSize !== undefined || !partial) num(h.batchSize, `${path}.healthy.batchSize`, 1, 50);
+    if (h.dailyBudgetMinutes !== undefined || !partial) num(h.dailyBudgetMinutes, `${path}.healthy.dailyBudgetMinutes`, 1, 1440);
+  }
+  if (has("avoid")) {
+    strings(s.avoid, `${path}.avoid`);
+    for (const id of s.avoid as string[]) need(AVOID_IDS.includes(id as AvoidId), `${path}.avoid: "${id}" is not one of ${AVOID_IDS.join(", ")}`);
+  }
+  if (has("activities")) {
+    strings(s.activities, `${path}.activities`);
+    need((s.activities as string[]).length <= 20, `${path}.activities: at most 20`);
+  }
+  if (has("apps")) apps(s.apps, `${path}.apps`);
   need(!has("theme"), `${path}.theme stays on each device; remove it`);
-  const known = ["schema", "sites", "barrier", "snoozeMinutes", "stopAtEnd", "ruleUpdates", "queueSoftCap", "customRanking", "webSources"];
+  need(!has("breakUntil"), `${path}.breakUntil stays on each device; remove it`);
+  const known = [
+    "schema", "sites", "barrier", "snoozeMinutes", "stopAtEnd", "ruleUpdates", "queueSoftCap", "customRanking",
+    "webSources", "healthy", "avoid", "activities", "apps",
+  ];
   for (const k of Object.keys(s)) need(known.includes(k), `${path}.${k} is not a known setting`);
 }
 
-function apps(v: unknown): void {
-  need(isObj(v), "apps must be an object");
+function apps(v: unknown, path: string): void {
+  need(isObj(v), `${path} must be an object`);
   for (const [platform, list] of Object.entries(v as object)) {
-    need(["android", "ios", "desktop"].includes(platform), `apps.${platform} is not a platform`);
-    need(isObj(list), `apps.${platform} must be an object`);
+    need((APP_PLATFORMS as readonly string[]).includes(platform), `${path}.${platform} is not a platform`);
+    need(isObj(list), `${path}.${platform} must be an object`);
     for (const [id, app] of Object.entries(list as object)) {
-      const p = `apps.${platform}.${id}`;
+      const p = `${path}.${platform}.${id}`;
       need(/^[a-z0-9.-]{1,64}$/.test(id), `${p}: app ids are lowercase letters, digits, dots and dashes`);
       need(isObj(app), `${p} must be an object`);
       const a = app as Record<string, unknown>;
@@ -239,7 +263,6 @@ export function validatePolicy(raw: unknown, rules: SiteRule[]): PolicyResult {
     need(typeof p.updatedAt === "string", "updatedAt must be text");
     need(typeof p.updatedBy === "string" && p.updatedBy.length <= 100, "updatedBy must be short text");
     settings(p.settings, "settings", false, rules);
-    if (p.apps !== undefined) apps(p.apps);
     if (p.overrides !== undefined) {
       need(isObj(p.overrides), "overrides must be an object");
       for (const [k, o] of Object.entries(p.overrides as object)) {
@@ -247,11 +270,10 @@ export function validatePolicy(raw: unknown, rules: SiteRule[]): PolicyResult {
         settings(o, `overrides.${k}`, true, rules);
       }
     }
-    const known = ["$schema", "schema", "rev", "updatedAt", "updatedBy", "settings", "apps", "overrides"];
+    const known = ["$schema", "schema", "rev", "updatedAt", "updatedBy", "settings", "overrides"];
     for (const k of Object.keys(p)) need(known.includes(k), `${k} is not a known policy field`);
     const s = p.settings as Record<string, unknown>;
-    const filled = migrateSettings({ ...s, theme: "system" } as unknown as Settings, rules);
-    const { theme: _t, ...shared } = filled;
+    const shared = sharedSettings(migrateSettings({ ...s, theme: "system" } as unknown as Settings, rules));
     return {
       ok: true,
       policy: {
@@ -260,7 +282,6 @@ export function validatePolicy(raw: unknown, rules: SiteRule[]): PolicyResult {
         updatedAt: p.updatedAt as string,
         updatedBy: p.updatedBy as string,
         settings: shared,
-        apps: (p.apps ?? {}) as Policy["apps"],
         overrides: (p.overrides ?? {}) as Policy["overrides"],
       },
     };

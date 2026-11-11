@@ -8,7 +8,7 @@ import {
 
 const NOW = new Date(2026, 10, 10, 12, 0, 0).getTime();
 const base = () => defaultSettings(SITES);
-const here = { platform: "chrome", deviceId: "pc-1", theme: "dark" as const };
+const here = { platform: "chrome", deviceId: "pc-1", local: { theme: "dark" as const, breakUntil: 0, barrier: base().barrier } };
 const apply = (s: Settings, patches: Patch[]) => patches.reduce(applyPatch, s);
 
 describe("policy file", () => {
@@ -56,10 +56,23 @@ describe("policy file", () => {
 
   it("checks native app entries", () => {
     const p = policyFromSettings(base(), 1, "pc-1", NOW);
-    const ok = { ...p, apps: { android: { youtube: { mode: "cover", shortVideo: true } }, ios: { instagram: { mode: "limit", minutes: 20 } } } };
+    const withApps = (apps: object) => ({ ...p, settings: { ...p.settings, apps } });
+    const ok = withApps({ android: { youtube: { mode: "cover", shortVideo: true } }, ios: { instagram: { mode: "limit", minutes: 20 } } });
     expect(validatePolicy(ok, SITES).ok).toBe(true);
-    expect(validatePolicy({ ...p, apps: { ios: { instagram: { mode: "limit" } } } }, SITES).ok).toBe(false);
-    expect(validatePolicy({ ...p, apps: { windows: {} } }, SITES).ok).toBe(false);
+    expect(validatePolicy(withApps({ ios: { instagram: { mode: "limit" } } }), SITES).ok).toBe(false);
+    expect(validatePolicy(withApps({ windows: {} }), SITES).ok).toBe(false);
+  });
+
+  it("keeps break mode and barrier progress on the device", () => {
+    let s = applyPatch(base(), { op: "startBreak", until: NOW + 1000 });
+    s = { ...s, barrier: { type: "locked", until: NOW + 5000, escapeUsed: true, after: { type: "pause", seconds: 30 } } };
+    const p = policyFromSettings(s, 1, "pc-1", NOW);
+    expect(p.settings).not.toHaveProperty("breakUntil");
+    expect(p.settings.barrier).toMatchObject({ escapeUsed: false });
+    const back = settingsFromPolicy(p, SITES, { ...here, local: { theme: "dark", breakUntil: 7, barrier: s.barrier } });
+    expect(back.breakUntil).toBe(7);
+    expect(back.barrier).toMatchObject({ escapeUsed: true });
+    expect(validatePolicy({ ...p, settings: { ...p.settings, breakUntil: 5 } }, SITES).ok).toBe(false);
   });
 
   it("applies platform then device overrides", () => {
@@ -94,8 +107,18 @@ describe("sync plan", () => {
     expect(diffSettings(to, to, SITES)).toEqual([]);
   });
 
-  it("ignores the theme", () => {
-    expect(diffSettings(base(), { ...base(), theme: "light" }, SITES)).toEqual([]);
+  it("ignores the theme and break mode", () => {
+    expect(diffSettings(base(), { ...base(), theme: "light", breakUntil: 9 }, SITES)).toEqual([]);
+  });
+
+  it("diffs the new settings", () => {
+    let to = applyPatch(base(), { op: "setHealthy", batchSize: 5 });
+    to = applyPatch(to, { op: "setAvoid", ids: ["outrage"] });
+    to = applyPatch(to, { op: "setActivities", items: ["Walk"] });
+    to = applyPatch(to, { op: "setApp", platform: "android", app: "tiktok", config: { mode: "block" } });
+    expect(apply(base(), diffSettings(base(), to, SITES))).toEqual(to);
+    const plan = planSync(base(), to, SITES);
+    expect(plan.pending).toEqual([{ op: "setAvoid", ids: ["outrage"] }]);
   });
 
   it("applies stricter changes now and holds looser ones for the barrier", () => {

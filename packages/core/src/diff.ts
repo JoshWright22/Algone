@@ -1,10 +1,10 @@
 import type { SiteRule } from "@algone/rules";
 import { applyPatch } from "./commands";
 import { isHidden } from "./defaults";
-import type { GlobalKey, IntentSettings, Patch, Settings } from "./types";
+import { APP_PLATFORMS, type GlobalKey, type IntentSettings, type Patch, type Settings } from "./types";
 import { isWeakening } from "./weakening";
 
-/** Settings every device shares. `theme` stays on each device. */
+/** Settings every device shares. `theme` and `breakUntil` stay on each device. */
 export const SHARED_GLOBALS: GlobalKey[] = [
   "snoozeMinutes",
   "stopAtEnd",
@@ -48,6 +48,16 @@ export function diffSettings(from: Settings, to: Settings, rules: SiteRule[]): P
   for (const key of SHARED_GLOBALS) {
     const value = globalValue(to, key);
     if (!same(globalValue(from, key), value)) out.push({ op: "setGlobal", key, value });
+  }
+  if (!same(from.healthy, to.healthy)) out.push({ op: "setHealthy", ...to.healthy });
+  if (!same(from.avoid, to.avoid)) out.push({ op: "setAvoid", ids: to.avoid });
+  if (!same(from.activities, to.activities)) out.push({ op: "setActivities", items: to.activities });
+  for (const platform of APP_PLATFORMS) {
+    const a = from.apps[platform] ?? {};
+    const b = to.apps[platform] ?? {};
+    for (const app of new Set([...Object.keys(a), ...Object.keys(b)])) {
+      if (!same(a[app], b[app])) out.push({ op: "setApp", platform, app, config: b[app] ?? null });
+    }
   }
   return out;
 }

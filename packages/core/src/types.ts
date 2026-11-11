@@ -1,4 +1,25 @@
-export type Mode = "nofeed" | "random" | "tuned" | "custom";
+export type Mode = "nofeed" | "random" | "healthy" | "tuned" | "custom";
+export type AvoidId = "outrage" | "clickbait" | "comparison" | "doom";
+export const AVOID_IDS: AvoidId[] = ["outrage", "clickbait", "comparison", "doom"];
+
+/** What Algone asks of a native app. Ordered from loosest to strictest. */
+export const APP_MODES = ["allow", "limit", "pause", "cover", "block"] as const;
+export type AppMode = (typeof APP_MODES)[number];
+export const APP_PLATFORMS = ["android", "ios", "desktop"] as const;
+export type AppPlatform = (typeof APP_PLATFORMS)[number];
+
+export interface AppPolicy {
+  mode: AppMode;
+  /** Daily minutes, for `limit`. */
+  minutes?: number;
+  /** Back out of Shorts, Reels and similar short-video screens. */
+  shortVideo?: boolean;
+}
+
+export interface HealthySettings {
+  batchSize: number;
+  dailyBudgetMinutes: number;
+}
 export type Theme = "system" | "dark" | "light";
 export type Ranking = "newest" | "fair" | "oldestUnseen";
 
@@ -45,7 +66,7 @@ export interface SiteSettings {
 }
 
 export interface Settings {
-  schema: 1;
+  schema: 2;
   sites: Record<string, SiteSettings>;
   barrier: BarrierConfig;
   snoozeMinutes: number;
@@ -55,6 +76,14 @@ export interface Settings {
   theme: Theme;
   queueSoftCap: number;
   customRanking: Ranking;
+  healthy: HealthySettings;
+  avoid: AvoidId[];
+  /** The user's own words, shown when a batch ends. */
+  activities: string[];
+  /** Break mode end on this device, epoch ms. 0 = none. Never synced. */
+  breakUntil: number;
+  /** Native apps, by platform then app id. */
+  apps: Partial<Record<AppPlatform, Record<string, AppPolicy>>>;
 }
 
 export interface Runtime {
@@ -85,6 +114,12 @@ export type Patch =
   | { op: "setBarrier"; barrier: BarrierConfig }
   | { op: "setTuned"; site: string; filters: TunedFilters }
   | { op: "useBundledRules" }
+  | { op: "setHealthy"; batchSize?: number; dailyBudgetMinutes?: number }
+  | { op: "setAvoid"; ids: AvoidId[] }
+  | { op: "setActivities"; items: string[] }
+  | { op: "startBreak"; until: number }
+  | { op: "endBreak" }
+  | { op: "setApp"; platform: AppPlatform; app: string; config: AppPolicy | null }
   /** Several changes from one sync or import. Weakening if any part is. */
   | { op: "batch"; patches: Patch[]; source: string };
 
@@ -127,7 +162,7 @@ export interface FeedStore {
 export interface PanelSpec {
   search: boolean;
   prompt: boolean;
-  content: "random" | "custom" | null;
+  content: "random" | "custom" | "healthy" | null;
 }
 
 export interface View {
