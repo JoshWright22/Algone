@@ -4,21 +4,24 @@
 
 **Algone: Algorithm Control.** Replace algorithmic feeds with something you control.
 
-Algone is a browser extension that hides the algorithmic parts of 12 popular websites and lets you decide what goes in their place. Search, subscriptions, direct links, and messages keep working. Your settings stay on your device. There is no account and no data collection.
+Algone is a browser extension that hides the algorithmic parts of 12 popular websites and lets you decide what goes in their place. Search, subscriptions, direct links, and messages keep working. By default it shows a **healthy feed**: a short batch picked from what the site already loaded, without the outrage, clickbait and doom it can spot, that ends so you can go. There is no Algone account and no data collection. Settings can sync between your devices through your own GitHub account, if you turn that on.
 
-Algone works in the browser. It does not change the YouTube, Instagram, or TikTok apps, so open those sites in your browser. Uninstalling always works.
+Today Algone works in the browser. It does not change the YouTube, Instagram, or TikTok apps, so open those sites in your browser. Native-app support on Android is being built; see [the system-wide design](docs/designs/system-wide.md). Uninstalling always works.
 
 ## What it does
 
 - **Hides feeds from install.** Everything algorithmic starts hidden. Things like comments start visible, and you can hide them too.
 - **A switch for every element.** The popup shows the site you are on. Settings shows all sites.
-- **Four modes per site.** No feed (clean empty space), Random (quotes, facts, poems, art, and puzzles, offline), Tuned (the site's feed with your filters), and Custom (your own feed from RSS and chosen creators, stored locally).
+- **Five modes per site.** Healthy (the default: a short daily batch from the site's own picks and the people you follow, ranked against outrage, clickbait, comparison and doom, then it ends), No feed (clean empty space), Random (quotes, facts, poems, art, and puzzles, offline), Tuned (the site's feed with your filters), and Custom (your own feed from RSS and chosen creators, stored locally).
+- **Leaving is the goal.** When the batch is done, or your daily minutes are used, the panel says so and shows the things you said you'd rather do. Rate what you opened (Worth it, Not worth it, Made me feel worse) and the next batches follow.
+- **Breaks, not uninstalls.** Take a break of up to 24 hours once a week, through your barrier. Shorts, Reels and autoplay stay off during it, and Algone comes back by itself.
+- **One settings file, every device.** Export it, import it, or sync it through a secret Gist in your own GitHub account. You or an AI assistant can edit it with the `algone` command. Stricter settings apply at once everywhere; looser ones wait for the barrier on each device, so asking an assistant is never a way around it.
 - **Barriers against autopilot.** Hiding more is instant. Showing more passes a barrier: a 30 second pause by default, or a typing challenge, daily limit, schedule, timed lock, or partner password. Each unlock is a timed snooze.
 - **Help picking what to watch.** Search-first home, subscriptions first, a saved queue, and stop at the end.
 
 Barriers interrupt habits. They are not a lock. Changing your clock or using another browser also gets around them.
 
-Filters are limited. "Likely AI" is a text match, so it will miss some and wrongly catch some. Sites change their pages, so a rule can stop working until it is repaired.
+Filters are limited. "Likely AI" and the healthy feed's outrage, clickbait, comparison and doom lists are text matches on titles, so they miss some and wrongly catch some. The healthy feed ranks only what the site already loaded; it cannot change the site's own ranking. Sites change their pages, so a rule can stop working until it is repaired.
 
 ## What works where
 
@@ -29,7 +32,9 @@ Filters are limited. "Likely AI" is a text match, so it will miss some and wrong
 | Safari (Mac, iPhone, iPad) | Extension in the Algone for Safari app | Built, not packaged or tested. Needs Apple tools |
 | Android | Algone Browser, or Firefox for Android | App in progress. Android Chrome has no extensions |
 | iPhone, iPad | Algone for Safari is the main route; Algone Browser is optional | App in progress |
-| Native apps on any platform | None | Not supported, and it never will be |
+| Android native apps | Algone app, built-in blocking | Being built. Will cover feeds and back out of Shorts and Reels; it cannot rerank inside apps |
+| iPhone native apps | None yet | Planned: whole-app pause and limits only, which is all iOS allows |
+| Desktop apps that show web pages | Optional Zen filter list from `algone export-zen` | Hide rules only; needs Zen |
 
 Algone Browser may be refused by the App Store or Google Play. See `store/browser-ios/` and `store/play/`. Algone for Safari is a separate app, so that would not affect it.
 
@@ -67,6 +72,7 @@ apps/mobile/       Algone Browser (Expo)
 packages/rules/    Per-site rules as JSON, the compiler, and the validator
 packages/core/     Settings, modes, barriers, queue, and copy
 packages/engine/   Page engine used by the extension
+packages/cli/      The algone command: check, edit and sync the settings file, build a Zen list
 store/             Listings, checklists, reviewer notes, and images for each store
 tests/             Static checks, Playwright tests, fixtures, and live checks
 scripts/           Icon and store asset generators
@@ -89,6 +95,7 @@ npm run test:firefox          # Firefox smoke test
 npm run test:live             # real sites, logged out
 npm run check:logged-in -- --profile <dir>   # your signed-in browser profile
 npm run assets                # store icons, tiles, and screenshots
+npm run cli                   # build the algone command, then: node packages/cli/dist/algone.mjs help
 ```
 
 ## Community
@@ -98,6 +105,7 @@ Algone is maintained by its community. Reports, rule repairs, and features are w
 ## Docs
 
 - [Design spec](docs/designs/algone.md)
+- [System-wide design](docs/designs/system-wide.md): settings file, sync, healthy feed, apps
 - [Project brief](docs/designs/project_brief.md)
 - [Firefox review notes](docs/firefox-review.md)
 - [Contributing](CONTRIBUTING.md)
