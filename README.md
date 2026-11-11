@@ -4,9 +4,11 @@
 
 **Algone: Algorithm Control.** Replace algorithmic feeds with something you control.
 
+Algone is becoming an **MCP server first**: ask it, or have your AI assistant ask it, "what should I read or watch?" and it returns a short list from open sources (RSS, YouTube channels, Reddit, Bluesky, Hacker News), picked by your own written rules, with a reason for each. No feed, no scroll. Your feedback updates the same settings file the browser extension and app use. The MCP server is being designed now; see [the system-wide design](docs/designs/system-wide.md).
+
 Algone is a browser extension that hides the algorithmic parts of 12 popular websites and lets you decide what goes in their place. Search, subscriptions, direct links, and messages keep working. By default it shows a **healthy feed**: a short batch picked from what the site already loaded, without the outrage, clickbait and doom it can spot, that ends so you can go. There is no Algone account and no data collection. Settings can sync between your devices through your own GitHub account, if you turn that on.
 
-Today Algone works in the browser. It does not change the YouTube, Instagram, or TikTok apps, so open those sites in your browser. Native-app support on Android is being built; see [the system-wide design](docs/designs/system-wide.md). Uninstalling always works.
+In browsers, Algone changes the page itself. On Android, the Algone app can also go back when YouTube, Instagram, Facebook or Reddit opens Shorts or Reels, and close TikTok, through its own Accessibility service; it cannot change what those apps recommend. On iPhone, open the sites in Safari. See [the system-wide design](docs/designs/system-wide.md). Uninstalling always works.
 
 ## What it does
 
@@ -32,7 +34,7 @@ Filters are limited. "Likely AI" and the healthy feed's outrage, clickbait, comp
 | Safari (Mac, iPhone, iPad) | Extension in the Algone for Safari app | Built, not packaged or tested. Needs Apple tools |
 | Android | Algone Browser, or Firefox for Android | App in progress. Android Chrome has no extensions |
 | iPhone, iPad | Algone for Safari is the main route; Algone Browser is optional | App in progress |
-| Android native apps | Algone app, built-in blocking | Being built. Will cover feeds and back out of Shorts and Reels; it cannot rerank inside apps |
+| Android native apps | Algone app, its own Accessibility service | Built: backs out of Shorts and Reels, closes TikTok, per-app choices. Not yet tested on a device; app updates can break it until the rules are repaired |
 | iPhone native apps | None yet | Planned: whole-app pause and limits only, which is all iOS allows |
 | Desktop apps that show web pages | Optional Zen filter list from `algone export-zen` | Hide rules only; needs Zen |
 
