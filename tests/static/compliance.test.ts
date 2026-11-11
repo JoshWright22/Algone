@@ -23,7 +23,7 @@ describe.runIf(built)("built extension", () => {
     const m = manifest(t);
     expect(m.manifest_version).toBe(3);
     expect(m.permissions).toEqual(["storage", "alarms", "scripting"]);
-    expect(m.optional_host_permissions).toEqual(["https://en.wikipedia.org/*"]);
+    expect(m.optional_host_permissions).toEqual(["https://en.wikipedia.org/*", "https://github.com/*"]);
     const text = JSON.stringify(m);
     for (const bad of ["<all_urls>", "*://*/*", "https://*/*", "webRequest", "tabs\"", "management", "history"]) {
       expect(text).not.toContain(bad);

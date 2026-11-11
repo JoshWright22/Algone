@@ -20,3 +20,4 @@ export * from "./zen";
 export * from "./healthy";
 export * from "./sync";
 export * from "./gist";
+export * from "./deviceFlow";

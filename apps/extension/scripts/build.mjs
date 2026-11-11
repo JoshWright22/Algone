@@ -66,7 +66,8 @@ function manifest(target) {
     options_ui: { page: "options.html", open_in_tab: true },
     permissions: ["storage", "alarms", "scripting"],
     host_permissions: hosts,
-    optional_host_permissions: ["https://en.wikipedia.org/*"],
+    // github.com only during "Sign in with GitHub"; it is removed again right after.
+    optional_host_permissions: ["https://en.wikipedia.org/*", "https://github.com/*"],
     content_scripts: SITES.map((s) => ({
       matches: s.hosts.map((h) => `https://${h}/*`),
       css: ["css/base.css", `css/${s.id}.css`],

@@ -1,7 +1,7 @@
 import { SITES } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
-  applyPatch, defaultSettings, emptySyncState, isLocalPatch, POLICY_FILE, syncOnce,
+  applyPatch, defaultSettings, emptySyncState, isLocalPatch, pollDeviceFlow, POLICY_FILE, startDeviceFlow, syncOnce,
   type Fetch, type Patch, type Settings, type SyncState,
 } from "../src/index";
 
@@ -155,5 +155,25 @@ describe("gist sync", () => {
     expect(isLocalPatch({ op: "startBreak", until: 1 })).toBe(true);
     expect(isLocalPatch({ op: "setBarrier", barrier: { type: "partner", salt: "", hash: "h", iterations: 1, recoveryAt: null } })).toBe(true);
     expect(isLocalPatch({ op: "setMode", site: "youtube", mode: "nofeed" })).toBe(false);
+  });
+});
+
+describe("GitHub device flow", () => {
+  const reply = (body: unknown) => async () => new Response(JSON.stringify(body));
+  it("starts and returns the code to show", async () => {
+    const c = await startDeviceFlow(reply({ device_code: "d", user_code: "ABCD-1234", verification_uri: "https://github.com/login/device", interval: 5, expires_in: 900 }), "id", NOW);
+    expect(c).toMatchObject({ userCode: "ABCD-1234", interval: 5, expiresAt: NOW + 900_000 });
+  });
+  it("refuses a sign-in address that is not GitHub", async () => {
+    await expect(startDeviceFlow(reply({ device_code: "d", user_code: "x", verification_uri: "https://evil.example/" }), "id", NOW)).rejects.toThrow();
+  });
+  it.each([
+    [{ access_token: "tok" }, { kind: "token", token: "tok" }],
+    [{ error: "authorization_pending" }, { kind: "wait", interval: 5 }],
+    [{ error: "slow_down", interval: 10 }, { kind: "wait", interval: 10 }],
+    [{ error: "access_denied" }, { kind: "failed" }],
+  ])("poll %j", async (body, expected) => {
+    const code = { deviceCode: "d", userCode: "u", verificationUri: "https://github.com/login/device", interval: 5, expiresAt: NOW };
+    expect(await pollDeviceFlow(reply(body), "id", code)).toMatchObject(expected);
   });
 });

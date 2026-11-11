@@ -16,3 +16,9 @@ export function reportUrl(site: string, page: string, version: string): string {
   });
   return `${REPO_URL}/issues/new?${q}`;
 }
+
+/**
+ * The GitHub OAuth app used for "Sign in with GitHub" (device flow, scope `gist`).
+ * Empty until a maintainer registers the app; until then Sync offers token paste only.
+ */
+export const GITHUB_CLIENT_ID = "";

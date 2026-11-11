@@ -1,5 +1,6 @@
 import {
-  addFeedItems, addMinute, applyPolicyText, checkBreak, markSeen, policyFromSettings, rateCreator,
+  addFeedItems, addMinute, applyPolicyText, checkBreak, diffSettings, emptySyncState, GistError, isLocalPatch,
+  markSeen, policyFromSettings, rateCreator, syncOnce, type Settings, type SyncState,
   addSource, addToQueue, applyPatch, barrierStep, clearIfBundled, clearSnooze, defaultRuntime, describePatch,
   dueSources, handleRulesFile, isWeakening, mergeEntries, migrateSettings, moveInQueue, nextFetchAt, parseFeed,
   recordPass, removeFromQueue, removeSource, RULES_URL, safeHttps, startRecovery, startSnooze, UNINSTALL_URL,
@@ -151,6 +152,38 @@ async function checkRules(): Promise<void> {
   }
 }
 
+// ---- Sync. The token and sync state live in their own keys, read only here and on the Sync tab.
+
+interface SyncStored {
+  sync: SyncState & { base: Settings | null };
+  syncToken: string;
+}
+
+async function loadSync(): Promise<SyncStored> {
+  const raw = (await api.storage.local.get(["sync", "syncToken"])) as Partial<SyncStored>;
+  return { sync: { ...emptySyncState(), base: null, ...raw.sync }, syncToken: raw.syncToken ?? "" };
+}
+
+/** One round. Never throws: problems are kept in `lastError` and shown on the Sync tab. */
+async function runSync(): Promise<CommandResult> {
+  const { sync, syncToken } = await loadSync();
+  if (!syncToken) return { ok: false, error: "Not signed in" };
+  const state = await loadState();
+  // This device's changes since the last round. Theme, breaks and partner passwords stay here.
+  const outbox = diffSettings(sync.base ?? state.settings, state.settings, SITES).filter((p) => !isLocalPatch(p));
+  try {
+    const r = await syncOnce(fetch.bind(globalThis), syncToken, { ...sync, outbox }, state.settings, SITES,
+      { platform: BUILD_TARGET, deviceId: await deviceId() }, now());
+    if (JSON.stringify(r.settings) !== JSON.stringify(state.settings)) await save({ settings: r.settings });
+    await api.storage.local.set({ sync: { ...r.state, base: r.settings } });
+    return { ok: true, applied: r.applied };
+  } catch (e) {
+    const error = e instanceof GistError ? e.message : String(e);
+    await api.storage.local.set({ sync: { ...sync, lastError: error, lastSync: now() } });
+    return { ok: false, error };
+  }
+}
+
 async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promise<CommandResult> {
   const state = await loadState();
   switch (cmd.t) {
@@ -286,6 +319,28 @@ async function handle(cmd: Command, sender: chrome.runtime.MessageSender): Promi
       }
       return { ok: true, applied: r.applied };
     }
+    case "syncConnect": {
+      if (typeof cmd.token !== "string" || !/^[\w-]{20,255}$/.test(cmd.token.trim())) {
+        return { ok: false, error: "That does not look like a GitHub token." };
+      }
+      await api.storage.local.set({ syncToken: cmd.token.trim(), sync: { ...emptySyncState(), base: null } });
+      await api.alarms.create("sync", { periodInMinutes: 15 });
+      const r = await runSync();
+      if (!r.ok) await api.storage.local.remove(["syncToken"]);
+      return r;
+    }
+    case "syncNow":
+      return runSync();
+    case "syncDisconnect":
+      await api.storage.local.remove(["syncToken", "sync"]);
+      await api.alarms.clear("sync");
+      return { ok: true };
+    case "syncReview": {
+      const { sync } = await loadSync();
+      if (!sync.pending) return { ok: false, error: "Nothing is waiting" };
+      await api.storage.local.set({ sync: { ...sync, pending: null } });
+      return requestPending(state, sync.pending);
+    }
     case "closeTab":
       if (sender.tab?.id !== undefined) await api.tabs.remove(sender.tab.id);
       return { ok: true };
@@ -341,7 +396,17 @@ api.runtime.onStartup?.addListener(() => {
 });
 
 api.alarms.onAlarm.addListener((alarm) => {
-  void serial(alarm.name === "rules" ? checkRules : refreshFeeds);
+  if (alarm.name === "rules") void serial(checkRules);
+  else if (alarm.name === "feeds") void serial(refreshFeeds);
+  else if (alarm.name === "sync" || alarm.name === "syncSoon") void serial(runSync);
+});
+
+// A settings change is sent half a minute later, so a burst of clicks is one write.
+api.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local" || !changes.settings) return;
+  void api.storage.local.get("syncToken").then(({ syncToken }) => {
+    if (syncToken) void api.alarms.create("syncSoon", { delayInMinutes: 0.5 });
+  });
 });
 
 if (TEST_HOOKS) {

@@ -1,5 +1,5 @@
 import {
-  AVOID_IDS, COPY, localDay, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
+  AVOID_IDS, COPY, GITHUB_CLIENT_ID, localDay, pollDeviceFlow, startDeviceFlow, createPartnerBarrier, KIND_LABELS, KOFI_URL, PRIVACY_URL, randomContentCount, REPO_URL, SPONSOR_URL,
   TOPIC_NAMES, webKdf, WEB_ITERATIONS, type AvoidId, type BarrierConfig, type Patch, type TunedFilters,
 } from "@algone/core";
 import { SITES, type SiteRule } from "@algone/rules";
@@ -304,7 +304,81 @@ function feedTab(s: Stored): HTMLElement {
 /** Kept across re-renders, which storage changes from the import itself cause. */
 let syncMessage = "";
 
-function syncTab(): HTMLElement {
+/** Sign in with GitHub's device flow. Polls from this page, since a service worker may stop mid-wait. */
+async function signIn(status: HTMLElement): Promise<void> {
+  // Firefox needs the request straight from the click, before any await.
+  const granted = await api.permissions.request({ origins: ["https://github.com/*"] });
+  if (!granted) return void (status.textContent = syncMessage = "Sign-in needs permission to reach github.com, only for signing in.");
+  try {
+    const code = await startDeviceFlow(fetch.bind(globalThis), GITHUB_CLIENT_ID, now());
+    status.textContent = syncMessage = `On GitHub, enter the code ${code.userCode}. Waiting...`;
+    await navigator.clipboard?.writeText(code.userCode).catch(() => undefined);
+    await api.tabs.create({ url: code.verificationUri });
+    let interval = code.interval;
+    while (now() < code.expiresAt) {
+      await new Promise((r) => setTimeout(r, interval * 1000));
+      const r = await pollDeviceFlow(fetch.bind(globalThis), GITHUB_CLIENT_ID, code);
+      if (r.kind === "wait") interval = r.interval;
+      else if (r.kind === "failed") return void (status.textContent = syncMessage = r.error);
+      else {
+        const done = await send({ t: "syncConnect", token: r.token });
+        syncMessage = done.ok ? "Signed in. Settings now sync." : `Could not sync: ${done.error}`;
+        return void render();
+      }
+    }
+    status.textContent = syncMessage = "The code expired. Start again.";
+  } catch (e) {
+    status.textContent = syncMessage = `Sign-in failed: ${String(e instanceof Error ? e.message : e)}`;
+  } finally {
+    void api.permissions.remove({ origins: ["https://github.com/*"] }).catch(() => undefined);
+  }
+}
+
+function syncAccount(s: Stored & { sync?: SyncInfo }, status: HTMLElement): HTMLElement {
+  const sync = s.sync;
+  if (sync?.signedIn) {
+    return h("section", { id: "sync-on" }, h("h2", {}, "Sync"),
+      h("p", { id: "sync-state" }, sync.lastError
+        ? `Last try ${new Date(sync.lastSync).toLocaleString()}: ${sync.lastError}`
+        : `Synced ${sync.lastSync ? new Date(sync.lastSync).toLocaleString() : "not yet"}.`),
+      sync.pending
+        ? h("div", { class: "row", id: "sync-pending" }, h("span", {}, sync.pending.label),
+            h("button", { class: "ghost small", id: "sync-review", onclick: () => void send({ t: "syncReview" }) }, "Review"))
+        : null,
+      h("div", { class: "row" },
+        h("button", { class: "ghost", id: "sync-now", onclick: async () => {
+          const r = await send({ t: "syncNow" });
+          status.textContent = syncMessage = r.ok ? "Synced." : `Could not sync: ${r.error}`;
+        } }, "Sync now"),
+        h("button", { class: "ghost", id: "sync-off", onclick: () => void send({ t: "syncDisconnect" }) }, "Stop syncing on this device")),
+      h("p", { class: "muted small" }, "Stopping sync keeps your settings here exactly as they are."));
+  }
+  const token = h("input", { id: "sync-token", type: "password", autocomplete: "off", placeholder: "GitHub token with the Gist permission", "aria-label": "GitHub token" }) as HTMLInputElement;
+  return h("section", { id: "sync-off-state" }, h("h2", {}, "Sync"),
+    h("p", {}, "Keep the same settings on every computer and phone where Algone runs. Your settings go to one secret Gist in your own GitHub account. There is no Algone server."),
+    GITHUB_CLIENT_ID
+      ? h("button", { class: "primary", id: "sync-signin", onclick: () => void signIn(status) }, "Sign in with GitHub")
+      : null,
+    h("details", { open: !GITHUB_CLIENT_ID },
+      h("summary", {}, "Use a token instead"),
+      h("p", { class: "muted small" }, "On GitHub, create a fine-grained token with Gists read and write, and paste it here."),
+      h("div", { class: "row" }, token,
+        h("button", { class: "ghost small", id: "sync-connect", onclick: async () => {
+          const r = await send({ t: "syncConnect", token: token.value });
+          syncMessage = r.ok ? "Signed in. Settings now sync." : `Could not sync: ${r.error}`;
+          void render();
+        } }, "Connect"))),
+    h("p", { class: "muted small" }, "A secret Gist is unlisted, not private: anyone with its link can read it. Algone keeps the sign-in on this device so it can sync. Partner passwords, breaks and the theme never leave this device."));
+}
+
+interface SyncInfo {
+  signedIn: boolean;
+  lastSync: number;
+  lastError: string;
+  pending: { label: string } | null;
+}
+
+function syncTab(s: Stored & { sync?: SyncInfo }): HTMLElement {
   const status = h("p", { role: "status", id: "sync-status" }, syncMessage);
   const file = h("input", { type: "file", accept: "application/json,.json", id: "policy-file", "aria-label": "Policy file" }) as HTMLInputElement;
   file.addEventListener("change", async () => {
@@ -320,6 +394,7 @@ function syncTab(): HTMLElement {
     status.textContent = syncMessage;
   });
   return h("div", { id: "sync-tab" },
+    syncAccount(s, status),
     h("h2", {}, "Settings file"),
     h("p", {}, "One file holds every setting that applies on all your devices. You, or an assistant you trust, can edit it and import it anywhere Algone runs."),
     h("p", { class: "muted" }, "Importing is never a shortcut: stricter settings apply at once, looser ones wait for your barrier on this device. Your theme, breaks and partner password stay on this device."),
@@ -364,6 +439,19 @@ function aboutTab(s: Stored): HTMLElement {
   );
 }
 
+async function syncInfo(): Promise<SyncInfo> {
+  const raw = (await api.storage.local.get(["sync", "syncToken"])) as {
+    sync?: { lastSync: number; lastError: string; pending: { label: string } | null };
+    syncToken?: string;
+  };
+  return {
+    signedIn: !!raw.syncToken,
+    lastSync: raw.sync?.lastSync ?? 0,
+    lastError: raw.sync?.lastError ?? "",
+    pending: raw.sync?.pending ?? null,
+  };
+}
+
 async function render(): Promise<void> {
   const s = await loadState();
   applyTheme(s.settings.theme);
@@ -391,7 +479,7 @@ async function render(): Promise<void> {
         tab === "general" ? generalTab(s) : null,
         tab === "queue" ? queueTab(s) : null,
         tab === "feed" ? feedTab(s) : null,
-        tab === "sync" ? syncTab() : null,
+        tab === "sync" ? syncTab({ ...s, sync: await syncInfo() }) : null,
         tab === "about" ? aboutTab(s) : null,
       ),
     ),

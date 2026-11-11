@@ -29,7 +29,11 @@ export type Command =
   | { t: "rate"; channel: string; rating: Rating }
   | { t: "healthyMinute" }
   | { t: "exportPolicy" }
-  | { t: "importPolicy"; text: string };
+  | { t: "importPolicy"; text: string }
+  | { t: "syncConnect"; token: string }
+  | { t: "syncNow" }
+  | { t: "syncDisconnect" }
+  | { t: "syncReview" };
 
 export interface CommandResult {
   ok: boolean;
