@@ -63,6 +63,8 @@ Builds are at <https://github.com/JoshWright22/Algone/releases>. Open the newest
 
 **From source.** Follow the development commands below, then load `apps/extension/dist/chrome` as above.
 
+**With automatic updates (Windows, Chrome and Edge).** Run `npm run build && npm run cli`, then `node packages/cli/dist/algone.mjs install --from apps/extension/dist`. It copies Algone to `%LOCALAPPDATA%\Algone\chrome` and `...\edge` and schedules an hourly update from the newest release. Load each folder once with Load unpacked; after that Algone updates and reloads by itself. `algone stop-updates` removes the schedule.
+
 ## Repo layout
 
 ```text
