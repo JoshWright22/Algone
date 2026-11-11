@@ -249,3 +249,26 @@ describe("Android app rules", () => {
     expect(rules.find((r) => r.packages.includes("com.zhiliaoapp.musically"))).toBeDefined();
   });
 });
+
+describe("recommendation rules", () => {
+  it("are in the policy, checked, and loosen only through the barrier", () => {
+    const p = policyFromSettings(base(), 1, "pc-1", NOW);
+    expect(p.settings.recommend.maxPerDay).toBe(10);
+    expect(p.settings.sources[0]?.kind).toBe("hn");
+    const withRules = (recommend: object) => ({ ...p, settings: { ...p.settings, recommend } });
+    expect(validatePolicy(withRules({ want: ["woodworking"], drop: ["true crime"], maxPerDay: 5 }), SITES).ok).toBe(true);
+    expect(validatePolicy(withRules({ maxPerDay: 500 }), SITES).ok).toBe(false);
+    expect(validatePolicy(withRules({ mood: "x" }), SITES).ok).toBe(false);
+    expect(validatePolicy({ ...p, settings: { ...p.settings, sources: [{ kind: "rss", url: "http://x.example/feed", title: "x" }] } }, SITES).ok).toBe(false);
+
+    let s = applyPatch(base(), { op: "setRecommend", rules: { drop: ["true crime"], maxPerDay: 5 } });
+    const plan = (to: Settings) => planSync(s, to, SITES);
+    expect(plan(applyPatch(s, { op: "setRecommend", rules: { drop: ["true crime", "polls"] } })).pending).toEqual([]);
+    expect(plan(applyPatch(s, { op: "setRecommend", rules: { drop: [] } })).pending).toHaveLength(1);
+    expect(plan(applyPatch(s, { op: "setRecommend", rules: { maxPerDay: 20 } })).pending).toHaveLength(1);
+    expect(plan(applyPatch(s, { op: "setRecommend", rules: { want: ["chess"] } })).pending).toEqual([]);
+    s = applyPatch(s, { op: "addOpenSource", source: { kind: "rss", url: "https://example.com/feed.xml", title: "Example" } });
+    expect(s.sources).toHaveLength(2);
+    expect(applyPatch(s, { op: "removeOpenSource", url: "https://example.com/feed.xml" }).sources).toHaveLength(1);
+  });
+});

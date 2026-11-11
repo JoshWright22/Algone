@@ -114,6 +114,18 @@ export function isWeakening(settings: Settings, patch: Patch, rules: SiteRule[])
       return false;
     case "setApp":
       return !appTightens(settings.apps[patch.platform]?.[patch.app], patch.config);
+    case "setRecommend": {
+      // Wants, favored creators and sources are neutral: the daily cap bounds what comes through.
+      const r = settings.recommend;
+      const n = patch.rules;
+      if (n.drop !== undefined && !(Array.isArray(n.drop) && isSubset(r.drop, n.drop))) return true;
+      if (n.blockCreators !== undefined && !(Array.isArray(n.blockCreators) && isSubset(r.blockCreators, n.blockCreators))) return true;
+      if (n.maxPerDay !== undefined && !(typeof n.maxPerDay === "number" && Number.isFinite(n.maxPerDay) && n.maxPerDay <= r.maxPerDay)) return true;
+      return false;
+    }
+    case "addOpenSource":
+    case "removeOpenSource":
+      return false;
     case "batch": {
       let current = settings;
       for (const p of patch.patches) {

@@ -1,6 +1,6 @@
 import type { SiteRule } from "@algone/rules";
 import { validateBarrier } from "./barriers";
-import { APP_MODES, APP_PLATFORMS, AVOID_IDS, type GlobalKey, type Mode, type Patch, type Ranking } from "./types";
+import { APP_MODES, APP_PLATFORMS, AVOID_IDS, SOURCE_KINDS, type GlobalKey, type Mode, type Patch, type Ranking } from "./types";
 
 const MODES: Mode[] = ["nofeed", "random", "healthy", "tuned", "custom"];
 const RANKINGS: Ranking[] = ["newest", "fair", "oldestUnseen"];
@@ -68,6 +68,22 @@ export function validatePatch(patch: Patch, rules: SiteRule[], now: number): str
       if (c.mode === "limit" && c.minutes === undefined) return "A limit needs minutes";
       return null;
     }
+    case "setRecommend": {
+      const r = patch.rules as Record<string, unknown>;
+      if (!r || typeof r !== "object") return "Bad rules";
+      for (const k of Object.keys(r)) {
+        if (k === "maxPerDay") {
+          if (!int(r[k], 1, 50)) return "Items per day must be 1 to 50";
+        } else if (["want", "drop", "creators", "blockCreators"].includes(k)) {
+          if (!texts(r[k], 200)) return `${k}: at most 200 lines of up to 200 characters`;
+        } else return `Unknown rule ${k}`;
+      }
+      return null;
+    }
+    case "addOpenSource":
+      return validSource(patch.source);
+    case "removeOpenSource":
+      return shortText(patch.url, 2048) ? null : "Bad address";
     case "batch": {
       if (!Array.isArray(patch.patches) || patch.patches.length > 2000) return "Bad batch";
       for (const p of patch.patches) {
@@ -80,4 +96,20 @@ export function validatePatch(patch: Patch, rules: SiteRule[], now: number): str
     default:
       return "Unknown change";
   }
+}
+
+/** Open sources are https addresses of a known kind. The MCP server's fetch layer checks them again. */
+export function validSource(s: unknown): string | null {
+  const src = s as { kind?: unknown; url?: unknown; title?: unknown } | null;
+  if (!src || typeof src !== "object") return "Bad source";
+  if (!(SOURCE_KINDS as readonly string[]).includes(src.kind as string)) return `Kind must be one of ${SOURCE_KINDS.join(", ")}`;
+  if (!shortText(src.title, 200)) return "Bad title";
+  if (typeof src.url !== "string" || src.url.length > 2048) return "Bad address";
+  try {
+    const u = new URL(src.url);
+    if (u.protocol !== "https:" || u.username || u.password) return "Sources must be plain https addresses";
+  } catch {
+    return "Bad address";
+  }
+  return null;
 }

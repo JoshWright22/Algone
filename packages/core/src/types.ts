@@ -16,6 +16,30 @@ export interface AppPolicy {
   shortVideo?: boolean;
 }
 
+/** Rules the MCP server's recommendations follow, in the person's own words. */
+export interface RecommendSettings {
+  /** Topics and kinds of things wanted. */
+  want: string[];
+  /** Topics and infohazards to keep out. */
+  drop: string[];
+  /** Creators to favor. */
+  creators: string[];
+  /** Creators never to show. */
+  blockCreators: string[];
+  /** Hard cap on items recommended per day. */
+  maxPerDay: number;
+}
+
+export const SOURCE_KINDS = ["rss", "youtube", "reddit", "bluesky", "hn"] as const;
+export type SourceKind = (typeof SOURCE_KINDS)[number];
+
+/** An open source the MCP server reads: no logins, no paid APIs. */
+export interface OpenSource {
+  kind: SourceKind;
+  url: string;
+  title: string;
+}
+
 export interface HealthySettings {
   batchSize: number;
   dailyBudgetMinutes: number;
@@ -84,6 +108,8 @@ export interface Settings {
   breakUntil: number;
   /** Native apps, by platform then app id. */
   apps: Partial<Record<AppPlatform, Record<string, AppPolicy>>>;
+  recommend: RecommendSettings;
+  sources: OpenSource[];
 }
 
 export interface Runtime {
@@ -124,6 +150,9 @@ export type Patch =
   | { op: "startBreak"; until: number }
   | { op: "endBreak" }
   | { op: "setApp"; platform: AppPlatform; app: string; config: AppPolicy | null }
+  | { op: "setRecommend"; rules: Partial<RecommendSettings> }
+  | { op: "addOpenSource"; source: OpenSource }
+  | { op: "removeOpenSource"; url: string }
   /** Several changes from one sync or import. Weakening if any part is. */
   | { op: "batch"; patches: Patch[]; source: string };
 

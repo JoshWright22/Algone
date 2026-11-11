@@ -57,6 +57,13 @@ export function applyPatch(settings: Settings, patch: Patch): Settings {
       else delete list[patch.app];
       return { ...settings, apps: { ...settings.apps, [patch.platform]: list } };
     }
+    case "setRecommend":
+      return { ...settings, recommend: { ...settings.recommend, ...patch.rules } };
+    case "addOpenSource":
+      if (settings.sources.some((s) => s.url === patch.source.url)) return settings;
+      return { ...settings, sources: [...settings.sources, patch.source] };
+    case "removeOpenSource":
+      return { ...settings, sources: settings.sources.filter((s) => s.url !== patch.url) };
     default:
       return settings;
   }
@@ -97,6 +104,8 @@ export function describePatch(patch: Patch, siteName = ""): string {
       return `Take a break until ${new Date(patch.until).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" })}`;
     case "setApp":
       return `Loosen ${patch.app} on ${patch.platform}`;
+    case "setRecommend":
+      return "Loosen your recommendation rules";
     case "batch":
       return `Loosen ${patch.patches.length} ${patch.patches.length === 1 ? "setting" : "settings"} from ${patch.source}`;
     default:

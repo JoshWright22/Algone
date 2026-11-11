@@ -1,5 +1,6 @@
 import type { SiteRule } from "@algone/rules";
 import { migrateSettings } from "./defaults";
+import { validSource } from "./validatePatch";
 import {
   APP_MODES, APP_PLATFORMS, AVOID_IDS, type AppMode, type AvoidId, type BarrierConfig, type Mode, type Ranking,
   type Settings,
@@ -223,11 +224,27 @@ function settings(v: unknown, path: string, partial: boolean, rules: SiteRule[])
     need((s.activities as string[]).length <= 20, `${path}.activities: at most 20`);
   }
   if (has("apps")) apps(s.apps, `${path}.apps`);
+  if (has("recommend")) {
+    need(isObj(s.recommend), `${path}.recommend must be an object`);
+    const r = s.recommend as Record<string, unknown>;
+    for (const k of Object.keys(r)) {
+      need(["want", "drop", "creators", "blockCreators", "maxPerDay"].includes(k), `${path}.recommend.${k} is not a known rule`);
+      if (k === "maxPerDay") num(r[k], `${path}.recommend.maxPerDay`, 1, 50);
+      else strings(r[k], `${path}.recommend.${k}`);
+    }
+  }
+  if (has("sources")) {
+    need(Array.isArray(s.sources) && (s.sources as unknown[]).length <= 200, `${path}.sources must be a list of at most 200`);
+    for (const [i, src] of (s.sources as unknown[]).entries()) {
+      const error = validSource(src);
+      need(!error, `${path}.sources[${i}]: ${error}`);
+    }
+  }
   need(!has("theme"), `${path}.theme stays on each device; remove it`);
   need(!has("breakUntil"), `${path}.breakUntil stays on each device; remove it`);
   const known = [
     "schema", "sites", "barrier", "snoozeMinutes", "stopAtEnd", "ruleUpdates", "queueSoftCap", "customRanking",
-    "webSources", "healthy", "avoid", "activities", "apps",
+    "webSources", "healthy", "avoid", "activities", "apps", "recommend", "sources",
   ];
   for (const k of Object.keys(s)) need(known.includes(k), `${path}.${k} is not a known setting`);
 }

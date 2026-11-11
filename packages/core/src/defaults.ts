@@ -39,6 +39,8 @@ export function defaultSettings(rules: SiteRule[]): Settings {
     activities: [],
     breakUntil: 0,
     apps: { android: { ...DEFAULT_ANDROID_APPS } },
+    recommend: { want: [], drop: [], creators: [], blockCreators: [], maxPerDay: 10 },
+    sources: [{ kind: "hn", url: "https://news.ycombinator.com/", title: "Hacker News" }],
   };
 }
 
@@ -67,6 +69,7 @@ export function migrateSettings(saved: Settings | undefined, rules: SiteRule[]):
     sites,
     webSources: { ...base.webSources, ...saved.webSources },
     healthy: { ...base.healthy, ...saved.healthy },
+    recommend: { ...base.recommend, ...saved.recommend },
   };
 }
 

@@ -52,6 +52,9 @@ export function diffSettings(from: Settings, to: Settings, rules: SiteRule[]): P
   if (!same(from.healthy, to.healthy)) out.push({ op: "setHealthy", ...to.healthy });
   if (!same(from.avoid, to.avoid)) out.push({ op: "setAvoid", ids: to.avoid });
   if (!same(from.activities, to.activities)) out.push({ op: "setActivities", items: to.activities });
+  if (!same(from.recommend, to.recommend)) out.push({ op: "setRecommend", rules: to.recommend });
+  for (const s of from.sources) if (!to.sources.some((t) => same(t, s))) out.push({ op: "removeOpenSource", url: s.url });
+  for (const s of to.sources) if (!from.sources.some((t) => same(t, s))) out.push({ op: "addOpenSource", source: s });
   for (const platform of APP_PLATFORMS) {
     const a = from.apps[platform] ?? {};
     const b = to.apps[platform] ?? {};
