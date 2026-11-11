@@ -1,4 +1,5 @@
 import type { SiteRule } from "@algone/rules";
+import { DEFAULT_ANDROID_APPS } from "./apps";
 import { AVOID_IDS, type Runtime, type Settings, type SiteSettings, type TunedFilters } from "./types";
 
 export const SHORT_VIDEO_SITES = ["tiktok"];
@@ -37,7 +38,7 @@ export function defaultSettings(rules: SiteRule[]): Settings {
     avoid: [...AVOID_IDS],
     activities: [],
     breakUntil: 0,
-    apps: {},
+    apps: { android: { ...DEFAULT_ANDROID_APPS } },
   };
 }
 

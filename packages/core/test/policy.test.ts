@@ -1,8 +1,8 @@
-import { SITES } from "@algone/rules";
+import { APPS, SITES } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
   applyPatch, defaultSettings, describePatch, diffSettings, isWeakening, nextRevision, parsePolicy,
-  applyPolicyText, planSync, policyFromSettings, settingsFromPolicy, validatePolicy,
+  activeAndroidRules, applyPolicyText, planSync, policyFromSettings, settingsFromPolicy, validatePolicy,
   type Patch, type Settings,
 } from "../src/index";
 
@@ -224,5 +224,28 @@ describe("applying a policy file", () => {
   });
   it("reports a bad file and changes nothing", () => {
     expect(applyPolicyText(base(), "{}", SITES, where, "x", NOW)).toMatchObject({ ok: false });
+  });
+});
+
+describe("Android app rules", () => {
+  it("start with short video blocked and TikTok closed", () => {
+    const rules = activeAndroidRules(base(), APPS, NOW);
+    const yt = rules.find((r) => r.packages.includes("com.google.android.youtube"))!;
+    expect(yt.screens.map((s) => s.kind)).toEqual(["shortVideo"]);
+    const tt = rules.find((r) => r.packages.includes("com.zhiliaoapp.musically"))!;
+    expect(tt.screens).toEqual([expect.objectContaining({ action: "home", match: { always: true } })]);
+  });
+  it("follow the settings: allow turns an app off, cover adds feed screens", () => {
+    let s = applyPatch(base(), { op: "setApp", platform: "android", app: "youtube", config: { mode: "allow" } });
+    s = applyPatch(s, { op: "setApp", platform: "android", app: "instagram", config: { mode: "cover", shortVideo: true } });
+    const rules = activeAndroidRules(s, APPS, NOW);
+    expect(rules.some((r) => r.packages.includes("com.google.android.youtube"))).toBe(false);
+    expect(rules.find((r) => r.packages.includes("com.instagram.android"))!.screens.map((x) => x.id)).toEqual(["reels", "explore"]);
+  });
+  it("a break opens feeds but keeps short video closed", () => {
+    const s = applyPatch(base(), { op: "startBreak", until: NOW + 60_000 });
+    const rules = activeAndroidRules(s, APPS, NOW);
+    expect(rules.every((r) => r.screens.every((x) => x.kind === "shortVideo"))).toBe(true);
+    expect(rules.find((r) => r.packages.includes("com.zhiliaoapp.musically"))).toBeDefined();
   });
 });

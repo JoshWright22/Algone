@@ -22,3 +22,4 @@ export * from "./sync";
 export * from "./gist";
 export * from "./deviceFlow";
 export * from "./validatePatch";
+export * from "./apps";
