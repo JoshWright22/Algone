@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-12T15:22:59.758Z",
-  "run": "43246527888",
+  "date": "2026-11-13T14:41:23.618Z",
+  "run": "43444588688",
   "sites": {
     "bluesky": {
       "outcome": "broken",
@@ -16,7 +16,7 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-12"
+      "lastPass": "2026-11-13"
     },
     "pinterest": {
       "outcome": "pass",
@@ -24,15 +24,15 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-12"
+      "lastPass": "2026-11-13"
     },
     "reddit": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "live-logged-out",
-      "inconclusiveDays": 11,
+      "inconclusiveDays": 12,
       "walled": true,
-      "lastCounted": "2026-11-12"
+      "lastCounted": "2026-11-13"
     },
     "threads": {
       "outcome": "broken",
@@ -48,7 +48,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-12"
+      "lastPass": "2026-11-13"
     },
     "twitch": {
       "outcome": "broken",
@@ -70,33 +70,33 @@
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 11,
+      "inconclusiveDays": 12,
       "walled": true,
-      "lastCounted": "2026-11-12"
+      "lastCounted": "2026-11-13"
     },
     "linkedin": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 11,
+      "inconclusiveDays": 12,
       "walled": true,
-      "lastCounted": "2026-11-12"
+      "lastCounted": "2026-11-13"
     },
     "substack": {
       "outcome": "inconclusive",
       "tier": 2,
       "method": "unverified",
-      "inconclusiveDays": 11,
+      "inconclusiveDays": 12,
       "walled": true,
-      "lastCounted": "2026-11-12"
+      "lastCounted": "2026-11-13"
     },
     "x": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 11,
+      "inconclusiveDays": 12,
       "walled": true,
-      "lastCounted": "2026-11-12"
+      "lastCounted": "2026-11-13"
     }
   }
 }
