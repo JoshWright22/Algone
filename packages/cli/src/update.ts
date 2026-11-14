@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 /**
  * Installing and updating Algone from a folder, for browsers where it is not from a store.
@@ -56,11 +56,26 @@ function installedRev(dir: string): number {
   }
 }
 
-/** Replaces the folder's contents. The folder itself stays, since the browser knows it by path. */
+/**
+ * Swaps in a new build as one step: copy beside the folder, move the old one aside, move
+ * the new one into its place (the browser knows the folder by path), then delete the old.
+ * A crash at any point leaves either the old or the new build whole.
+ */
 function replaceContents(from: string, to: string): void {
-  mkdirSync(to, { recursive: true });
-  for (const name of readdirSync(to)) rmSync(join(to, name), { recursive: true, force: true });
-  cpSync(from, to, { recursive: true });
+  const next = `${to}.new`;
+  const old = `${to}.old`;
+  rmSync(next, { recursive: true, force: true });
+  rmSync(old, { recursive: true, force: true });
+  cpSync(from, next, { recursive: true });
+  checkBuild(next);
+  if (existsSync(to)) renameSync(to, old);
+  try {
+    renameSync(next, to);
+  } catch (e) {
+    if (existsSync(old)) renameSync(old, to);
+    throw e;
+  }
+  rmSync(old, { recursive: true, force: true });
 }
 
 export function installFrom(source: string, browser: Browser, tag: string): string {
@@ -101,6 +116,7 @@ export async function update(browser: Browser, log: (s: string) => void): Promis
       ({ rev } = checkBuild(out));
     } catch {
       // Remembered, so the hourly check does not download it again.
+      mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, MARKER), `${pick.tag}\n`);
       log(`${browser}: ${pick.tag} is older than automatic updates; keeping the installed build`);
       return false;
@@ -122,7 +138,7 @@ export async function update(browser: Browser, log: (s: string) => void): Promis
 export function schedule(self: string, browsers: Browser[]): string {
   const script = join(home(), "algone.mjs");
   mkdirSync(home(), { recursive: true });
-  cpSync(self, script);
+  if (resolve(self) !== resolve(script)) cpSync(self, script);
   if (process.platform !== "win32") return `Run "node ${script} update" from cron to stay updated.`;
   const command = `"${process.execPath}" "${script}" update ${browsers.join(" ")}`;
   execFileSync("schtasks", ["/Create", "/F", "/SC", "HOURLY", "/TN", TASK, "/TR", command], { stdio: "ignore" });

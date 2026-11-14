@@ -32,3 +32,22 @@ describe("updater", () => {
     expect(() => checkBuild(dir)).toThrow();
   });
 });
+
+describe("installing", () => {
+  it("never replaces a newer build with an older one", async () => {
+    const { installFrom, folderFor } = await import("../src/update");
+    const root = mkdtempSync(join(tmpdir(), "algone-home-"));
+    process.env.LOCALAPPDATA = root;
+    const build = (rev: number) => {
+      const d = mkdtempSync(join(tmpdir(), "algone-build-"));
+      writeFileSync(join(d, "manifest.json"), JSON.stringify({ name: "Algone", manifest_version: 3 }));
+      writeFileSync(join(d, "build.json"), JSON.stringify({ rev }));
+      return d;
+    };
+    installFrom(build(10), "chrome", "a");
+    expect(checkBuild(folderFor("chrome")).rev).toBe(10);
+    expect(() => installFrom(build(5), "chrome", "b")).toThrow(/newer/);
+    installFrom(build(11), "chrome", "c");
+    expect(checkBuild(folderFor("chrome")).rev).toBe(11);
+  });
+});

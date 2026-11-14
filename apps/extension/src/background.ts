@@ -403,7 +403,10 @@ async function checkSelfUpdate(): Promise<void> {
   try {
     const res = await fetch(api.runtime.getURL("build.json"), { cache: "no-store" });
     const build = (await res.json()) as { rev?: number };
-    if (typeof build.rev === "number" && build.rev > BUILD_REV) api.runtime.reload();
+    if (typeof build.rev !== "number" || build.rev <= BUILD_REV) return;
+    // Reload only once the new build is whole: a missing manifest would leave Algone off.
+    const manifest = await fetch(api.runtime.getURL("manifest.json"), { cache: "no-store" });
+    if (manifest.ok && (await manifest.json()).manifest_version === 3) api.runtime.reload();
   } catch {
     // An old or partly copied folder: try again at the next alarm.
   }
