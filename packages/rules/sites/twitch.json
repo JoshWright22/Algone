@@ -119,6 +119,11 @@
       "path": "/",
       "selector": "[data-a-target=\"home-link\"]",
       "label": "Home link"
+    },
+    {
+      "path": "/monstercat",
+      "selector": "[data-a-target=\"video-player\"]",
+      "label": "Stream player"
     }
   ],
   "probes": [
