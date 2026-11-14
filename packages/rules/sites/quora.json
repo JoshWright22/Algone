@@ -1,0 +1,84 @@
+{
+  "id": "quora",
+  "name": "Quora",
+  "tier": 2,
+  "hosts": [
+    "www.quora.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "[class*=\"dom_annotate_multifeed\"]",
+        "#mainContent [class*=\"multifeed\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "related",
+      "label": "Related questions",
+      "group": "Question page",
+      "class": "algorithmic",
+      "selectors": [
+        "div.qu-gutterBottom:has(a[class*=\"sprig_related_question\"]):not(:has([class*=\"dom_annotate_question_answer_item\"]))",
+        "a[class*=\"sprig_related_question\"]"
+      ]
+    },
+    {
+      "id": "promoted",
+      "label": "Promoted answers and ads",
+      "group": "Question page",
+      "class": "algorithmic",
+      "selectors": [
+        "[class*=\"spacing_log_question_page_ad\"]",
+        "[class*=\"dom_annotate_ad\"]"
+      ]
+    }
+  ],
+  "protected": [
+    {
+      "path": "/What-is-the-best-programming-language-10",
+      "selector": "[class*=\"dom_annotate_question_answer_item\"]",
+      "label": "Answers"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/What-is-the-best-programming-language-10",
+      "live": true,
+      "expect": [
+        "related"
+      ],
+      "viewport": "mobile"
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
+    }
+  ],
+  "walls": [
+    "div.ray-id",
+    "#challenge-form",
+    "html:not(:has(#root))"
+  ],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "unverified",
+    "notes": "tests/live passed logged out on a question page on a phone (related questions); desktop gets a Cloudflare check, so it is inconclusive. The home feed needs a login and was not seen, so its selectors are unchecked."
+  }
+}
