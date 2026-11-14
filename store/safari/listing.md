@@ -20,7 +20,7 @@ Algone hides the algorithmic parts of popular websites and gives you something y
 
 Works in the browser only. Algone does not change native apps, so open these sites in Safari on iPhone, iPad, or Mac. Uninstalling always works.
 
-Sites: YouTube, Reddit, X, Instagram, Facebook, LinkedIn, TikTok, Threads, Bluesky, Twitch, Pinterest, and Substack.
+Sites: YouTube, Reddit, X, Instagram, Facebook, LinkedIn, TikTok, Threads, Bluesky, Twitch, Pinterest, Substack, Hacker News, GitHub, ABC News (Australia), Tumblr, Quora, Medium, and Kick.
 
 Four modes for each site:
 - No feed: clean empty space where the feed was. This is the default.

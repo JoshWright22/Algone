@@ -7,12 +7,12 @@ Single purpose: replace algorithmic feeds with something you control.
 | `storage` | Stores settings, the saved queue, and the validated rules copy on this device. |
 | `alarms` | Runs the daily rule check and the hourly Custom feed refresh. |
 | `scripting` | Inserts the validated rules stylesheet into supported sites through `insertCSS`. It runs no fetched code. It also injects the bundled content script into tabs open at install, and only on supported sites. |
-| Host permissions for the 12 supported sites | Hides elements on those sites and shows the Random, Custom, and queue panels. `insertCSS` needs host permission. Algone never asks for access to all websites. |
+| Host permissions for the 19 supported sites | Hides elements on those sites and shows the Random, Custom, and queue panels. `insertCSS` needs host permission. Algone never asks for access to all websites. |
 | Optional `https://en.wikipedia.org/*` | Off by default. Asked for only if the user turns on the Wikipedia source for Random, after a dialog that says what is sent. |
 
 Not requested: `<all_urls>`, `tabs`, `webRequest`, `declarativeNetRequest`, `management`, `history`.
 
-Host list: `www.youtube.com`, `m.youtube.com`, `www.reddit.com`, `sh.reddit.com`, `new.reddit.com`, `x.com`, `twitter.com`, `mobile.x.com`, `mobile.twitter.com`, `www.instagram.com`, `www.facebook.com`, `web.facebook.com`, `m.facebook.com`, `www.linkedin.com`, `www.tiktok.com`, `www.threads.com`, `www.threads.net`, `bsky.app`, `www.twitch.tv`, `m.twitch.tv`, `www.pinterest.com`, `substack.com`.
+Host list: `www.youtube.com`, `m.youtube.com`, `www.reddit.com`, `sh.reddit.com`, `new.reddit.com`, `x.com`, `twitter.com`, `mobile.x.com`, `mobile.twitter.com`, `www.instagram.com`, `www.facebook.com`, `web.facebook.com`, `m.facebook.com`, `www.linkedin.com`, `www.tiktok.com`, `www.threads.com`, `www.threads.net`, `bsky.app`, `www.twitch.tv`, `m.twitch.tv`, `www.pinterest.com`, `substack.com`, `news.ycombinator.com`, `github.com`, `www.abc.net.au`, `www.tumblr.com`, `www.quora.com`, `medium.com`, `kick.com`.
 
 ## Remote rules disclosure
 

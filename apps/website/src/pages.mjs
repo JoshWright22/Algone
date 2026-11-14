@@ -277,7 +277,7 @@ function sitesPage({ sites }) {
 <tbody>${rows}</tbody>
 </table></div>
 </section>
-${section("Support tiers", "Maintainers have limited time, so the twelve sites are not treated equally.", terms([
+${section("Support tiers", `Maintainers have limited time, so the ${sites.length} sites are not treated equally.`, terms([
     ["Tier 1", "Daily logged-out check, plus a maintainer's weekly logged-in check. Repaired first."],
     ["Tier 2", "Daily logged-out check only, so logged-in pages depend on your reports. Repaired when time allows."],
   ]))}
@@ -300,7 +300,7 @@ ${section("Last daily check", "The result of the newest automatic run, logged ou
 
 /* Privacy */
 
-function privacy() {
+function privacy({ sites }) {
   const parts = [
     ["summary", "Summary", `<p>Algone has no account and collects no data by default. Your settings stay on your device. There are no analytics, no cookies, and no ads.</p>
 <p>The one automatic network request is a daily download of a rules file from GitHub Pages. It carries no identifier. The other requests below happen only if you choose them.</p>
@@ -327,7 +327,7 @@ function privacy() {
 <li>No cookies</li>
 <li>No accounts or sync servers</li>
 <li>No selling or sharing of data, because Algone does not have any</li>
-<li>No access to sites beyond the 12 supported ones, plus Wikipedia if you opt in</li>
+<li>No access to sites beyond the ${sites.length} supported ones, plus Wikipedia if you opt in</li>
 </ul>
 <p>Algone does not change what you send to the sites you visit. They handle your data under their own terms, and they can detect that Algone is present.</p>`],
     ["browser", "Algone Browser", `<p>Algone Browser stores your settings, queue, and feeds locally on your device, and makes the same daily rules fetch. It has no account of its own. Sites you log in to in the app handle your data under their own terms.</p>`],
@@ -429,7 +429,7 @@ export function buildPages(ctx) {
     { slug: "install", title: "Install: Algone", description: "How to install Algone. It works in the browser, does not change native apps, and store listings are pending.", body: install(ctx) },
     { slug: "how-it-works", title: "How it works: Algone", description: "What Algone hides, its four modes and six barriers, and how rule repairs reach you.", body: howItWorks(ctx) },
     { slug: "sites", title: "Site status: Algone", description: `Support tier, verification, and the latest daily check for all ${count} sites.`, body: sitesPage(ctx), script: "status.js" },
-    { slug: "privacy", title: "Privacy policy: Algone", description: "Algone has no account and collects no data by default. Read exactly what stays on your device and what leaves it.", body: privacy() },
+    { slug: "privacy", title: "Privacy policy: Algone", description: "Algone has no account and collects no data by default. Read exactly what stays on your device and what leaves it.", body: privacy(ctx) },
     { slug: "support", title: "Support: Algone", description: "Fix a showing feed, report a broken site, or uninstall Algone.", body: support() },
     { slug: "ledger", title: "Funding ledger: Algone", description: "The public ledger of Algone donations and costs.", body: ledgerPage(ctx) },
     { slug: "uninstalled", title: "Uninstalled: Algone", description: "Algone has been removed. Optional feedback form.", body: uninstalled() },

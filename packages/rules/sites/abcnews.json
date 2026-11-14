@@ -1,0 +1,136 @@
+{
+  "id": "abcnews",
+  "name": "ABC News (Australia)",
+  "tier": 2,
+  "hosts": [
+    "www.abc.net.au"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/news",
+      "/news/"
+    ],
+    "forYou": [
+      "/news/for-you*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home page story rails",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main div[id]:has(> div > [data-uri*=\"collection/\"])",
+        "#topStories",
+        "#moreNews",
+        "#spotlight",
+        "#videoShorts"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "forYou",
+      "label": "For You feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "ul[data-component=\"ForYouFeed\"]"
+      ],
+      "routes": [
+        "forYou"
+      ]
+    },
+    {
+      "id": "forYouNav",
+      "label": "For You in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "li:has(> a[href=\"/news/for-you\"])"
+      ]
+    },
+    {
+      "id": "trendingFilter",
+      "label": "Trending filter",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "label:has(> input#sitepreference_trending)"
+      ],
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "topics",
+      "label": "Today's Topics",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#todaysTopics"
+      ],
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "promos",
+      "label": "Promotions",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "aside[data-component=\"MarketingBanner\"]"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "article[data-component=\"TopStoriesCard\"]",
+    "title": "[id^=\"card-link-\"]",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/",
+      "selector": "[data-component=\"AutoCompleteSearchBoxNext\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "#justIn",
+      "label": "Just In, in time order"
+    },
+    {
+      "path": "/",
+      "selector": "nav[aria-label=\"primary\"]",
+      "label": "Section navigation"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "viewport": "mobile"
+    }
+  ],
+  "walls": [],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "live-logged-out",
+    "notes": "tests/live passed on the home page, desktop and phone. For You was seen logged out but has no live probe. www.abc.net.au/news redirects to the home page. Just In stays visible because it is in time order."
+  }
+}

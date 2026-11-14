@@ -30,7 +30,7 @@ async function render(): Promise<void> {
       "main",
       { class: "page" },
       h("h1", {}, "Algone is on"),
-      h("p", { class: "lead" }, "Feeds and recommendations are now hidden on 12 sites. Search, subscriptions, direct links, and messages keep working."),
+      h("p", { class: "lead" }, `Feeds and recommendations are now hidden on ${SITES.length} sites. Search, subscriptions, direct links, and messages keep working.`),
       missing.length ? h("section", { id: "access" }, h("h2", {}, "Allow Algone on these sites"), ...missing) : null,
       h("section", {}, h("h2", {}, "How it works"),
         h("ul", {},

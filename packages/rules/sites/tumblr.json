@@ -1,0 +1,109 @@
+{
+  "id": "tumblr",
+  "name": "Tumblr",
+  "tier": 2,
+  "hosts": [
+    "www.tumblr.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/dashboard",
+      "/dashboard/stuff_for_you*"
+    ],
+    "subscriptions": [
+      "/dashboard/following*"
+    ],
+    "explore": [
+      "/explore*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Dashboard feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main [data-timeline-id]",
+        "main [data-timeline]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main [data-timeline-id]",
+        "main [data-timeline]"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "trendingBlogs",
+      "label": "Trending blogs",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "aside div:has(> ul[aria-label=\"Trending Blogs\"])",
+        "ul[aria-label=\"Trending Blogs\"]"
+      ]
+    },
+    {
+      "id": "exploreNav",
+      "label": "Explore in navigation",
+      "group": "Navigation",
+      "class": "algorithmic",
+      "selectors": [
+        "li:has(> a[href^=\"/explore\"])"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "div[data-id]:has(article)",
+    "title": "article p",
+    "kinds": {}
+  },
+  "subscriptionsPath": "/dashboard/following",
+  "protected": [
+    {
+      "path": "/",
+      "selector": "form[role=\"search\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "a[aria-label=\"Home\"]",
+      "label": "Home link"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ]
+    },
+    {
+      "path": "/explore/trending",
+      "live": true,
+      "expect": [
+        "explore"
+      ]
+    }
+  ],
+  "walls": [],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "unverified",
+    "notes": "tests/live passed logged out on the home page (which shows the trending timeline) and Explore. Marked unverified because the signed-in dashboard, the main target, was not seen; its For You tab is assumed to use the same timeline markup. The Following tab is left visible when its own URL is used, as a subscriptions list."
+  }
+}

@@ -2,7 +2,8 @@
 // prompt-injection channel, and values that look like identifiers are masked.
 const SAFE_VALUE = /^[A-Za-z0-9_-]+$/;
 const KEEP = ["id", "class", "role", "data-testid", "data-e2e", "data-a-target", "page-subtype",
-  "data-test-id", "data-test-selector", "data-view-name", "slot", "componentkey"];
+  "data-test-id", "data-test-selector", "data-view-name", "slot", "componentkey",
+  "data-component", "data-timeline-id"];
 
 export function maskValue(value) {
   if (!SAFE_VALUE.test(value)) return null;

@@ -6,7 +6,7 @@
 
 Algone is becoming an **MCP server first**: ask it, or have your AI assistant ask it, "what should I read or watch?" and it returns a short list from open sources (RSS, YouTube channels, Reddit, Bluesky, Hacker News), picked by your own written rules, with a reason for each. No feed, no scroll. Your feedback updates the same settings file the browser extension and app use. The MCP server is being designed now; see [the system-wide design](docs/designs/system-wide.md).
 
-Algone is a browser extension that hides the algorithmic parts of 12 popular websites and lets you decide what goes in their place. Search, subscriptions, direct links, and messages keep working. **Every feed is off from the moment you install it**, with no setup, and one switch ("Turn all feeds off") puts everything back that way. Per site you can instead choose a **healthy feed**: a short batch picked from what the site already loaded, without the outrage, clickbait and doom it can spot, that ends so you can go. There is no Algone account and no data collection. Settings can sync between your devices through your own GitHub account, if you turn that on.
+Algone is a browser extension that hides the algorithmic parts of 19 popular websites and lets you decide what goes in their place. Search, subscriptions, direct links, and messages keep working. **Every feed is off from the moment you install it**, with no setup, and one switch ("Turn all feeds off") puts everything back that way. Per site you can instead choose a **healthy feed**: a short batch picked from what the site already loaded, without the outrage, clickbait and doom it can spot, that ends so you can go. There is no Algone account and no data collection. Settings can sync between your devices through your own GitHub account, if you turn that on.
 
 In browsers, Algone changes the page itself. On Android, the Algone app can also go back when YouTube, Instagram, Facebook or Reddit opens Shorts or Reels, and close TikTok, through its own Accessibility service; it cannot change what those apps recommend. On iPhone, open the sites in Safari. See [the system-wide design](docs/designs/system-wide.md). Uninstalling always works.
 
@@ -47,8 +47,8 @@ Algone is `0.1.0`. It is not in any store yet.
 | Item | Status |
 |---|---|
 | Tests | Passing in CI: unit, Chromium, Firefox smoke, mobile typecheck and bundle |
-| Rules checked on the real site, logged out | YouTube (and its mobile home), Reddit, TikTok, Twitch, Bluesky, Pinterest, Threads, Instagram Explore only |
-| Rules not checked on the real site | X, Facebook, LinkedIn, Substack, and Instagram's home feed |
+| Rules checked on the real site, logged out | YouTube (and its mobile home), Reddit, TikTok, Twitch, Bluesky, Pinterest, Threads, Hacker News, ABC News (Australia), Kick, Instagram Explore only |
+| Rules not checked on the real site | X, Facebook, LinkedIn, Substack, and Instagram's home feed. GitHub, Tumblr, Quora and Medium passed logged out only on their public pages; their signed-in feeds are unchecked |
 | Logged-in check | Not run. Needs a maintainer's accounts |
 | Website and privacy policy | Live at <https://joshwright22.github.io/Algone/> |
 | Store listings | Drafted in `store/`, not submitted |

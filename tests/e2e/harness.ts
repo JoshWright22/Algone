@@ -27,6 +27,13 @@ export const FIXTURES: Record<string, Record<string, string>> = {
   "www.twitch.tv": { "/": "twitch/home" },
   "www.pinterest.com": { "/ideas/": "pinterest/ideas" },
   "substack.com": { "/": "substack/home" },
+  "news.ycombinator.com": { "/": "hackernews/home", "/newest": "hackernews/newest", "/item": "hackernews/item" },
+  "github.com": { "/trending": "github/trending", "/explore": "github/explore", "/torvalds/linux": "github/repo" },
+  "www.abc.net.au": { "/": "abcnews/home", "/news/for-you": "abcnews/foryou" },
+  "www.tumblr.com": { "/": "tumblr/home", "/explore/trending": "tumblr/explore" },
+  "www.quora.com": { "/What-is-the-best-programming-language-10": "quora/question" },
+  "medium.com": { "/tag/programming": "medium/tag" },
+  "kick.com": { "/": "kick/home", "/destiny": "kick/channel" },
 };
 
 export function fixture(name: string): string {
@@ -35,7 +42,7 @@ export function fixture(name: string): string {
 }
 
 export async function routeFixtures(context: BrowserContext, extra?: (url: URL) => string | null): Promise<void> {
-  await context.route(/^https:\/\/[^/]*(youtube|reddit|x|instagram|facebook|linkedin|tiktok|threads|bsky|twitch|pinterest|substack)\.[a-z.]+\//, (route) => {
+  await context.route(/^https:\/\/[^/]*(youtube|reddit|x|instagram|facebook|linkedin|tiktok|threads|bsky|twitch|pinterest|substack|ycombinator|github|abc|tumblr|quora|medium|kick)\.[a-z.]+\//, (route) => {
     const url = new URL(route.request().url());
     if (route.request().resourceType() !== "document") return route.fulfill({ status: 204, body: "" });
     const custom = extra?.(url);
