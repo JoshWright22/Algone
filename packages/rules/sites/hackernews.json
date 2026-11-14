@@ -86,7 +86,7 @@
       "label": "Newest stories, in time order"
     },
     {
-      "path": "/item",
+      "path": "/item?id=1",
       "selector": "table.fatitem",
       "label": "The story itself"
     }
