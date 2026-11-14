@@ -1,0 +1,82 @@
+{
+  "id": "medium",
+  "name": "Medium",
+  "tier": 2,
+  "hosts": [
+    "medium.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ],
+    "tag": [
+      "/tag/*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "article[data-testid=\"post-preview\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "topicPopular",
+      "label": "Popular stories on topic pages",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "div:has(> div > h2):has(a[href*=\"source=topic_portal---popular_stories\"])"
+      ],
+      "routes": [
+        "tag"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "article[data-testid=\"post-preview\"]",
+    "title": "h2",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/tag/programming",
+      "selector": "input[data-testid=\"headerSearchInput\"]",
+      "label": "Search"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/tag/programming",
+      "live": true,
+      "expect": [
+        "topicPopular"
+      ],
+      "viewport": "mobile"
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
+    }
+  ],
+  "walls": [
+    "div.ray-id",
+    "#challenge-form"
+  ],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "unverified",
+    "notes": "tests/live passed logged out on a topic page on a phone; desktop gets a Cloudflare check, so it is inconclusive. The For You home feed needs a login and was not seen; it is assumed to use the same post-preview cards as author pages. Story-page recommendations are not covered. Publications on their own domains are not covered."
+  }
+}
