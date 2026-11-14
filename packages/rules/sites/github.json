@@ -1,0 +1,114 @@
+{
+  "id": "github",
+  "name": "GitHub",
+  "tier": 2,
+  "hosts": [
+    "github.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/dashboard"
+    ],
+    "explore": [
+      "/explore*"
+    ],
+    "trending": [
+      "/trending*"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Dashboard feed",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#dashboard .news",
+        "#dashboard feed-container"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "explore",
+      "label": "Explore recommendations",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main div:has(> div[data-hpc] > article)",
+        "main article:has([data-hydro-click*=\"explore.click\"])",
+        "main div.Box:has(article.Box-row)"
+      ],
+      "routes": [
+        "explore"
+      ]
+    },
+    {
+      "id": "trending",
+      "label": "Trending repositories and developers",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main div.Box:has(article.Box-row)"
+      ],
+      "routes": [
+        "trending"
+      ]
+    }
+  ],
+  "tuned": {
+    "item": "article.Box-row",
+    "title": "h2 a",
+    "kinds": {}
+  },
+  "protected": [
+    {
+      "path": "/trending",
+      "selector": "button[aria-label^=\"Search or jump to\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/explore",
+      "selector": "button[aria-label^=\"Search or jump to\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/torvalds/linux",
+      "selector": "#repo-content-pjax-container",
+      "label": "Repository page"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/trending",
+      "live": true,
+      "expect": [
+        "trending"
+      ]
+    },
+    {
+      "path": "/explore",
+      "live": true,
+      "expect": [
+        "explore"
+      ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "needsLogin": true
+    }
+  ],
+  "walls": [],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "unverified",
+    "notes": "tests/live passed logged out on Explore and Trending. Marked unverified because the main target is the dashboard. The dashboard feed exists only when signed in and was not seen, so its selectors are unchecked."
+  }
+}
