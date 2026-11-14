@@ -20,7 +20,7 @@ Algone Browser is a small browser for 12 social and video websites. It loads the
 
 Works in the browser only. This app is the browser: Algone applies to pages you open inside it. It does not change native apps, so the YouTube, Instagram, and TikTok apps stay as they are. Uninstalling always works.
 
-Sites: YouTube, Reddit, X, Instagram, Facebook, LinkedIn, TikTok, Threads, Bluesky, Twitch, Pinterest, and Substack. Sites open from plain text tiles. There is no free address bar, and other links open in your system browser.
+Sites: YouTube, Reddit, X, Instagram, Facebook, LinkedIn, TikTok, Threads, Bluesky, Twitch, Pinterest, Substack, Hacker News, GitHub, ABC News (Australia), Tumblr, Quora, Medium, and Kick. Sites open from plain text tiles. There is no free address bar, and other links open in your system browser.
 
 - Search-first home, with an optional question about what you came to do.
 - Subscriptions first where the site supports it.
