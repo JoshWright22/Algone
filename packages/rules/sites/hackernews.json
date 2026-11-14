@@ -1,0 +1,119 @@
+{
+  "id": "hackernews",
+  "name": "Hacker News",
+  "tier": 2,
+  "hosts": [
+    "news.ycombinator.com"
+  ],
+  "routes": {
+    "home": [
+      "/",
+      "/news",
+      "/best",
+      "/active",
+      "/front"
+    ],
+    "askShow": [
+      "/ask",
+      "/show"
+    ],
+    "item": [
+      "/item"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Front page ranking",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#bigbox table:has(tr.athing.submission)"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "askShow",
+      "label": "Ask HN and Show HN rankings",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "#bigbox table:has(tr.athing.submission)"
+      ],
+      "routes": [
+        "askShow"
+      ]
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "group": "Story page",
+      "class": "extra",
+      "selectors": [
+        "table.comment-tree"
+      ],
+      "routes": [
+        "item"
+      ]
+    },
+    {
+      "id": "points",
+      "label": "Points",
+      "group": "Story page",
+      "class": "extra",
+      "selectors": [
+        "span.score"
+      ]
+    }
+  ],
+  "protected": [
+    {
+      "path": "/",
+      "selector": "form[action*=\"hn.algolia.com\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "span.pagetop",
+      "label": "Top navigation"
+    },
+    {
+      "path": "/newest",
+      "selector": "tr.athing.submission",
+      "label": "Newest stories, in time order"
+    },
+    {
+      "path": "/item",
+      "selector": "table.fatitem",
+      "label": "The story itself"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "viewport": "mobile"
+    }
+  ],
+  "walls": [
+    "html:not(:has(#hnmain))"
+  ],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "live-logged-out",
+    "notes": "tests/live passed on the front page, desktop and phone. Written from a logged-out look at the front page, /newest and a story page. /newest stays visible because it is in time order, not ranked. No tuned block: each story row starts with a vote link, so a picked item could point at it."
+  }
+}
