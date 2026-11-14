@@ -1,0 +1,95 @@
+{
+  "id": "kick",
+  "name": "Kick",
+  "tier": 2,
+  "hosts": [
+    "kick.com"
+  ],
+  "routes": {
+    "home": [
+      "/"
+    ]
+  },
+  "elements": [
+    {
+      "id": "home",
+      "label": "Home recommendations",
+      "group": "Feeds",
+      "class": "algorithmic",
+      "selectors": [
+        "main div:has(> section[data-testid=\"top-live-categories\"])",
+        "section[data-testid=\"top-live-categories\"]"
+      ],
+      "feed": true,
+      "routes": [
+        "home"
+      ]
+    },
+    {
+      "id": "sidebarRecommended",
+      "label": "Recommended channels in the sidebar",
+      "group": "Sidebar",
+      "class": "algorithmic",
+      "selectors": [
+        "#sidebar-wrapper section:has(a[data-testid^=\"sidebar-recommended-channel\"])",
+        "div:has(> a[data-testid=\"sidebar-show-more-recommended-to-browse\"])"
+      ]
+    }
+  ],
+  "protected": [
+    {
+      "path": "/",
+      "selector": "input[data-testid=\"search\"]",
+      "label": "Search"
+    },
+    {
+      "path": "/",
+      "selector": "[data-testid=\"sidebar-following\"]",
+      "label": "Following"
+    },
+    {
+      "path": "/destiny",
+      "selector": "#video-player",
+      "label": "Stream"
+    },
+    {
+      "path": "/destiny",
+      "selector": "#channel-chatroom",
+      "label": "Chat"
+    }
+  ],
+  "probes": [
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home",
+        "sidebarRecommended"
+      ]
+    },
+    {
+      "path": "/",
+      "live": true,
+      "expect": [
+        "home"
+      ],
+      "viewport": "mobile"
+    },
+    {
+      "path": "/destiny",
+      "live": true,
+      "expect": [
+        "sidebarRecommended"
+      ]
+    }
+  ],
+  "walls": [
+    "div.ray-id",
+    "#challenge-form"
+  ],
+  "verified": {
+    "date": "2026-11-13",
+    "method": "live-logged-out",
+    "notes": "tests/live passed on the home page (desktop and phone) and a channel page, where the stream and chat stayed visible. The home feed includes the featured stream carousel at the top of the home page; channel pages keep their stream and chat. Signed-in sidebars were not seen."
+  }
+}
