@@ -1,6 +1,6 @@
 // Saves reduced copies of public pages: real structure, no text, no scripts.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { chromium } from "playwright";
+import { chromium, devices } from "playwright";
 import { KEEP_ATTRS, snapshotInPage, toHtml } from "../live/sanitize.mjs";
 
 const PAGES = [
@@ -14,11 +14,30 @@ const PAGES = [
   ["bluesky", "home", "https://bsky.app/"],
   ["twitch", "home", "https://www.twitch.tv/"],
   ["pinterest", "ideas", "https://www.pinterest.com/ideas/"],
-];
+  ["hackernews", "home", "https://news.ycombinator.com/"],
+  ["hackernews", "newest", "https://news.ycombinator.com/newest"],
+  ["hackernews", "item", "https://news.ycombinator.com/item?id=50493062"],
+  ["github", "trending", "https://github.com/trending"],
+  ["github", "explore", "https://github.com/explore"],
+  ["github", "repo", "https://github.com/torvalds/linux"],
+  ["abcnews", "home", "https://www.abc.net.au/"],
+  ["abcnews", "foryou", "https://www.abc.net.au/news/for-you"],
+  ["tumblr", "home", "https://www.tumblr.com/"],
+  ["tumblr", "explore", "https://www.tumblr.com/explore/trending"],
+  ["kick", "home", "https://kick.com/"],
+  ["kick", "channel", "https://kick.com/destiny"],
+  // Quora and Medium serve a bot check to desktop headless browsers, so these use a phone.
+  ["quora", "question", "https://www.quora.com/What-is-the-best-programming-language-10", "mobile"],
+  ["medium", "tag", "https://medium.com/tag/programming", "mobile"],];
 
+// `node tests/fixtures/save-live.mjs kick medium` saves only those sites.
+const only = process.argv.slice(2);
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: "en-US" });
-for (const [site, name, url] of PAGES) {
+const desktop = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: "en-US" });
+const phone = await browser.newContext({ ...devices["iPhone 15"], locale: "en-US" });
+for (const [site, name, url, device] of PAGES) {
+  if (only.length && !only.includes(site)) continue;
+  const ctx = device === "mobile" ? phone : desktop;
   const p = await ctx.newPage();
   await p.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await p.waitForTimeout(6000);

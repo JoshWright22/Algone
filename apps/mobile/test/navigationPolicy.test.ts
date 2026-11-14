@@ -6,7 +6,7 @@ const youtube = SITES.find((s) => s.id === "youtube")!;
 
 describe("navigation policy", () => {
   it("allows https on every site's hosts and auxHosts, in that site's web view", () => {
-    expect(SITES).toHaveLength(12);
+    expect(SITES).toHaveLength(19);
     for (const site of SITES) {
       for (const host of [...site.hosts, ...(site.auxHosts ?? [])]) {
         expect(decide(`https://${host}/a?b=1`, site.id, true)).toEqual({ action: "allow" });

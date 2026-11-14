@@ -15,7 +15,7 @@ const file = (o: object) => JSON.stringify({ schema: 1, rev: 100, sites: {}, ...
 const yt = known.youtube!;
 
 describe("bundled rules", () => {
-  it("has 12 sites", () => expect(SITES).toHaveLength(12));
+  it("has 19 sites", () => expect(SITES).toHaveLength(19));
   it.each(SITES.map((s) => [s.id, s] as const))("%s is valid", (_id, site) => {
     expect(validateSite(site)).toEqual([]);
   });
@@ -145,6 +145,6 @@ describe("validateOverlay", () => {
     const r = validateOverlay(JSON.stringify(pub), known, 0);
     expect(r.ok).toBe(true);
     expect(r.rejected).toEqual([]);
-    expect(Object.keys(r.sites)).toHaveLength(12);
+    expect(Object.keys(r.sites)).toHaveLength(19);
   });
 });
