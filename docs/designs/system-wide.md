@@ -6,7 +6,9 @@ Status: approved direction, in build. Written 2026-11-10. Sources: `docs/designs
 
 Algone removes the harmful parts of social media on every device a person uses: algorithmic feeds, Shorts and Reels, autoplay, outrage and clickbait, and endless scroll. Search, subscriptions, direct links and messages keep working. By default it shows a **healthy feed**: a short batch picked from what the site already offers, with outrage and depressing posts pushed out, that ends so the person can leave. Settings are changed in one place and reach every device.
 
-**Centerpiece (2026-11-10): the Algone MCP server.** Instead of opening a site to see what it recommends, a person (or their AI agent) asks Algone: "what should I read or watch?" Algone pulls from open sources (RSS and Atom, YouTube channel feeds, Reddit, Bluesky, Hacker News), scores each item against the person's own written rules in the shared policy file, and returns a short ranked list with a reason for each pick. Never a scroll. Feedback (more, less, never) writes back to the policy file, so the agent, the extension and the app stay in step. The extension and the app remain the way to make the sites themselves safe.
+> **Moved to a separate tool (2026-11-13).** Recommendations, the MCP server and agent-built algorithms are no longer part of Algone. Algone only blocks feeds. A separate CLI for developers will build recommendations; it is planned outside this repo. The sections marked "moved" below are kept for reference only.
+
+**Moved: centerpiece as of 2026-11-10, now a separate tool.** ~~The Algone MCP server.~~ Instead of opening a site to see what it recommends, a person (or their AI agent) asks Algone: "what should I read or watch?" Algone pulls from open sources (RSS and Atom, YouTube channel feeds, Reddit, Bluesky, Hacker News), scores each item against the person's own written rules in the shared policy file, and returns a short ranked list with a reason for each pick. Never a scroll. Feedback (more, less, never) writes back to the policy file, so the agent, the extension and the app stay in step. The extension and the app remain the way to make the sites themselves safe.
 
 Nothing can stop a person who is set on switching Algone off. The design aims for two things instead: switching off is slow and deliberate, and staying on feels worth it.
 
@@ -23,8 +25,8 @@ These replace D-26, the Non-Goals line on native apps, and the "Native-app featu
 | S-5 | Android native apps are handled by Algone's **own** Accessibility service inside the Algone app. No other app is needed. | The maintainer: users should not install anything else. Curbox is GPL; nothing is copied from it. |
 | S-6 | iPhone native apps get whole-app pause and limits through Screen Time only, and the UI says so. This needs a paid Apple developer account; it waits for the maintainer. | iOS gives no access inside another app. |
 | S-7 | On computers the extension does everything. A Zen filter list is an optional export for people who already use Zen; it is built on the computer after the local barrier, never synced. | Editing a synced list would loosen with no barrier. |
-| S-9 | An **MCP server** (`packages/mcp`) is the main way the person and their agents use Algone. It recommends a fixed short list from open sources, scored against the policy's recommendation rules, and writes feedback back to the policy. | The maintainer: "rework Algone to be an MCP which gives you recommendations from all websites to view/read". |
-| S-10 | Sources are open only: RSS and Atom, YouTube channel feeds, Reddit's public JSON, Bluesky's public API, Hacker News. X and other walled sites only through what the extension already sees on the page. No scraping behind logins, no paid APIs. | Legal, durable, open source. |
+| S-9 | *Moved to a separate tool (2026-11-13).* An **MCP server** (`packages/mcp`) is the main way the person and their agents use Algone. It recommends a fixed short list from open sources, scored against the policy's recommendation rules, and writes feedback back to the policy. | The maintainer: "rework Algone to be an MCP which gives you recommendations from all websites to view/read". |
+| S-10 | *Moved to a separate tool (2026-11-13).* Sources are open only: RSS and Atom, YouTube channel feeds, Reddit's public JSON, Bluesky's public API, Hacker News. X and other walled sites only through what the extension already sees on the page. No scraping behind logins, no paid APIs. | Legal, durable, open source. |
 | S-8 | An opt-in **browser lock** on Windows: the CLI writes Chrome, Edge and Firefox enterprise policy so the extension is force-installed and cannot be disabled or removed from the browser UI. Removing the lock needs admin rights and the CLI. | The only real friction against one-click disable on a person's own PC. |
 
 ## Coverage
@@ -111,7 +113,9 @@ Ranked by evidence (plan section 5): an easy "Never mind" on every barrier (exis
 - **Clock.** Each device keeps the latest time it has seen and never uses an earlier one; with sync on, GitHub's `Date` header bounds forward jumps for barrier timers.
 - **Agents.** The `algone` CLI edits the policy (`set`, `validate`). An agent edit is as safe as any other device's edit: loosening still waits on each device. An agent with shell access to a device can still tamper with that device; the browser lock (S-8) is the defence there.
 
-## Recommendation rules (in the policy)
+## Recommendation rules (in the policy) — moved to a separate tool
+
+*Moved 2026-11-13: these fields stay in the policy format for now, but nothing in Algone uses them, and the separate tool will own them.*
 
 The policy's `settings.recommend` holds the person's rules in plain words, read by the MCP's scorer and shown in the extension and app:
 
@@ -128,7 +132,9 @@ sources: Array<{ kind: "rss" | "youtube" | "reddit" | "bluesky" | "hn"; url: str
 
 Direction: removing from `drop` or `blockCreators`, or raising `maxPerDay`, loosens and waits for the barrier. Adding to them, or lowering the cap, applies at once. `want`, `creators` and `sources` are neutral, since the cap bounds what can come through. Feedback "never" adds to `blockCreators` or `drop` (stricter, at once); "more" and "less" adjust scores.
 
-## The Algone MCP server
+## The Algone MCP server — moved to a separate tool
+
+*Moved 2026-11-13: not built in Algone.*
 
 Stub. Waiting for research on existing open-source MCP servers for RSS, news, Reddit, YouTube and feeds that could be reused or forked. Planned tools, at minimum: `recommend(n, kind = read | watch)`, `explain(item)`, `feedback(item, more | less | never)`, `get_policy`, `set_rule`, `sources_add`, `sources_remove`. Returns a fixed short list, never a feed.
 
