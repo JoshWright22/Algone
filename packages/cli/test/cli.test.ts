@@ -29,7 +29,7 @@ describe("algone CLI", () => {
     expect(await run(["init", "p.json"], t.x)).toBe(0);
     expect(await run(["validate", "p.json"], t.x)).toBe(0);
     expect(await run(["get", "p.json", "sites.youtube.mode"], t.x)).toBe(0);
-    expect(t.out.at(-1)).toBe('"healthy"');
+    expect(t.out.at(-1)).toBe('"nofeed"');
   });
 
   it("set changes one value, checks it, and counts the revision", async () => {

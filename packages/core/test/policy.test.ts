@@ -33,7 +33,7 @@ describe("policy file", () => {
     if (!r.ok) return;
     expect(r.policy.settings.sites.youtube?.mode).toBe("tuned");
     expect(r.policy.settings.sites.youtube?.tuned.blockKeywords).toEqual([]);
-    expect(r.policy.settings.sites.reddit?.mode).toBe("healthy");
+    expect(r.policy.settings.sites.reddit?.mode).toBe("nofeed");
   });
 
   it.each([
@@ -85,7 +85,7 @@ describe("policy file", () => {
     const s = settingsFromPolicy(p, SITES, here);
     expect(s.sites.youtube?.mode).toBe("tuned");
     expect(s.snoozeMinutes).toBe(5);
-    expect(settingsFromPolicy(p, SITES, { ...here, platform: "firefox", deviceId: "x" }).sites.youtube?.mode).toBe("healthy");
+    expect(settingsFromPolicy(p, SITES, { ...here, platform: "firefox", deviceId: "x" }).sites.youtube?.mode).toBe("nofeed");
   });
 
   it("counts revisions", () => {

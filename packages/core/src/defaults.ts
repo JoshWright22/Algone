@@ -1,6 +1,6 @@
 import type { SiteRule } from "@algone/rules";
 import { DEFAULT_ANDROID_APPS } from "./apps";
-import { AVOID_IDS, type Runtime, type Settings, type SiteSettings, type TunedFilters } from "./types";
+import { AVOID_IDS, type Patch, type Runtime, type Settings, type SiteSettings, type TunedFilters } from "./types";
 
 export const SHORT_VIDEO_SITES = ["tiktok"];
 
@@ -23,9 +23,9 @@ export const defaultSite = (): SiteSettings => ({
 export function defaultSettings(rules: SiteRule[]): Settings {
   return {
     schema: 2,
-    // Healthy where the rule can read the site's feed, otherwise No feed. TikTok's feed is
-    // nothing but short video, so a "healthy" batch of it would still be short video.
-    sites: Object.fromEntries(rules.map((r) => [r.id, { ...defaultSite(), mode: r.tuned && !SHORT_VIDEO_SITES.includes(r.id) ? "healthy" : "nofeed" }])),
+    // Every feed off from the first minute, with no setup. Healthy, Random, Tuned and Custom
+    // are choices a person makes later, per site.
+    sites: Object.fromEntries(rules.map((r) => [r.id, defaultSite()])),
     barrier: { type: "pause", seconds: 30 },
     snoozeMinutes: 10,
     stopAtEnd: true,
@@ -90,4 +90,25 @@ export function isHidden(
   site: SiteSettings,
 ): boolean {
   return site.elements[el.id] ?? el.class === "algorithmic";
+}
+
+/** One switch: every site on, in No feed, with every algorithmic element hidden. Stricter, so it never waits. */
+export function allFeedsOffPatch(settings: Settings, rules: SiteRule[]): Patch {
+  const patches: Patch[] = [];
+  for (const rule of rules) {
+    const site = settings.sites[rule.id];
+    if (!site?.enabled) patches.push({ op: "setSiteEnabled", site: rule.id, enabled: true });
+    if (site?.mode !== "nofeed") patches.push({ op: "setMode", site: rule.id, mode: "nofeed" });
+    for (const el of rule.elements) {
+      if (el.class === "algorithmic" && site && !isHidden(el, site)) {
+        patches.push({ op: "setElement", site: rule.id, element: el.id, hidden: true });
+      }
+    }
+  }
+  return { op: "batch", patches, source: "All feeds off" };
+}
+
+export function allFeedsAreOff(settings: Settings, rules: SiteRule[]): boolean {
+  const p = allFeedsOffPatch(settings, rules);
+  return p.op === "batch" && p.patches.length === 0;
 }

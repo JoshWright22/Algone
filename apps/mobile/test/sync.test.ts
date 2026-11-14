@@ -65,14 +65,14 @@ afterEach(() => vi.useRealTimers());
 describe("settings file", () => {
   it("exports a policy that another device imports, stricter at once", async () => {
     const a = await device();
-    await a.store.patch({ op: "setMode", site: "youtube", mode: "nofeed" });
+    await a.store.patch({ op: "setElement", site: "youtube", element: "comments", hidden: true });
     const text = a.store.exportPolicy();
     expect(JSON.parse(text).schema).toBe("algone-policy/1");
     const b = await device();
     const r = await b.store.importPolicy(text, "android");
     expect(r).toMatchObject({ ok: true, applied: 1 });
     expect(r.needsBarrier).toBeUndefined();
-    expect(b.store.get().settings.sites.youtube!.mode).toBe("nofeed");
+    expect(b.store.get().settings.sites.youtube!.elements.comments).toBe(true);
   });
 
   it("looser settings in a file wait for the barrier", async () => {
@@ -82,7 +82,7 @@ describe("settings file", () => {
     const b = await device();
     const r = await b.store.importPolicy(a.store.exportPolicy(), "android");
     expect(r).toMatchObject({ ok: true, needsBarrier: true });
-    expect(b.store.get().settings.sites.youtube!.mode).toBe("healthy");
+    expect(b.store.get().settings.sites.youtube!.mode).toBe("nofeed");
     expect(b.store.get().runtime.pending?.kind).toBe("patch");
     expect((await b.store.barrierPass()).ok).toBe(true);
     expect(b.store.get().settings.sites.youtube!.mode).toBe("tuned");
@@ -129,14 +129,14 @@ describe("sync", () => {
     const gh = fakeGitHub();
     const a = await device();
     const b = await device();
-    await a.store.patch({ op: "setMode", site: "youtube", mode: "nofeed" });
+    await a.store.patch({ op: "setElement", site: "youtube", element: "comments", hidden: true });
     expect((await connectSync(a.store, TOKEN, "android", gh.f)).ok).toBe(true);
-    expect(gh.policy().settings.sites.youtube.mode).toBe("nofeed");
+    expect(gh.policy().settings.sites.youtube.elements.comments).toBe(true);
     // The token is kept in the app's own storage, with the rest of the state.
     expect(JSON.parse(a.kv.data.get(STATE_KEY)!).syncToken).toBe(TOKEN);
 
     expect((await connectSync(b.store, TOKEN, "ios", gh.f)).ok).toBe(true);
-    expect(b.store.get().settings.sites.youtube!.mode).toBe("nofeed");
+    expect(b.store.get().settings.sites.youtube!.elements.comments).toBe(true);
     expect(b.store.get().sync.base).toEqual(b.store.get().settings);
 
     // Stricter on b: sent, then applied on a without a barrier.
@@ -173,12 +173,12 @@ describe("sync", () => {
     const a = await device();
     await connectSync(a.store, TOKEN, "android", gh.f);
     const round = runSync(a.store, "android", gh.f);
-    await a.store.patch({ op: "setMode", site: "reddit", mode: "nofeed" });
+    await a.store.patch({ op: "setElement", site: "reddit", element: "comments", hidden: true });
     expect((await round).ok).toBe(true);
-    expect(a.store.get().settings.sites.reddit!.mode).toBe("nofeed");
+    expect(a.store.get().settings.sites.reddit!.elements.comments).toBe(true);
     expect(outboxOf(a.store.get()).length).toBeGreaterThan(0);
     await runSync(a.store, "android", gh.f);
-    expect(gh.policy().settings.sites.reddit.mode).toBe("nofeed");
+    expect(gh.policy().settings.sites.reddit.elements.comments).toBe(true);
   });
 
   it("a revoked token keeps the settings and shows the problem", async () => {
@@ -202,8 +202,8 @@ describe("sync", () => {
     await connectSync(a.store, TOKEN, "android", gh.f);
     vi.useFakeTimers();
     const stop = startSyncLoop(a.store, "android", gh.f);
-    await a.store.patch({ op: "setMode", site: "reddit", mode: "nofeed" });
-    await a.store.patch({ op: "setMode", site: "x", mode: "nofeed" });
+    await a.store.patch({ op: "setElement", site: "reddit", element: "comments", hidden: true });
+    await a.store.patch({ op: "setElement", site: "x", element: "replies", hidden: true });
     const before = gh.calls.length;
     await vi.advanceTimersByTimeAsync(SYNC_SOON_MS - 1000);
     expect(gh.calls.length).toBe(before);
@@ -212,6 +212,6 @@ describe("sync", () => {
     vi.useRealTimers();
     await vi.waitFor(() => expect(outboxOf(a.store.get())).toEqual([]));
     expect(gh.calls.filter((c) => c.startsWith("PATCH"))).toHaveLength(1);
-    expect(gh.policy().settings.sites.x.mode).toBe("nofeed");
+    expect(gh.policy().settings.sites.x.elements.replies).toBe(true);
   });
 });

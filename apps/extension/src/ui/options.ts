@@ -6,7 +6,7 @@ import { SITES, type SiteRule } from "@algone/rules";
 import { api, now } from "../browser";
 import { send, type Stored } from "../messages";
 import { loadState } from "../state";
-import { elementList, modePicker, MODES } from "./common";
+import { allOffSwitch, elementList, modePicker, MODES } from "./common";
 import { applyTheme, h, mount, toggle } from "./h";
 
 const root = document.getElementById("root")!;
@@ -66,6 +66,7 @@ function tunedEditor(rule: SiteRule, f: TunedFilters): HTMLElement {
 
 function sitesTab(s: Stored): HTMLElement {
   return h("div", { id: "sites" },
+    allOffSwitch(s.settings),
     ...SITES.map((rule) => {
       const site = s.settings.sites[rule.id]!;
       const isOpen = open === rule.id;

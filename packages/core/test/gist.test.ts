@@ -73,7 +73,7 @@ describe("gist sync", () => {
     const gh = fakeGitHub();
     const r = await run(gh, emptySyncState(), base());
     expect(r.state.gistId).toBe("g1");
-    expect(gh.policy("g1").settings.sites.youtube.mode).toBe("healthy");
+    expect(gh.policy("g1").settings.sites.youtube.mode).toBe("nofeed");
     expect(gh.policy("g1").settings.theme).toBeUndefined();
   });
 

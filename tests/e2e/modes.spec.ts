@@ -258,8 +258,24 @@ test("hidden feed stays hidden with panel fallback when the slot is missing", as
   expect(await isHiddenEl(page, 'ytd-browse[page-subtype="home"]')).toBe(true);
 });
 
-test("healthy is the default: a short batch from the hidden feed, without ragebait, that ends", async ({ h }) => {
+test("a fresh install has every feed off, and one switch turns them all off again", async ({ h }) => {
+  const opts = await extPage(h, "options.html");
+  await expect(opts.locator("p#all-off")).toContainText("All feeds are off");
   await configure(h, (s) => {
+    s.sites.youtube.mode = "tuned";
+    s.sites.twitch.enabled = false;
+  });
+  await opts.reload();
+  await opts.locator("button#all-off").click();
+  await expect(opts.locator("p#all-off")).toContainText("All feeds are off");
+  const settings = await getStorage(h, "settings");
+  expect(settings.sites.youtube.mode).toBe("nofeed");
+  expect(settings.sites.twitch.enabled).toBe(true);
+});
+
+test("healthy mode: a short batch from the hidden feed, without ragebait, that ends", async ({ h }) => {
+  await configure(h, (s) => {
+    s.sites.youtube.mode = "healthy";
     s.healthy.batchSize = 2;
     s.activities = ["Go for a walk"];
   });

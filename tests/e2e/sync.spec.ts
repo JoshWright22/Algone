@@ -49,7 +49,7 @@ test("sync: connect, send changes, and hold another device's loosening for the b
   await opts.locator("#sync-token").fill(TOKEN);
   await opts.locator("#sync-connect").click();
   await expect(opts.locator("#sync-state")).toContainText(/Synced \d/);
-  expect(gh.policy().settings.sites.youtube.mode).toBe("healthy");
+  expect(gh.policy().settings.sites.youtube.mode).toBe("nofeed");
   expect(await getStorage(h, "syncToken")).toBe(TOKEN);
 
   // A change here is sent on the next round.

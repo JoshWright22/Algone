@@ -124,3 +124,6 @@ html[data-panel="save"] #root { display: flex; justify-content: flex-end; }
 html[data-panel="notice"] .notice { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.all-off { font-weight: 600; margin: 8px 0 12px; }
+button#all-off { width: 100%; margin: 8px 0 12px; }

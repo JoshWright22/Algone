@@ -3,7 +3,7 @@ import { siteMap } from "@algone/rules";
 import { api, now } from "../browser";
 import { send } from "../messages";
 import { loadState } from "../state";
-import { elementList, modePicker } from "./common";
+import { allOffSwitch, elementList, modePicker } from "./common";
 import { applyTheme, h, mount, toggle } from "./h";
 
 interface Here {
@@ -41,6 +41,7 @@ async function render(): Promise<void> {
     mount(
       root,
       header,
+      allOffSwitch(state.settings),
       h(
         "div",
         { class: "empty" },
@@ -68,6 +69,7 @@ async function render(): Promise<void> {
   mount(
     root,
     header,
+    allOffSwitch(state.settings),
     h(
       "div",
       { class: "site" },

@@ -1,11 +1,11 @@
-import { isHidden, type Mode, type SiteSettings } from "@algone/core";
-import type { SiteRule } from "@algone/rules";
+import { allFeedsAreOff, allFeedsOffPatch, isHidden, type Mode, type Settings, type SiteSettings } from "@algone/core";
+import { SITES, type SiteRule } from "@algone/rules";
 import { send } from "../messages";
 import { h, toggle } from "./h";
 
 export const MODES: Array<{ id: Mode; label: string; hint: string }> = [
-  { id: "healthy", label: "Healthy", hint: "A short batch from the site's own picks, without ragebait. Then it ends" },
   { id: "nofeed", label: "No feed", hint: "Clean empty space" },
+  { id: "healthy", label: "Healthy", hint: "A short batch from the site's own picks, without ragebait. Then it ends" },
   { id: "random", label: "Random", hint: "Quotes, facts, poems, art, puzzles" },
   { id: "tuned", label: "Tuned", hint: "The site's feed, with your filters" },
   { id: "custom", label: "Custom", hint: "Your own feed, stored on this device" },
@@ -58,3 +58,16 @@ export function elementList(rule: SiteRule, site: SiteSettings): HTMLElement {
     ),
   );
 }
+
+/** The one switch: every feed on every site off. Shown on every page, supported or not. */
+export function allOffSwitch(settings: Settings): HTMLElement {
+  if (allFeedsAreOff(settings, SITES)) {
+    return h("p", { class: "all-off", id: "all-off" }, `All feeds are off on ${SITES.length} sites.`);
+  }
+  return h("button", {
+    class: "primary",
+    id: "all-off",
+    onclick: () => void send({ t: "patch", patch: allFeedsOffPatch(settings, SITES) }),
+  }, "Turn all feeds off");
+}
+

@@ -129,6 +129,9 @@ test("hidden video is muted, and a shown one is left alone", async ({ h }) => {
 });
 
 test("a video in the off-screen healthy feed is not muted, so a reused player keeps its sound", async ({ h }) => {
+  const settings = await getStorage(h, "settings");
+  settings.sites.youtube.mode = "healthy";
+  await setStorage(h, { settings });
   const page = await h.context.newPage();
   await page.goto("https://www.youtube.com/");
   await waitAttrs(page);

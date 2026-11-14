@@ -1,7 +1,7 @@
 import { publishRules, SITES, siteMap, type SiteRule } from "@algone/rules";
 import { describe, expect, it } from "vitest";
 import {
-  addSource, addToQueue, applyPatch, checkBreak, validatePatch, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
+  addSource, addToQueue, allFeedsAreOff, allFeedsOffPatch, applyPatch, checkBreak, validatePatch, barrierStep, clearIfBundled, computeView, createPartnerBarrier,
   defaultRuntime, defaultSettings, dueSources, effectiveRule, emptyTuned, feedUrlFor, handleRulesFile,
   inWindow, isLikelyAi, isStricterBarrier, isWeakening, localDay, makePuzzle, matchesTopic, mergeEntries,
   migrateSettings, moveInQueue, nextFetchAt, parseFeed, pickRandom, randomContentCount, rankItems, recordPass,
@@ -22,11 +22,22 @@ const NOW = new Date(2026, 9, 31, 12, 0, 0).getTime();
 const tok = (id: string) => `youtube.${id}`;
 
 describe("defaults", () => {
-  it("starts every site with a feed rule on the healthy feed", () => {
+  it("starts with every feed off, with no setup", () => {
     const s = defaultSettings(SITES);
-    expect(Object.entries(s.sites).every(([id, site]) => site.mode === (id === "tiktok" ? "nofeed" : "healthy"))).toBe(true);
-    expect(computeView(s, rt(), yt, NOW).panel?.content).toBe("healthy");
-    expect(computeView(s, rt(), yt, NOW).show).not.toContain(tok("home"));
+    expect(Object.values(s.sites).every((site) => site.mode === "nofeed" && site.enabled)).toBe(true);
+    expect(allFeedsAreOff(s, SITES)).toBe(true);
+    for (const rule of SITES) expect(computeView(s, rt(), rule, NOW).show).toEqual([]);
+  });
+  it("one switch turns every feed off again, at once", () => {
+    let s = applyPatch(defaultSettings(SITES), { op: "setMode", site: "youtube", mode: "tuned" });
+    s = applyPatch(s, { op: "setSiteEnabled", site: "twitch", enabled: false });
+    s = applyPatch(s, { op: "setElement", site: "reddit", element: "home", hidden: false });
+    expect(allFeedsAreOff(s, SITES)).toBe(false);
+    const patch = allFeedsOffPatch(s, SITES);
+    expect(isWeakening(s, patch, SITES)).toBe(false);
+    const off = applyPatch(s, patch);
+    expect(allFeedsAreOff(off, SITES)).toBe(true);
+    expect(off.sites.twitch?.enabled).toBe(true);
   });
   it("hides algorithmic and shows extras", () => {
     const v = computeView(base(), rt(), yt, NOW);
