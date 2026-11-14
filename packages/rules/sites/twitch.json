@@ -15,6 +15,16 @@
     ],
     "subscriptions": [
       "/directory/following*"
+    ],
+    "browse": [
+      "/directory",
+      "/directory/all*",
+      "/directory/category*",
+      "/directory/gaming*",
+      "/directory/irl*",
+      "/directory/music*",
+      "/directory/creative*",
+      "/directory/esports*"
     ]
   },
   "elements": [
@@ -52,7 +62,7 @@
         "[data-a-target=\"root-scroller\"]"
       ],
       "routes": [
-        "directory"
+        "browse"
       ]
     },
     {

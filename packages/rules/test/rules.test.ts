@@ -148,3 +148,20 @@ describe("validateOverlay", () => {
     expect(Object.keys(r.sites)).toHaveLength(12);
   });
 });
+
+describe("twitch", () => {
+  it("never hides the followed channels page", () => {
+    const tw = SITES.find((s) => s.id === "twitch")!;
+    const matches = (pattern: string, path: string) =>
+      pattern.endsWith("*") ? path.startsWith(pattern.slice(0, -1)) : path === pattern;
+    for (const el of tw.elements) {
+      for (const route of el.routes ?? []) {
+        for (const m of tw.routes[route] ?? []) {
+          const pattern = typeof m === "string" ? m : m.path;
+          expect(matches(pattern, "/directory/following"), `${el.id} via ${route}`).toBe(false);
+          expect(matches(pattern, "/directory/following/live"), `${el.id} via ${route}`).toBe(false);
+        }
+      }
+    }
+  });
+});

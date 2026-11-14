@@ -51,3 +51,13 @@ describe("installing", () => {
     expect(checkBuild(folderFor("chrome")).rev).toBe(11);
   });
 });
+
+describe("firefox", () => {
+  it("needs both AMO credentials, and says how to get them", async () => {
+    const { hasAmoCredentials, FIREFOX_SETUP } = await import("../src/firefox");
+    expect(hasAmoCredentials({})).toBe(false);
+    expect(hasAmoCredentials({ WEB_EXT_API_KEY: "a" })).toBe(false);
+    expect(hasAmoCredentials({ WEB_EXT_API_KEY: "a", WEB_EXT_API_SECRET: "b" })).toBe(true);
+    expect(FIREFOX_SETUP).toContain("unlisted");
+  });
+});

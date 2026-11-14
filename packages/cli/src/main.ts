@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { run } from "./cli";
+import { FIREFOX_SETUP, hasAmoCredentials, openInFirefox, signFirefox } from "./firefox";
 import { BROWSERS, folderFor, installFrom, schedule, unschedule, update, type Browser } from "./update";
 
 const args = process.argv.slice(2);
@@ -38,7 +39,24 @@ After that, updates install by themselves every hour and Algone reloads within 1
   return failed ? 1 : 0;
 }
 
-if (args[0] === "install" || args[0] === "update") {
+/** Firefox: signed by Mozilla (unlisted, private), then installed through Firefox's own prompt. */
+function installFirefox(): number {
+  if (!hasAmoCredentials(process.env)) {
+    console.log(FIREFOX_SETUP);
+    return 1;
+  }
+  const fromAt = args.indexOf("--from");
+  const dist = resolve(fromAt >= 0 ? args[fromAt + 1]! : "apps/extension/dist", "firefox");
+  const xpi = signFirefox(dist);
+  openInFirefox(xpi);
+  console.log(`Signed: ${xpi}
+Firefox is asking whether to add Algone. Press Add; it stays after restarts.`);
+  return 0;
+}
+
+if (args[0] === "install" && args.includes("firefox")) {
+  process.exitCode = installFirefox();
+} else if (args[0] === "install" || args[0] === "update") {
   process.exitCode = await installOrUpdate();
 } else if (args[0] === "stop-updates") {
   unschedule();

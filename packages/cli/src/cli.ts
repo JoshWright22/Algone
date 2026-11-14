@@ -30,6 +30,7 @@ export const HELP = `algone: the Algone settings file from a terminal.
   algone push <file>                  Upload a file to your Gist as the next revision
   algone install [chrome] [edge]      Install Algone from the newest release, and keep it updated
   algone install --from <dist>        Install from a local build (apps/extension/dist)
+  algone install firefox              Sign privately with Mozilla (needs your AMO key) and install
   algone update [chrome] [edge]       Update now (the scheduled task runs this every hour)
   algone stop-updates                 Remove the scheduled update
 
