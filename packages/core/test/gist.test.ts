@@ -96,7 +96,7 @@ describe("gist sync", () => {
     const r = await run(gh, first.state, base());
     expect(r.applied).toBe(0);
     expect(Object.values(r.settings.sites).every((s) => s.enabled)).toBe(true);
-    expect(r.state.pending?.label).toMatch(/^Loosen 12 settings from another device/);
+    expect(r.state.pending?.label).toMatch(new RegExp(`^Loosen ${SITES.length} settings from another device`));
   });
 
   it("sends only this device's changes, so it never undoes another device's", async () => {

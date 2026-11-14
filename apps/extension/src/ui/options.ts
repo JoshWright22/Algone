@@ -324,9 +324,7 @@ let syncMessage = "";
 
 /** Sign in with GitHub's device flow. Polls from this page, since a service worker may stop mid-wait. */
 async function signIn(status: HTMLElement): Promise<void> {
-  // Firefox needs the request straight from the click, before any await.
-  const granted = await api.permissions.request({ origins: ["https://github.com/*"] });
-  if (!granted) return void (status.textContent = syncMessage = "Sign-in needs permission to reach github.com, only for signing in.");
+  // github.com is one of the sites Algone works on, so sign-in needs no extra permission.
   try {
     const code = await startDeviceFlow(fetch.bind(globalThis), GITHUB_CLIENT_ID, now());
     status.textContent = syncMessage = `On GitHub, enter the code ${code.userCode}. Waiting...`;
@@ -347,8 +345,6 @@ async function signIn(status: HTMLElement): Promise<void> {
     status.textContent = syncMessage = "The code expired. Start again.";
   } catch (e) {
     status.textContent = syncMessage = `Sign-in failed: ${String(e instanceof Error ? e.message : e)}`;
-  } finally {
-    void api.permissions.remove({ origins: ["https://github.com/*"] }).catch(() => undefined);
   }
 }
 
