@@ -254,7 +254,7 @@
     "/feeds/videos.xml"
   ],
   "verified": {
-    "date": "2026-10-31",
+    "date": "2026-11-13",
     "method": "live-logged-out",
     "notes": "Home, watch, and search checked logged out. Logged-out home is nearly empty. Mobile (ytm-*) selectors unverified."
   }

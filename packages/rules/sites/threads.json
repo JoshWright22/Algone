@@ -73,7 +73,7 @@
     "input[autocomplete=\"username\"]"
   ],
   "verified": {
-    "date": "2026-11-01",
+    "date": "2026-11-13",
     "method": "live-logged-out",
     "notes": "Logged-out home checked from a local browser and a GitHub runner. The structural selector is fragile."
   }

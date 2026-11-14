@@ -121,7 +121,7 @@
   "protected": [
     {
       "path": "/",
-      "selector": "[data-e2e=\"search-user-input\"]",
+      "selector": "[data-e2e=\"nav-search\"]",
       "label": "Search"
     },
     {
@@ -148,7 +148,7 @@
   ],
   "walls": [],
   "verified": {
-    "date": "2026-10-31",
+    "date": "2026-11-13",
     "method": "live-logged-out",
     "notes": "Home and explore checked logged out."
   }

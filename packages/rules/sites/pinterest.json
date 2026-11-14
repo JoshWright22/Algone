@@ -109,7 +109,7 @@
   ],
   "walls": [],
   "verified": {
-    "date": "2026-10-31",
+    "date": "2026-11-13",
     "method": "live-logged-out",
     "notes": "Explore checked logged out. Logged-in home uses a selector from Escape the Algorithm (MIT)."
   }

@@ -32,7 +32,15 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      # The runner's package mirror sometimes fails to resolve; try a few times before failing.
+      - name: Install Chromium
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Install failed, retrying in 30 seconds"
+            sleep 30
+          done
+          exit 1
       - run: node apps/extension/scripts/build.mjs --target chrome --test --out-dir apps/extension/dist-test
       - name: Check the live sites
         env:

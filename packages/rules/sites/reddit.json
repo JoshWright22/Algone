@@ -211,7 +211,7 @@
     ".rss"
   ],
   "verified": {
-    "date": "2026-10-31",
+    "date": "2026-11-13",
     "method": "live-logged-out",
     "notes": "r/popular and subreddit pages checked logged out; home sometimes served a JS challenge. Logged-in home is unverified."
   }
