@@ -105,7 +105,7 @@ jobs:
           name: gate-snapshot
           path: test-results/live
       - id: claude
-        uses: anthropics/claude-code-action@d535f5172dec02b204866b393d6b20b9b2aaf98d # v1.0.266
+        uses: anthropics/claude-code-action@d5f7970ae232b6039636a16ea7f251e58e814f38 # v1.0.272
         env:
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1"
         with:
