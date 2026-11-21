@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-20T15:35:54.156Z",
-  "run": "44763816265",
+  "date": "2026-11-21T14:47:55.623Z",
+  "run": "44915280396",
   "sites": {
     "bluesky": {
       "outcome": "pass",
@@ -8,7 +8,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "instagram": {
       "outcome": "pass",
@@ -16,7 +16,7 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "pinterest": {
       "outcome": "pass",
@@ -24,15 +24,15 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "reddit": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "live-logged-out",
-      "inconclusiveDays": 19,
+      "inconclusiveDays": 20,
       "walled": true,
-      "lastCounted": "2026-11-20"
+      "lastCounted": "2026-11-21"
     },
     "threads": {
       "outcome": "pass",
@@ -40,7 +40,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "tiktok": {
       "outcome": "broken",
@@ -56,7 +56,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "youtube": {
       "outcome": "pass",
@@ -64,40 +64,40 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "facebook": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 19,
+      "inconclusiveDays": 20,
       "walled": true,
-      "lastCounted": "2026-11-20"
+      "lastCounted": "2026-11-21"
     },
     "linkedin": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 19,
+      "inconclusiveDays": 20,
       "walled": true,
-      "lastCounted": "2026-11-20"
+      "lastCounted": "2026-11-21"
     },
     "substack": {
       "outcome": "inconclusive",
       "tier": 2,
       "method": "unverified",
-      "inconclusiveDays": 3,
+      "inconclusiveDays": 4,
       "walled": false,
       "lastPass": "2026-11-17",
-      "lastCounted": "2026-11-20"
+      "lastCounted": "2026-11-21"
     },
     "x": {
       "outcome": "inconclusive",
       "tier": 1,
       "method": "unverified",
-      "inconclusiveDays": 19,
+      "inconclusiveDays": 20,
       "walled": true,
-      "lastCounted": "2026-11-20"
+      "lastCounted": "2026-11-21"
     },
     "abcnews": {
       "outcome": "pass",
@@ -105,7 +105,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "github": {
       "outcome": "pass",
@@ -113,7 +113,7 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "hackernews": {
       "outcome": "pass",
@@ -121,7 +121,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "kick": {
       "outcome": "pass",
@@ -129,7 +129,7 @@
       "method": "live-logged-out",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "medium": {
       "outcome": "pass",
@@ -137,14 +137,15 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     },
     "quora": {
-      "outcome": "broken",
+      "outcome": "inconclusive",
       "tier": 2,
       "method": "unverified",
-      "inconclusiveDays": 0,
-      "walled": false
+      "inconclusiveDays": 1,
+      "walled": false,
+      "lastCounted": "2026-11-21"
     },
     "tumblr": {
       "outcome": "pass",
@@ -152,7 +153,7 @@
       "method": "unverified",
       "inconclusiveDays": 0,
       "walled": false,
-      "lastPass": "2026-11-20"
+      "lastPass": "2026-11-21"
     }
   }
 }
